@@ -5,7 +5,8 @@ import { Shirt, Pencil, MoreHorizontal, Archive, Gift, DollarSign, RotateCcw } f
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { LogWearButton } from '@/components/wear/log-wear-button';
+import { WearHistory } from '@/components/wear/wear-history';
 import {
   Dialog,
   DialogContent,
@@ -140,6 +141,9 @@ export function ItemDetail({ item, wearLogs = [], onStatusChange }: ItemDetailPr
           )}
         </div>
         <div className="flex items-center gap-2">
+          {item.status === 'active' && (
+            <LogWearButton itemId={item.id} />
+          )}
           <Button variant="outline" onClick={() => setIsEditing(true)}>
             <Pencil className="mr-2 h-4 w-4" />
             Edit
@@ -370,34 +374,7 @@ export function ItemDetail({ item, wearLogs = [], onStatusChange }: ItemDetailPr
       </div>
 
       {/* Wear History */}
-      {wearLogs.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Wear History</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ScrollArea className="h-[200px]">
-              <div className="space-y-4">
-                {wearLogs.map((log) => (
-                  <div key={log.id} className="flex items-start gap-4 border-l-2 pl-4">
-                    <div>
-                      <p className="font-medium">
-                        {new Date(log.worn_at).toLocaleDateString()}
-                      </p>
-                      {log.occasion && (
-                        <p className="text-sm text-muted-foreground">{log.occasion}</p>
-                      )}
-                      {log.notes && (
-                        <p className="text-sm text-muted-foreground mt-1">{log.notes}</p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </ScrollArea>
-          </CardContent>
-        </Card>
-      )}
+      <WearHistory logs={wearLogs} maxHeight="250px" />
 
       {/* Notes */}
       {item.notes && (
