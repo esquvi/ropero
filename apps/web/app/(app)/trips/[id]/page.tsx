@@ -1,11 +1,12 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, CalendarDays, MapPin, Cloud } from 'lucide-react';
+import { ArrowLeft, CalendarDays, MapPin } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PackingList } from '@/components/trips/packing-list';
+import { WeatherForecastDisplay } from '@/components/trips/weather-forecast';
 
 interface TripPageProps {
   params: Promise<{
@@ -165,27 +166,14 @@ export default async function TripPage({ params }: TripPageProps) {
             </CardContent>
           </Card>
 
-          {/* Weather Forecast Placeholder */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-lg">Weather Forecast</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {typedTrip.weather_forecast ? (
-                <div className="text-sm">
-                  {/* Weather display will be implemented in Task 27 */}
-                  <p className="text-muted-foreground">Weather data available</p>
-                </div>
-              ) : (
-                <div className="flex flex-col items-center py-4 text-center">
-                  <Cloud className="h-8 w-8 text-muted-foreground" />
-                  <p className="mt-2 text-sm text-muted-foreground">
-                    Weather forecast will be available closer to your trip date.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          {/* Weather Forecast */}
+          <WeatherForecastDisplay
+            tripId={typedTrip.id}
+            destination={typedTrip.destination}
+            startDate={typedTrip.start_date}
+            endDate={typedTrip.end_date}
+            initialForecast={typedTrip.weather_forecast as Parameters<typeof WeatherForecastDisplay>[0]['initialForecast']}
+          />
 
           {typedTrip.notes && (
             <Card>
