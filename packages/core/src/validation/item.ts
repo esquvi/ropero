@@ -46,3 +46,4 @@ export const createItemSchema = z.object({
 });
 
 export type CreateItemInput = z.infer<typeof createItemSchema>;
+export type CreateItemFormInput = z.input<typeof createItemSchema>;
