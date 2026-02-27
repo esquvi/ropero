@@ -6,7 +6,7 @@
 
 **Architecture:** Turborepo monorepo with shared TypeScript packages. Supabase handles auth, database (Postgres + RLS), file storage, and Edge Functions. No custom API server — client SDK talks directly to Supabase, Edge Functions handle server-side logic (AI, weather).
 
-**Tech Stack:** TypeScript, Next.js 15, Expo (React Native), Turborepo, Supabase, Zod, Vitest, Playwright, Claude API, Open-Meteo API
+**Tech Stack:** TypeScript, Next.js 15, shadcn/ui (Radix UI + Tailwind CSS), Expo (React Native), Turborepo, Supabase, Zod, Vitest, Playwright, Claude API, Open-Meteo API
 
 ---
 
@@ -170,16 +170,39 @@ Set name to `@ropero/web`. Add scripts:
 }
 ```
 
-**Step 4: Create a minimal landing page**
+**Step 4: Initialize shadcn/ui**
 
-Replace `app/page.tsx` with a simple "Ropero — Your Smart Wardrobe" placeholder page.
+Run from `apps/web/`:
+```bash
+npx shadcn@latest init
+```
 
-**Step 5: Verify it runs**
+Select: New York style, Neutral base color, CSS variables for theming.
+
+This creates:
+- `apps/web/components/ui/` — where shadcn components will live
+- `apps/web/lib/utils.ts` — `cn()` helper for merging Tailwind classes
+- Updates `tailwind.config.ts` and `globals.css` with shadcn theme variables
+
+**Step 5: Install initial shadcn/ui components**
+
+Install the components we'll need across the app:
+```bash
+npx shadcn@latest add button card input label select badge dialog sheet tabs form dropdown-menu separator avatar command calendar popover textarea toast tooltip scroll-area checkbox
+```
+
+These components are now files in `apps/web/components/ui/` that you own and can customize.
+
+**Step 6: Create a minimal landing page**
+
+Replace `app/page.tsx` with a simple "Ropero — Your Smart Wardrobe" placeholder page using shadcn Button and Card components to verify the setup works.
+
+**Step 7: Verify it runs**
 
 Run: `npm run dev --workspace=@ropero/web`
-Expected: Next.js dev server at http://localhost:3000 with the placeholder page.
+Expected: Next.js dev server at http://localhost:3000 with the placeholder page, shadcn components rendering correctly with proper styling.
 
-**Step 6: Commit**
+**Step 8: Commit**
 
 ```bash
 git add apps/web
@@ -564,9 +587,17 @@ Wardrobe management app with outfit building, wear logging, and smart trip packi
 - Local dev: `supabase start` (requires Docker)
 - Migrations: `supabase/migrations/`
 
+## Web UI Components (shadcn/ui)
+- shadcn/ui components live in `apps/web/components/ui/` — do NOT modify these directly for app logic
+- App-specific components go in `apps/web/components/` (they compose shadcn primitives)
+- Add new shadcn components: `npx shadcn@latest add <component>` (run from apps/web/)
+- Use the `cn()` helper from `@/lib/utils` for conditional Tailwind classes
+- shadcn/ui is web-only — mobile app uses React Native primitives with shared tokens
+
 ## Key Conventions
 - No custom API server — use Supabase client SDK directly + Edge Functions
 - Design tokens in packages/ui — import from @ropero/ui, not hardcoded values
+- Always use shadcn/ui components for web UI — never raw HTML inputs, buttons, etc.
 - TDD: write failing test first, then implement
 ```
 
@@ -1230,18 +1261,22 @@ git commit -m "feat: set up Supabase auth with SSR in web app"
 
 **Step 1: Create auth layout**
 
-Centered card layout for auth pages — no sidebar.
+Centered Card layout for auth pages — no sidebar. Use shadcn Card as the form container.
 
 **Step 2: Build login page**
 
-- Email + password form
-- "Sign in with Google" button (Supabase OAuth)
+Use shadcn components:
+- `Card` + `CardHeader` + `CardContent` for the form container
+- `Form` + `Input` + `Label` for email/password fields (with Zod validation via react-hook-form)
+- `Button` for submit and Google OAuth
+- `Separator` between email and OAuth options
 - Link to signup
 
 **Step 3: Build signup page**
 
-- Email + password + name form
-- "Sign up with Google" button
+Same shadcn component pattern as login:
+- `Form` + `Input` + `Label` for email/password/name
+- `Button` for submit and Google OAuth
 - Link to login
 
 **Step 4: Create OAuth callback route**
@@ -1274,13 +1309,13 @@ git commit -m "feat: add login and signup pages with email and Google OAuth"
 **Step 1: Create app layout with sidebar**
 
 Route group `(app)` wraps all authenticated pages. Layout includes:
-- Sidebar with navigation links (Dashboard, Wardrobe, Outfits, Trips, Settings)
-- Header with user menu (profile, sign out)
-- Main content area
+- Sidebar using shadcn `Sheet` (collapsible on mobile) with `Button` variants for nav links
+- Header with shadcn `DropdownMenu` for user menu (profile, sign out) and `Avatar` for user photo
+- Main content area with proper padding
 
 **Step 2: Create placeholder dashboard page**
 
-Simple "Welcome to Ropero" message with placeholder stat cards.
+Simple "Welcome to Ropero" message with shadcn `Card` components as placeholder stat cards.
 
 **Step 3: Test navigation**
 
@@ -1317,11 +1352,11 @@ const { data: items } = await supabase
 
 **Step 2: Build ItemCard component**
 
-Displays: photo thumbnail (or placeholder), name, brand, category, color dot, season badges.
+Use shadcn `Card` + `Badge` components. Displays: photo thumbnail (or placeholder), name, brand, category, color dot, season `Badge`s.
 
 **Step 3: Build filter bar**
 
-Client component with dropdowns: category, season, formality range, status. Filters applied as URL search params for server-side filtering.
+Client component using shadcn `Select` for dropdowns (category, season, status) and `Popover` for formality range. Filters applied as URL search params for server-side filtering.
 
 **Step 4: Test with seed data**
 
@@ -1343,12 +1378,12 @@ git commit -m "feat: add wardrobe list page with item cards and filters"
 
 **Step 1: Build multi-step add form**
 
-Three steps:
-1. **Photo** — drag-and-drop or click to upload photo(s). Upload to Supabase Storage under `{user_id}/{uuid}.jpg`.
-2. **Details** — category, name, brand, colors, size, material, season, formality, purchase info.
-3. **Tags** — notes and tags. Review and submit.
+Use shadcn `Tabs` for the step indicator, `Form` + `Input` + `Select` + `Textarea` for form fields, `Button` for navigation and submit. Three steps:
+1. **Photo** — drag-and-drop zone or click to upload photo(s). Upload to Supabase Storage under `{user_id}/{uuid}.jpg`.
+2. **Details** — `Select` for category, `Input` for name/brand/colors/size/material, `Checkbox` group for seasons, slider or `Select` for formality, `Calendar` (shadcn date picker) + `Input` for purchase info.
+3. **Tags** — `Textarea` for notes, `Input` with `Badge` display for tags. Review and submit.
 
-Uses the `createItemSchema` from `@ropero/core` for client-side validation.
+Uses the `createItemSchema` from `@ropero/core` for client-side validation via react-hook-form + Zod resolver.
 
 **Step 2: Build photo upload component**
 
@@ -1389,15 +1424,15 @@ git commit -m "feat: add item creation flow with photo upload"
 
 **Step 1: Build item detail page**
 
-Displays: full-size photos, all attributes, wear history (from wear_logs), edit button, status change buttons (archive, mark as donated/sold).
+Use shadcn `Card` sections for photo gallery, attributes (with `Badge` for seasons/tags), and wear history (`ScrollArea` with timeline). shadcn `Button` for edit, `DropdownMenu` for status changes (archive, donate, sell, reactivate).
 
 **Step 2: Build edit form**
 
-Pre-populated form using the same schema as add. Server action for update.
+Pre-populated shadcn `Form` using the same schema as add. Same component pattern. Server action for update.
 
 **Step 3: Add status change actions**
 
-Server actions for: archive, donate, sell, reactivate.
+`Dialog` for confirmation ("Are you sure you want to archive this item?"). Server actions for: archive, donate, sell, reactivate.
 
 **Step 4: Commit**
 
@@ -1419,10 +1454,11 @@ git commit -m "feat: add item detail and edit pages"
 
 **Step 1: Build "Log Wear" button component**
 
-Quick action button on item cards and item detail page. Opens a small modal/popover:
-- Date (defaults to today)
-- Occasion (optional)
-- Notes (optional)
+shadcn `Button` on item cards and item detail page. Opens a shadcn `Popover` with:
+- `Calendar` date picker (defaults to today)
+- `Select` for occasion (optional)
+- `Textarea` for notes (optional)
+- `Button` to submit
 
 Server action creates wear_log entry. The database trigger automatically updates `items.times_worn` and `items.last_worn_at`.
 
@@ -1455,16 +1491,16 @@ git commit -m "feat: add wear logging with history timeline"
 
 **Step 1: Build outfits list page**
 
-Grid of saved outfits with name, photo/item previews, occasion, rating.
+Grid of saved outfits using shadcn `Card` with item thumbnail previews, name, occasion `Badge`, rating display.
 
 **Step 2: Build outfit builder**
 
-Interactive page:
-- Left panel: browse/filter wardrobe items (reuse item-filters)
-- Right panel: "outfit canvas" where selected items appear
-- Click an item to add/remove from outfit
-- Form fields: name, occasion, rating, notes, tags
-- Save action creates outfit + outfit_items rows
+Interactive page using shadcn components:
+- Left panel: browse/filter wardrobe items (reuse item-filters, `Command` for search)
+- Right panel: "outfit canvas" (`Card` area) where selected items appear
+- Click an item to add/remove from outfit (toggle with visual feedback)
+- `Form` fields: `Input` for name, `Select` for occasion, star rating, `Textarea` for notes, tag `Input` with `Badge` display
+- `Button` to save — creates outfit + outfit_items rows
 
 **Step 3: Test creating and viewing outfits**
 
@@ -1489,15 +1525,15 @@ git commit -m "feat: add outfit builder and outfits list"
 
 **Step 1: Build trips list page**
 
-Upcoming and past trips. Trip card shows: name, destination, dates, type, packing status.
+Upcoming and past trips using shadcn `Tabs` (Upcoming / Past). Trip `Card` shows: name, destination, dates, type `Badge`, packing status `Badge`.
 
 **Step 2: Build create trip form**
 
-Fields: name, destination, start/end dates, trip type. Server action creates trip.
+shadcn `Dialog` with `Form`: `Input` for name/destination, `Calendar` for start/end dates, `Select` for trip type. Server action creates trip.
 
 **Step 3: Build trip detail page**
 
-Shows trip info, weather forecast (fetched in Task 27), and packing list.
+`Card` sections for trip info, weather forecast (fetched in Task 27), and packing list with `Checkbox` items.
 
 **Step 4: Commit**
 
@@ -1588,10 +1624,10 @@ Rules:
 **Step 4: Build packing UI**
 
 `apps/web/app/(app)/trips/[id]/pack/page.tsx`:
-- "Generate suggestions" button triggers Edge Function
-- Displays suggested items with AI explanations
-- User can accept/reject each suggestion
-- Finalize creates packing_list + packing_list_items
+- shadcn `Button` "Generate suggestions" triggers Edge Function
+- Displays suggested items as `Card` list with AI explanations and accept/reject `Button`s
+- `Checkbox` list for final packing items
+- "Finalize" `Button` creates packing_list + packing_list_items
 
 **Step 5: Test, commit**
 
@@ -1614,17 +1650,17 @@ git commit -m "feat: add AI-assisted packing suggestions"
 
 **Step 1: Build dashboard with real data**
 
-Stats:
-- Total items (by status)
-- Total wardrobe value (sum of purchase_price)
-- Items by category (bar/pie chart)
-- Most worn / least worn items
+Use shadcn `Card` for each stat section:
+- Total items (by status) — stat `Card`s with numbers
+- Total wardrobe value (sum of purchase_price) — stat `Card`
+- Items by category (simple bar/count display)
+- Most worn / least worn items — `Card` with item thumbnails
 
-Recent activity: last 10 wear logs.
+Recent activity: last 10 wear logs in a `ScrollArea` list.
 
-Upcoming trips: next 3 trips with packing status.
+Upcoming trips: next 3 trips as `Card`s with packing status `Badge`.
 
-Quick actions: "Add Item", "Log Wear".
+Quick actions: shadcn `Button` for "Add Item", "Log Wear".
 
 **Step 2: Commit**
 

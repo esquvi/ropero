@@ -36,6 +36,7 @@ ropero/
 | Layer | Technology |
 |-------|-----------|
 | Web app | Next.js 15 (App Router) |
+| Web UI components | shadcn/ui (Radix UI + Tailwind CSS) |
 | Mobile app | Expo with Expo Router |
 | Monorepo | Turborepo |
 | Auth | Supabase Auth (email + Google OAuth) |
@@ -267,11 +268,13 @@ Mobile priorities:
 - Packing list with checkboxes
 - Same route structure adapted for mobile navigation
 
-### Shared Design System (packages/ui)
+### Shared Design System
 
-- Design tokens: color palette, spacing scale, typography
-- Both apps consume the same tokens
-- Platform-native rendering (HTML/CSS on web, RN primitives on mobile)
+**Web (shadcn/ui):** Components live in `apps/web/components/ui/` — installed via `npx shadcn@latest add <component>`. Built on Radix UI (accessible primitives) + Tailwind CSS. Key components used: Button, Card, Dialog, Dropdown Menu, Form, Input, Select, Tabs, Badge, Sheet (mobile sidebar), Command (search), Calendar (date picker).
+
+**Shared tokens (packages/ui):** Color palette, spacing scale, typography exported as constants. Both apps consume the same tokens. Web app maps tokens to Tailwind CSS variables (used by shadcn/ui theme). Mobile app uses tokens directly in React Native styles.
+
+**Mobile:** Platform-native components (React Native primitives), styled using shared tokens from packages/ui. No shadcn/ui on mobile (it's web-only).
 
 ## Testing
 
