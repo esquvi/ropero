@@ -1,7 +1,7 @@
-import type { NextConfig } from "next";
+import type { NextConfig } from 'next';
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  transpilePackages: ['@ropero/core', '@ropero/supabase', '@ropero/ui'],
 };
 
 export default nextConfig;
