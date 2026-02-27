@@ -1,1 +1,41 @@
+# Dependencies
+node_modules
+
+# Build outputs
+.next
+dist
+.turbo
+
+# Environment variables
+.env
+.env.*
+.env.local
+.env.*.local
+
+# Expo / React Native
+.expo
+ios/build
+android/build
+android/.gradle
+*.jks
+*.keystore
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Worktrees
 .worktrees
+
+# Logs
+*.log
+npm-debug.log*
+
+# Testing
+coverage
