@@ -92,10 +92,10 @@ DECLARE
 BEGIN
   LOOP
     attempts := attempts + 1;
-    new_code := generate_invite_code();
+    new_code := public.generate_invite_code();
 
     BEGIN
-      INSERT INTO invite_codes (user_id, code)
+      INSERT INTO public.invite_codes (user_id, code)
       VALUES (NEW.id, new_code);
       EXIT; -- success, break out of loop
     EXCEPTION WHEN unique_violation THEN
