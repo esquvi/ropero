@@ -312,7 +312,7 @@ describe('RLS Policies', () => {
         .insert({
           user_id: userAId,
           item_id: itemId,
-          worn_date: '2026-02-28',
+          worn_at: '2026-02-28',
         })
         .select('id')
         .single();
