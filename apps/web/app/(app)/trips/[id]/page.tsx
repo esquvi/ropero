@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { PackingList } from '@/components/trips/packing-list';
+import { PackingSuggestions } from '@/components/trips/packing-suggestions';
 import { WeatherForecastDisplay } from '@/components/trips/weather-forecast';
 
 interface TripPageProps {
@@ -188,7 +189,20 @@ export default async function TripPage({ params }: TripPageProps) {
         </div>
 
         {/* Packing List */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Packing</h2>
+            <PackingSuggestions
+              tripId={typedTrip.id}
+              packingListId={packingList?.id}
+              destination={typedTrip.destination}
+              startDate={typedTrip.start_date}
+              endDate={typedTrip.end_date}
+              tripType={typedTrip.trip_type}
+              weatherForecast={typedTrip.weather_forecast}
+              hasExistingItems={packingItems.length > 0}
+            />
+          </div>
           <PackingList
             packingListId={packingList?.id}
             items={packingItems}
