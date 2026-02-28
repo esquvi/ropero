@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -16,11 +17,11 @@ export default function Home() {
             Manage your wardrobe, build outfits, log what you wear, and pack smart for trips.
           </p>
           <div className="flex flex-col gap-2">
-            <Button size="lg" className="w-full">
-              Get Started
+            <Button asChild size="lg" className="w-full">
+              <Link href="/signup">Get Started</Link>
             </Button>
-            <Button variant="outline" size="lg" className="w-full">
-              Learn More
+            <Button asChild variant="outline" size="lg" className="w-full">
+              <Link href="/login">Sign In</Link>
             </Button>
           </div>
         </CardContent>
