@@ -11,7 +11,8 @@
     "lint": "turbo run lint",
     "test": "turbo run test",
     "typecheck": "turbo run typecheck",
-    "clean": "turbo run clean"
+    "clean": "turbo run clean",
+    "postinstall": "test -L node_modules/expo-router || ln -s ../apps/mobile/node_modules/expo-router node_modules/expo-router"
   },
   "devDependencies": {
     "turbo": "^2"
