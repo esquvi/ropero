@@ -20,7 +20,7 @@ interface Stats {
 
 interface WearLog {
   id: string;
-  worn_date: string;
+  worn_at: string;
   occasion: string | null;
   items: { name: string };
 }
@@ -49,8 +49,8 @@ export default function HomeScreen() {
       (supabase.from('trips') as ReturnType<typeof supabase.from>)
         .select('*', { count: 'exact', head: true }).gte('start_date', today),
       (supabase.from('wear_logs') as ReturnType<typeof supabase.from>)
-        .select('id, worn_date, occasion, items(name)')
-        .order('worn_date', { ascending: false }).limit(5),
+        .select('id, worn_at, occasion, items(name)')
+        .order('worn_at', { ascending: false }).limit(5),
       (supabase.from('outfits') as ReturnType<typeof supabase.from>)
         .select('id, name, occasion')
         .order('created_at', { ascending: false }).limit(5),
@@ -128,7 +128,7 @@ export default function HomeScreen() {
                   <Text style={styles.logOccasion}>{log.occasion}</Text>
                 )}
               </View>
-              <Text style={styles.logDate}>{formatDate(log.worn_date)}</Text>
+              <Text style={styles.logDate}>{formatDate(log.worn_at)}</Text>
             </View>
           ))
         ) : (

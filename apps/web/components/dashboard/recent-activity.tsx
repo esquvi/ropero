@@ -4,7 +4,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 
 interface WearLogEntry {
   id: string;
-  worn_date: string;
+  worn_at: string;
   occasion: string | null;
   items: {
     name: string;
@@ -55,7 +55,7 @@ export function RecentActivity({ wearLogs }: RecentActivityProps) {
                     </p>
                     <p className="text-xs text-muted-foreground">
                       {log.occasion && <span className="capitalize">{log.occasion} &middot; </span>}
-                      {formatDate(log.worn_date)}
+                      {formatDate(log.worn_at)}
                     </p>
                   </div>
                 </div>
