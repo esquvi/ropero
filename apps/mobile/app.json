@@ -24,7 +24,11 @@
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -41,10 +45,12 @@
     },
     "extra": {
       "eas": {
-        "projectId": ""
+        "projectId": "e74d24ea-959a-46da-9b9b-73986c749d71"
       },
       "supabaseUrl": "https://ihwkmkdtlcmrhomlyalx.supabase.co",
-      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlod2tta2R0bGNtcmhvbWx5YWx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTcyNTIsImV4cCI6MjA4Nzg3MzI1Mn0.CcN08hWfBdjmaZgB1CajhLpPn-r-c2wuKG6OI9Jbn-w"
-    }
+      "supabaseAnonKey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imlod2tta2R0bGNtcmhvbWx5YWx4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTcyNTIsImV4cCI6MjA4Nzg3MzI1Mn0.CcN08hWfBdjmaZgB1CajhLpPn-r-c2wuKG6OI9Jbn-w",
+      "router": {}
+    },
+    "owner": "esquvi"
   }
 }
