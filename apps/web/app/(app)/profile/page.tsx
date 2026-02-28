@@ -16,11 +16,22 @@ export default async function ProfilePage() {
   const name = (user.user_metadata?.name as string) || '';
   const email = user.email || '';
 
-  // Fetch invite code and redemptions
-  const { data: inviteCode } = await (supabase.from('invite_codes') as any)
+  // Fetch invite code — create one if missing (for users created before the invite system)
+  let { data: inviteCode } = await (supabase.from('invite_codes') as any)
     .select('id, code, max_uses, times_used')
     .eq('user_id', user.id)
     .single();
+
+  if (!inviteCode) {
+    const { data: newCode } = await (supabase.rpc as any)('generate_invite_code');
+    if (newCode) {
+      const { data: inserted } = await (supabase.from('invite_codes') as any)
+        .insert({ user_id: user.id, code: newCode })
+        .select('id, code, max_uses, times_used')
+        .single();
+      if (inserted) inviteCode = inserted;
+    }
+  }
 
   let redemptions: any[] = [];
   if (inviteCode) {
