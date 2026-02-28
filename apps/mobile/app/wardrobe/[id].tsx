@@ -37,7 +37,7 @@ interface ItemDetail {
 
 interface WearLog {
   id: string;
-  worn_date: string;
+  worn_at: string;
   occasion: string | null;
 }
 
@@ -59,9 +59,9 @@ export default function ItemDetailScreen() {
         .eq('id', id)
         .single(),
       (supabase.from('wear_logs') as ReturnType<typeof supabase.from>)
-        .select('id, worn_date, occasion')
+        .select('id, worn_at, occasion')
         .eq('item_id', id)
-        .order('worn_date', { ascending: false })
+        .order('worn_at', { ascending: false })
         .limit(10),
     ]);
 
@@ -89,7 +89,7 @@ export default function ItemDetailScreen() {
         .insert({
           user_id: user.id,
           item_id: id,
-          worn_date: today,
+          worn_at: today,
         });
 
       if (error) {
@@ -228,7 +228,7 @@ export default function ItemDetailScreen() {
             wearLogs.map((log) => (
               <View key={log.id} style={styles.logRow}>
                 <Text style={styles.logDate}>
-                  {new Date(log.worn_date).toLocaleDateString('en-US', {
+                  {new Date(log.worn_at).toLocaleDateString('en-US', {
                     month: 'short',
                     day: 'numeric',
                     year: 'numeric',

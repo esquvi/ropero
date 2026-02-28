@@ -30,7 +30,7 @@ export default async function DashboardPage() {
     sb.from('items').select('*', { count: 'exact', head: true }).eq('status', 'archived'),
     sb.from('outfits').select('*', { count: 'exact', head: true }),
     sb.from('items').select('purchase_price').eq('status', 'active').not('purchase_price', 'is', null),
-    sb.from('wear_logs').select('id, worn_date, occasion, items(name, category)').order('worn_date', { ascending: false }).limit(10),
+    sb.from('wear_logs').select('id, worn_at, occasion, items(name, category)').order('worn_at', { ascending: false }).limit(10),
     sb.from('trips').select('id, name, destination, start_date, end_date, trip_type, packing_lists(status)').gte('start_date', new Date().toISOString().split('T')[0]).order('start_date').limit(3),
     sb.from('items').select('category').eq('status', 'active'),
     sb.from('items').select('id, name, times_worn, photo_urls').eq('status', 'active').order('times_worn', { ascending: false }).limit(3),
