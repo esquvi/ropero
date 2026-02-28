@@ -41,8 +41,30 @@ Wardrobe management app with outfit building, wear logging, and smart trip packi
 - Use the `cn()` helper from `@/lib/utils` for conditional Tailwind classes
 - shadcn/ui is web-only — mobile app uses React Native primitives with shared tokens
 
+## Git Workflow
+- **Never commit directly to `main`** — all changes go through feature branches and PRs
+- Branch naming: `feature/description`, `fix/description`, `chore/description`
+- Create a PR for every change, no matter how small
+- PRs require passing CI checks (typecheck, lint, tests) before merging
+- Squash-merge PRs to keep `main` history clean
+- Write clear PR descriptions with a summary and test plan
+- Delete branches after merging
+
+## Testing
+- TDD: write failing test first, then implement
+- Unit tests required for all business logic in `packages/core`
+- E2E tests required for new user-facing features (Playwright in `apps/web/e2e/`)
+- RLS tests required for any new database tables or policy changes
+- All tests must pass before merging — CI enforces this
+- Run `npm run test` locally before pushing
+
 ## Key Conventions
 - No custom API server — use Supabase client SDK directly + Edge Functions
 - Design tokens in packages/ui — import from @ropero/ui, not hardcoded values
 - Always use shadcn/ui components for web UI — never raw HTML inputs, buttons, etc.
-- TDD: write failing test first, then implement
+
+## Deployment
+- **Web**: Auto-deploys to Vercel on merge to `main` (https://ropero-web.vercel.app)
+- **Database**: Push migrations with `npx supabase db push` after merging migration PRs
+- **Mobile**: Run locally with `cd apps/mobile && npx expo start`, scan QR with iPhone camera
+- **Supabase Cloud**: Project ref `ihwkmkdtlcmrhomlyalx`
