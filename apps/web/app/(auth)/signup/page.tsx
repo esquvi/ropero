@@ -20,14 +20,31 @@ export default function SignUpPage() {
     const email = formData.get('email') as string;
     const password = formData.get('password') as string;
     const name = formData.get('name') as string;
+    const inviteCode = formData.get('invite_code') as string;
 
     const supabase = await createClient();
+
+    // Validate invite code exists and has remaining uses
+    const { data: codeData } = await (supabase.from('invite_codes') as any)
+      .select('code, times_used, max_uses')
+      .eq('code', inviteCode.toUpperCase())
+      .single();
+
+    if (!codeData) {
+      redirect('/signup?error=' + encodeURIComponent('Invalid invite code'));
+    }
+
+    if (codeData.times_used >= codeData.max_uses) {
+      redirect('/signup?error=' + encodeURIComponent('This invite code has been fully used'));
+    }
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: {
           name,
+          invite_code: inviteCode.toUpperCase(),
         },
         emailRedirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/auth/callback`,
       },
@@ -103,6 +120,18 @@ export default function SignUpPage() {
         </div>
 
         <form action={signUpWithEmail} className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="invite_code">Invite Code</Label>
+            <Input
+              id="invite_code"
+              name="invite_code"
+              type="text"
+              placeholder="Enter your invite code"
+              className="font-mono uppercase tracking-widest"
+              maxLength={8}
+              required
+            />
+          </div>
           <div className="space-y-2">
             <Label htmlFor="name">Name</Label>
             <Input

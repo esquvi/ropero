@@ -11,10 +11,24 @@ export async function GET(request: Request) {
     const { error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error) {
+      // Redeem invite code if present in user metadata
+      const { data: { user } } = await supabase.auth.getUser();
+      const inviteCode = user?.user_metadata?.invite_code;
+
+      if (inviteCode && user) {
+        await (supabase.rpc as any)('redeem_invite_code', {
+          invite_code: inviteCode,
+          redeemer_id: user.id,
+        });
+        // Clear invite_code from metadata after redemption
+        await supabase.auth.updateUser({
+          data: { invite_code: null },
+        });
+      }
+
       return NextResponse.redirect(`${origin}${next}`);
     }
   }
 
-  // Return the user to an error page with instructions
   return NextResponse.redirect(`${origin}/login?error=Could not authenticate user`);
 }
