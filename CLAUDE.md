@@ -62,6 +62,16 @@ Wardrobe management app with outfit building, wear logging, and smart trip packi
 - No custom API server — use Supabase client SDK directly + Edge Functions
 - Design tokens in packages/ui — import from @ropero/ui, not hardcoded values
 - Always use shadcn/ui components for web UI — never raw HTML inputs, buttons, etc.
+- Dark mode via `next-themes` — ThemeProvider at root layout, uses `class` attribute + CSS vars in globals.css
+- Triggers on `auth.users` must use `public.` schema prefix for table/function references (auth schema context)
+
+## Invite System
+- Signup is gated — requires a valid invite code
+- Founder code: `ROPERO01` (9999 uses) for bootstrapping
+- Each user gets a unique 8-char code with 5 invites on signup (DB trigger)
+- Atomic redemption via `redeem_invite_code()` Postgres function (race-safe with `FOR UPDATE`)
+- Profile page auto-generates codes for pre-existing users on first visit
+- Tables: `invite_codes`, `invite_redemptions` (migrations 00006–00007)
 
 ## Deployment
 - **Web**: Auto-deploys to Vercel on merge to `main` (https://ropero-web.vercel.app)
