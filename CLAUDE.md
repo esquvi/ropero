@@ -42,14 +42,16 @@ Wardrobe management app with outfit building, wear logging, and smart trip packi
 - shadcn/ui is web-only — mobile app uses React Native primitives with shared tokens
 
 ## Git Workflow
-- **Never commit directly to `main`** — all changes go through feature branches and PRs
+- Code, migrations, dependencies, and deploy config changes must go through feature branches and PRs. Doc-only edits (CLAUDE.md, READMEs, code comments) may be committed directly to `main`
 - Branch naming: `feature/description`, `fix/description`, `chore/description`
-- Create a PR for every change, no matter how small
-- PRs require passing CI checks (typecheck, lint, tests) before merging
-- Squash-merge PRs to keep `main` history clean
+- PR titles become the squash-merge commit message on `main`: use imperative mood, keep under 70 characters, no trailing period
 - Write clear PR descriptions with a summary and test plan
-- Never use em-dashes (—) in PR descriptions or titles. Use periods, commas, colons, semicolons, or parentheses instead
+- Never use em-dashes (—) in PR descriptions, titles, or commit messages. Use periods, commas, colons, semicolons, or parentheses instead
+- PRs require passing CI typecheck and tests before merging. Lint is advisory today (CI uses `continue-on-error` on the lint step)
+- Mobile (`apps/mobile`) is not wired into CI yet. Run `npx tsc --noEmit` from `apps/mobile/` locally before pushing mobile changes
+- Squash-merge PRs to keep `main` history clean
 - Delete branches after merging
+- Commit prefixes like `feat:` / `fix:` / `chore:` are not required. Use them if helpful, but consistency is not enforced
 
 ## Testing
 - TDD: write failing test first, then implement
