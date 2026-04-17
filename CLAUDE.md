@@ -48,6 +48,7 @@ Wardrobe management app with outfit building, wear logging, and smart trip packi
 - PRs require passing CI checks (typecheck, lint, tests) before merging
 - Squash-merge PRs to keep `main` history clean
 - Write clear PR descriptions with a summary and test plan
+- Never use em-dashes (—) in PR descriptions or titles. Use periods, commas, colons, semicolons, or parentheses instead
 - Delete branches after merging
 
 ## Testing
