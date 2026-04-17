@@ -14,6 +14,7 @@ import { useLocalSearchParams, router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/auth';
+import { LogWearSheet, LogWearValues } from '../../components/log-wear-sheet';
 
 interface ItemDetail {
   id: string;
@@ -39,6 +40,7 @@ interface WearLog {
   id: string;
   worn_at: string;
   occasion: string | null;
+  notes: string | null;
 }
 
 export default function ItemDetailScreen() {
@@ -49,6 +51,7 @@ export default function ItemDetailScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [loggingWear, setLoggingWear] = useState(false);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   const fetchData = useCallback(async () => {
     if (!id) return;
@@ -59,7 +62,7 @@ export default function ItemDetailScreen() {
         .eq('id', id)
         .single(),
       (supabase.from('wear_logs') as ReturnType<typeof supabase.from>)
-        .select('id, worn_at, occasion')
+        .select('id, worn_at, occasion, notes')
         .eq('item_id', id)
         .order('worn_at', { ascending: false })
         .limit(10),
@@ -79,23 +82,24 @@ export default function ItemDetailScreen() {
     setRefreshing(false);
   }, [fetchData]);
 
-  const handleLogWear = async () => {
+  const handleLogWear = async (values: LogWearValues) => {
     if (!user || !id) return;
 
     setLoggingWear(true);
     try {
-      const today = new Date().toISOString().split('T')[0];
       const { error } = await (supabase.from('wear_logs') as ReturnType<typeof supabase.from>)
         .insert({
           user_id: user.id,
           item_id: id,
-          worn_at: today,
+          worn_at: values.wornAt,
+          occasion: values.occasion,
+          notes: values.notes,
         });
 
       if (error) {
         Alert.alert('Error', 'Failed to log wear');
       } else {
-        Alert.alert('Logged!', 'Wear logged for today.');
+        setSheetOpen(false);
         await fetchData();
       }
     } finally {
@@ -169,17 +173,10 @@ export default function ItemDetailScreen() {
         {/* Log Wear button */}
         <TouchableOpacity
           style={styles.logWearButton}
-          onPress={handleLogWear}
-          disabled={loggingWear}
+          onPress={() => setSheetOpen(true)}
         >
-          {loggingWear ? (
-            <ActivityIndicator color="#fff" size="small" />
-          ) : (
-            <>
-              <Ionicons name="checkmark-circle-outline" size={20} color="#fff" />
-              <Text style={styles.logWearText}>Log Wear</Text>
-            </>
-          )}
+          <Ionicons name="checkmark-circle-outline" size={20} color="#fff" />
+          <Text style={styles.logWearText}>Log Wear</Text>
         </TouchableOpacity>
 
         {/* Details */}
@@ -226,16 +223,22 @@ export default function ItemDetailScreen() {
           <Text style={styles.sectionTitle}>Wear History</Text>
           {wearLogs.length > 0 ? (
             wearLogs.map((log) => (
-              <View key={log.id} style={styles.logRow}>
-                <Text style={styles.logDate}>
-                  {new Date(log.worn_at).toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </Text>
-                {log.occasion && (
-                  <Text style={styles.logOccasion}>{log.occasion}</Text>
+              <View key={log.id} style={styles.logEntry}>
+                <View style={styles.logRow}>
+                  <Text style={styles.logDate}>
+                    {new Date(log.worn_at).toLocaleDateString('en-US', {
+                      weekday: 'short',
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </Text>
+                  {log.occasion && (
+                    <Text style={styles.logOccasion}>{log.occasion}</Text>
+                  )}
+                </View>
+                {log.notes && (
+                  <Text style={styles.logNotes}>{log.notes}</Text>
                 )}
               </View>
             ))
@@ -251,6 +254,13 @@ export default function ItemDetailScreen() {
           </View>
         )}
       </View>
+
+      <LogWearSheet
+        visible={sheetOpen}
+        submitting={loggingWear}
+        onClose={() => setSheetOpen(false)}
+        onSubmit={handleLogWear}
+      />
     </ScrollView>
   );
 }
@@ -319,16 +329,28 @@ const styles = StyleSheet.create({
   },
   detailLabel: { fontSize: 14, color: '#6b7280' },
   detailValue: { fontSize: 14, color: '#111', fontWeight: '500', textTransform: 'capitalize' },
+  logEntry: {
+    paddingVertical: 10,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
   logRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 8,
-    borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
   },
-  logDate: { fontSize: 14, color: '#374151' },
-  logOccasion: { fontSize: 12, color: '#6b7280', textTransform: 'capitalize' },
+  logDate: { fontSize: 14, color: '#374151', fontWeight: '500' },
+  logOccasion: {
+    fontSize: 11,
+    color: '#6b7280',
+    textTransform: 'capitalize',
+    backgroundColor: '#f3f4f6',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+    overflow: 'hidden',
+  },
+  logNotes: { fontSize: 13, color: '#6b7280', marginTop: 4 },
   emptyText: { fontSize: 14, color: '#9ca3af' },
   notes: { fontSize: 14, color: '#374151', lineHeight: 20 },
 });
