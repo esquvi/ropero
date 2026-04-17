@@ -138,7 +138,16 @@ export default function HomeScreen() {
 
       {/* Saved Outfits */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Saved Outfits</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Saved Outfits</Text>
+          <TouchableOpacity
+            style={styles.newButton}
+            onPress={() => router.push('/outfits/new')}
+          >
+            <Ionicons name="add" size={16} color="#111" />
+            <Text style={styles.newButtonText}>New</Text>
+          </TouchableOpacity>
+        </View>
         {outfits.length > 0 ? (
           outfits.map((outfit) => (
             <View key={outfit.id} style={styles.outfitRow}>
@@ -150,7 +159,13 @@ export default function HomeScreen() {
             </View>
           ))
         ) : (
-          <Text style={styles.emptyText}>No outfits saved yet</Text>
+          <TouchableOpacity
+            style={styles.emptyPrompt}
+            onPress={() => router.push('/outfits/new')}
+          >
+            <Ionicons name="add-circle-outline" size={18} color="#6b7280" />
+            <Text style={styles.emptyPromptText}>Create your first outfit</Text>
+          </TouchableOpacity>
         )}
       </View>
     </ScrollView>
@@ -176,7 +191,38 @@ const styles = StyleSheet.create({
   statValue: { fontSize: 24, fontWeight: '700', color: '#111' },
   statLabel: { fontSize: 12, color: '#6b7280' },
   section: { marginBottom: 24 },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
   sectionTitle: { fontSize: 16, fontWeight: '600', color: '#111', marginBottom: 12 },
+  newButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 14,
+    backgroundColor: '#f3f4f6',
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    marginBottom: 12,
+  },
+  newButtonText: { fontSize: 13, fontWeight: '600', color: '#111' },
+  emptyPrompt: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+    paddingVertical: 16,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: '#d1d5db',
+    borderRadius: 8,
+  },
+  emptyPromptText: { fontSize: 14, color: '#6b7280' },
   logRow: {
     flexDirection: 'row',
     alignItems: 'center',
