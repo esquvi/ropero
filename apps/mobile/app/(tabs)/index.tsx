@@ -299,7 +299,12 @@ export default function HomeScreen() {
         </View>
         {outfits.length > 0 ? (
           outfits.map((outfit) => (
-            <View key={outfit.id} style={styles.outfitRow}>
+            <TouchableOpacity
+              key={outfit.id}
+              style={styles.outfitRow}
+              onPress={() => router.push(`/outfits/${outfit.id}`)}
+              activeOpacity={0.7}
+            >
               <Ionicons name="layers-outline" size={18} color="#6b7280" />
               <Text style={styles.outfitName}>{outfit.name}</Text>
               {outfit.occasion && (
@@ -313,7 +318,7 @@ export default function HomeScreen() {
                 <Ionicons name="checkmark-circle-outline" size={14} color="#fff" />
                 <Text style={styles.wearButtonText}>Wear</Text>
               </TouchableOpacity>
-            </View>
+            </TouchableOpacity>
           ))
         ) : (
           <TouchableOpacity
