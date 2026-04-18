@@ -26,21 +26,6 @@ type TripRow = {
   notes: string | null;
 };
 
-type PackingListRow = {
-  id: string;
-  status: string;
-  items: {
-    item_id: string;
-    packed: boolean;
-    items: {
-      id: string;
-      name: string;
-      category: string;
-      photo_urls: string[];
-    };
-  }[];
-};
-
 const tripTypeColors: Record<string, string> = {
   business: 'bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-300',
   vacation: 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300',

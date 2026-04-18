@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-interface Redemption {
+export interface Redemption {
   id: string;
   created_at: string;
   redeemed_by_email: string | null;
