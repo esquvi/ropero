@@ -16,21 +16,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { OCCASIONS } from '@ropero/core';
 import { cn } from '@/lib/utils';
 import { createOutfit } from './actions';
-
-const OCCASIONS = [
-  'casual',
-  'work',
-  'formal',
-  'date',
-  'party',
-  'wedding',
-  'interview',
-  'travel',
-  'workout',
-  'other',
-] as const;
 
 interface WardrobeItem {
   id: string;

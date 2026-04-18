@@ -8,7 +8,8 @@ export const OCCASIONS = [
   'party',
   'wedding',
   'travel',
-  'sport',
+  'exercise',
+  'interview',
   'other',
 ] as const;
 

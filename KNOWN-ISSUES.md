@@ -110,19 +110,6 @@ See the mobile entry above; same file-level shape in `apps/web/components/dashbo
 
 ## Tech debt and consistency
 
-### `OCCASIONS` forked into three places with different values [QA-2026-04-18]
-
-**Severity:** important. Web UI exposes values the DB/schema rejects.
-
-**Surfaces:**
-- `packages/core/src/validation/outfit.ts:3-13` — canonical, used by mobile and the Zod schema: `['work','casual','formal','date','party','wedding','travel','sport','other']`.
-- `apps/web/components/wear/log-wear-button.tsx:25-36` — uses `interview` and `workout` instead of `sport`.
-- `apps/web/components/outfits/outfit-builder.tsx:22-33` — yet another ordering with the `interview`/`workout` variants.
-
-If server-side validation ever runs the Zod schema, web-selected values like `interview` / `workout` will 400.
-
-**Fix direction:** import `OCCASIONS` from `@ropero/core` in both web files. Decide whether to add `interview`/`workout` to the canonical list and update the Zod enum and any DB check constraints at the same time.
-
 ### Zod major version skew across workspaces [QA-2026-04-18]
 
 **Severity:** important. Any shared schema imported from core into web will hit v3 to v4 API breaks.
