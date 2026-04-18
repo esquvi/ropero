@@ -103,7 +103,11 @@ export function LogWearSheet({
             </TouchableOpacity>
           </View>
 
-          <ScrollView style={styles.body} keyboardShouldPersistTaps="handled">
+          <ScrollView
+            style={styles.body}
+            keyboardShouldPersistTaps="handled"
+            automaticallyAdjustKeyboardInsets
+          >
             <Text style={styles.label}>Date</Text>
             <View style={styles.presetRow}>
               {(
