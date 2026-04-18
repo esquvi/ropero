@@ -24,22 +24,34 @@ export default function SignUpPage() {
 
     const supabase = await createClient();
 
-    // Validate invite code exists and has remaining uses.
-    // invite_codes is not in the generated DB types yet, so the chain is
-    // typed via ReturnType. Regenerating types is tracked separately.
+    // Validate via RPC rather than a direct table read. The anon role has no
+    // SELECT access to invite_codes after migration 00009; this function is
+    // SECURITY DEFINER and returns only the yes/no/remaining status needed
+    // here, with no user id or internal fields leaked.
     const { data: codeData } = await (
-      supabase.from('invite_codes') as ReturnType<typeof supabase.from>
-    )
-      .select('code, times_used, max_uses')
-      .eq('code', inviteCode.toUpperCase())
-      .single();
+      supabase.rpc as unknown as (
+        fn: 'validate_invite_code',
+        args: { p_code: string },
+      ) => Promise<{
+        data:
+          | {
+              valid: boolean;
+              reason?: 'not_found' | 'exhausted';
+              times_used?: number;
+              max_uses?: number;
+            }
+          | null;
+      }>
+    )('validate_invite_code', {
+      p_code: inviteCode.toUpperCase(),
+    });
 
-    if (!codeData) {
-      redirect('/signup?error=' + encodeURIComponent('Invalid invite code'));
-    }
-
-    if (codeData.times_used >= codeData.max_uses) {
-      redirect('/signup?error=' + encodeURIComponent('This invite code has been fully used'));
+    if (!codeData?.valid) {
+      const message =
+        codeData?.reason === 'exhausted'
+          ? 'This invite code has been fully used'
+          : 'Invalid invite code';
+      redirect('/signup?error=' + encodeURIComponent(message));
     }
 
     const { error } = await supabase.auth.signUp({
