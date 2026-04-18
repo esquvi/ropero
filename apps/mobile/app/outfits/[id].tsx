@@ -253,18 +253,26 @@ export default function OutfitDetailScreen() {
         )}
       </View>
 
-      {/* Primary action */}
-      <TouchableOpacity
-        style={[
-          styles.wearButton,
-          outfit.items.length === 0 && styles.wearButtonDisabled,
-        ]}
-        onPress={() => setSheetOpen(true)}
-        disabled={outfit.items.length === 0}
-      >
-        <Ionicons name="checkmark-circle-outline" size={20} color="#fff" />
-        <Text style={styles.wearButtonText}>Wear Outfit</Text>
-      </TouchableOpacity>
+      {/* Primary actions */}
+      <View style={styles.actionRow}>
+        <TouchableOpacity
+          style={[
+            styles.wearButton,
+            outfit.items.length === 0 && styles.wearButtonDisabled,
+          ]}
+          onPress={() => setSheetOpen(true)}
+          disabled={outfit.items.length === 0}
+        >
+          <Ionicons name="checkmark-circle-outline" size={20} color="#fff" />
+          <Text style={styles.wearButtonText}>Wear Outfit</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => router.push(`/outfits/new?editId=${outfit.id}`)}
+        >
+          <Ionicons name="pencil" size={18} color="#111" />
+        </TouchableOpacity>
+      </View>
 
       {/* Items */}
       <Text style={styles.sectionTitle}>Items</Text>
@@ -421,7 +429,14 @@ const styles = StyleSheet.create({
   },
   metaLabel: { fontSize: 11, color: '#6b7280', marginTop: 2 },
 
+  actionRow: {
+    flexDirection: 'row',
+    gap: 10,
+    paddingHorizontal: 20,
+    marginTop: 20,
+  },
   wearButton: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -429,11 +444,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#111',
     borderRadius: 8,
     paddingVertical: 14,
-    marginHorizontal: 20,
-    marginTop: 20,
   },
   wearButtonDisabled: { opacity: 0.4 },
   wearButtonText: { color: '#fff', fontSize: 15, fontWeight: '600' },
+  editButton: {
+    width: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#e5e7eb',
+    backgroundColor: '#fff',
+  },
 
   sectionTitle: {
     fontSize: 14,

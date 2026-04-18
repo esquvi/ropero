@@ -12,7 +12,7 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { OCCASIONS } from '@ropero/core';
 import { supabase } from '../../lib/supabase';
@@ -27,8 +27,22 @@ interface WardrobeItem {
   photo_urls: string[];
 }
 
-export default function NewOutfitScreen() {
+interface ExistingOutfit {
+  id: string;
+  name: string;
+  occasion: string | null;
+  rating: number | null;
+  notes: string | null;
+  tags: string[] | null;
+  outfit_items: Array<{ item_id: string }> | null;
+}
+
+export default function OutfitFormScreen() {
   const { user } = useAuth();
+  const params = useLocalSearchParams<{ editId?: string }>();
+  const editId = params.editId ?? null;
+  const isEditing = editId !== null;
+
   const [items, setItems] = useState<WardrobeItem[]>([]);
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [search, setSearch] = useState('');
@@ -44,16 +58,46 @@ export default function NewOutfitScreen() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await (
+      // Always fetch wardrobe items so the picker has something to show.
+      const itemsPromise = (
         supabase.from('items') as ReturnType<typeof supabase.from>
       )
         .select('id, name, brand, category, color_primary, photo_urls')
         .eq('status', 'active')
         .order('created_at', { ascending: false });
-      setItems((data as unknown as WardrobeItem[] | null) ?? []);
+
+      // In edit mode, also fetch the existing outfit and its current items.
+      const outfitPromise = isEditing
+        ? (supabase.from('outfits') as ReturnType<typeof supabase.from>)
+            .select(
+              'id, name, occasion, rating, notes, tags, outfit_items(item_id)',
+            )
+            .eq('id', editId!)
+            .single()
+        : Promise.resolve({ data: null });
+
+      const [itemsRes, outfitRes] = await Promise.all([
+        itemsPromise,
+        outfitPromise,
+      ]);
+
+      setItems((itemsRes.data as unknown as WardrobeItem[] | null) ?? []);
+
+      const existing = outfitRes.data as unknown as ExistingOutfit | null;
+      if (existing) {
+        setName(existing.name);
+        setOccasion(existing.occasion);
+        setRating(existing.rating ?? 0);
+        setNotes(existing.notes ?? '');
+        setTags(existing.tags ?? []);
+        setSelected(
+          new Set((existing.outfit_items ?? []).map((row) => row.item_id)),
+        );
+      }
+
       setLoading(false);
     })();
-  }, []);
+  }, [editId, isEditing]);
 
   const categories = useMemo(() => {
     const set = new Set(items.map((i) => i.category));
@@ -105,27 +149,59 @@ export default function NewOutfitScreen() {
     if (!user || !canSave) return;
     setSaving(true);
 
-    const { data: outfit, error: outfitError } = await (
-      supabase.from('outfits') as ReturnType<typeof supabase.from>
-    )
-      .insert({
-        user_id: user.id,
-        name: name.trim(),
-        occasion,
-        rating: rating || null,
-        notes: notes.trim() || null,
-        tags,
-      })
-      .select('id')
-      .single();
+    const payload = {
+      name: name.trim(),
+      occasion,
+      rating: rating || null,
+      notes: notes.trim() || null,
+      tags,
+    };
 
-    if (outfitError || !outfit) {
-      setSaving(false);
-      Alert.alert('Error', 'Failed to create outfit');
-      return;
+    let outfitId: string;
+
+    if (isEditing && editId) {
+      const { error: updateError } = await (
+        supabase.from('outfits') as ReturnType<typeof supabase.from>
+      )
+        .update(payload)
+        .eq('id', editId);
+
+      if (updateError) {
+        setSaving(false);
+        Alert.alert('Error', 'Failed to save outfit');
+        return;
+      }
+      outfitId = editId;
+
+      // Replace the item set: delete all existing outfit_items and reinsert.
+      // Not transactional, but acceptable for now; on partial failure the
+      // outfit may end up empty until the user retries.
+      const { error: deleteError } = await (
+        supabase.from('outfit_items') as ReturnType<typeof supabase.from>
+      )
+        .delete()
+        .eq('outfit_id', outfitId);
+
+      if (deleteError) {
+        setSaving(false);
+        Alert.alert('Error', 'Failed to update outfit items');
+        return;
+      }
+    } else {
+      const { data: outfit, error: outfitError } = await (
+        supabase.from('outfits') as ReturnType<typeof supabase.from>
+      )
+        .insert({ user_id: user.id, ...payload })
+        .select('id')
+        .single();
+
+      if (outfitError || !outfit) {
+        setSaving(false);
+        Alert.alert('Error', 'Failed to create outfit');
+        return;
+      }
+      outfitId = (outfit as unknown as { id: string }).id;
     }
-
-    const outfitId = (outfit as unknown as { id: string }).id;
 
     const rows = Array.from(selected).map((itemId) => ({
       outfit_id: outfitId,
@@ -140,13 +216,19 @@ export default function NewOutfitScreen() {
     if (itemsError) {
       Alert.alert(
         'Partial success',
-        'Outfit saved but items could not be attached.',
+        isEditing
+          ? 'Outfit saved but items could not be attached.'
+          : 'Outfit saved but items could not be attached.',
       );
-      router.back();
-      return;
     }
 
-    router.back();
+    if (isEditing) {
+      // Replace so the detail screen remounts and picks up the new data
+      // instead of going back to a stale render.
+      router.replace(`/outfits/${outfitId}`);
+    } else {
+      router.back();
+    }
   };
 
   return (
@@ -158,7 +240,7 @@ export default function NewOutfitScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.iconButton}>
           <Ionicons name="close" size={24} color="#111" />
         </TouchableOpacity>
-        <Text style={styles.topTitle}>Create Outfit</Text>
+        <Text style={styles.topTitle}>{isEditing ? 'Edit Outfit' : 'Create Outfit'}</Text>
         <View style={styles.iconButton} />
       </View>
 
@@ -436,7 +518,7 @@ export default function NewOutfitScreen() {
           {saving ? (
             <ActivityIndicator color="#fff" size="small" />
           ) : (
-            <Text style={styles.saveText}>Save Outfit</Text>
+            <Text style={styles.saveText}>{isEditing ? 'Save Changes' : 'Save Outfit'}</Text>
           )}
         </TouchableOpacity>
       </View>
