@@ -7,6 +7,13 @@
     "icon": "./assets/images/icon.png",
     "scheme": "ropero",
     "userInterfaceStyle": "automatic",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/e74d24ea-959a-46da-9b9b-73986c749d71",
+      "fallbackToCacheTimeout": 0
+    },
     "splash": {
       "image": "./assets/images/splash-icon.png",
       "resizeMode": "contain",

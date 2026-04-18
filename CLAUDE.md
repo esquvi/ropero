@@ -78,5 +78,7 @@ Wardrobe management app with outfit building, wear logging, and smart trip packi
 ## Deployment
 - **Web**: Auto-deploys to Vercel on merge to `main` (https://ropero-web.vercel.app)
 - **Database**: Push migrations with `npx supabase db push` after merging migration PRs
-- **Mobile**: Run locally with `cd apps/mobile && npx expo start`, scan QR with iPhone camera
+- **Mobile dev**: `cd apps/mobile && npx expo start`, scan QR with iPhone camera
+- **Mobile builds**: `cd apps/mobile && eas build --profile <development|preview|production>`. Each profile maps to an EAS Update channel of the same name
+- **Mobile OTA updates** (JS-only changes): `cd apps/mobile && eas update --branch <preview|production> --message "<short description>"`. Updates ship to installed apps that already include the matching native runtime (the `expo-updates` module). Bumping `expo.version` in `app.json` invalidates existing OTAs because `runtimeVersion` policy is `appVersion`; do that only when shipping new native code via `eas build`
 - **Supabase Cloud**: Project ref `ihwkmkdtlcmrhomlyalx`
