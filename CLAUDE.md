@@ -48,7 +48,6 @@ Wardrobe management app with outfit building, wear logging, and smart trip packi
 - Write clear PR descriptions with a summary and test plan
 - Never use em-dashes (—) in PR descriptions, titles, or commit messages. Use periods, commas, colons, semicolons, or parentheses instead
 - PRs require passing CI typecheck and tests before merging. Lint is advisory today (CI uses `continue-on-error` on the lint step)
-- Mobile (`apps/mobile`) is not wired into CI yet. Run `npx tsc --noEmit` from `apps/mobile/` locally before pushing mobile changes
 - Squash-merge PRs to keep `main` history clean
 - Delete branches after merging
 - Commit prefixes like `feat:` / `fix:` / `chore:` are not required. Use them if helpful, but consistency is not enforced
