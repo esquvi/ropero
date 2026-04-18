@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Shirt, Layers, Plane, TrendingUp, Plus, BookOpen } from 'lucide-react';
+import { Shirt, Layers, Plane, TrendingUp, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/server';
 import { StatCard } from '@/components/dashboard/stat-card';
@@ -151,12 +151,6 @@ export default async function DashboardPage() {
           <Button>
             <Plus className="mr-2 h-4 w-4" />
             Add Item
-          </Button>
-        </Link>
-        <Link href="/wear-log">
-          <Button variant="outline">
-            <BookOpen className="mr-2 h-4 w-4" />
-            Log Wear
           </Button>
         </Link>
         <Link href="/trips">
