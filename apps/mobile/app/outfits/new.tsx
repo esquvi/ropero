@@ -248,6 +248,7 @@ export default function OutfitFormScreen() {
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         keyboardShouldPersistTaps="handled"
+        automaticallyAdjustKeyboardInsets
       >
         {/* Selected items canvas */}
         <Text style={styles.sectionLabel}>
@@ -546,7 +547,9 @@ const styles = StyleSheet.create({
   sectionLabel: { fontSize: 14, fontWeight: '600', color: '#111', marginBottom: 10 },
   sectionSpacing: { marginTop: 24 },
 
-  canvasRow: { gap: 10, paddingRight: 20 },
+  // Top padding keeps the -6 top offset on the remove badges from being
+  // clipped by the scroll view's edge; right padding lets the last tile breathe.
+  canvasRow: { gap: 10, paddingTop: 8, paddingBottom: 4, paddingRight: 20 },
   canvasTile: {
     width: 80,
     height: 80,
