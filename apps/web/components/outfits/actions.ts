@@ -1,6 +1,7 @@
 'use server';
 
 import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
 import { createClient } from '@/lib/supabase/server';
 
 interface CreateOutfitInput {
@@ -62,4 +63,32 @@ export async function createOutfit(input: CreateOutfitInput) {
   }
 
   revalidatePath('/outfits');
+}
+
+export async function deleteOutfit(outfitId: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error('Not authenticated');
+  }
+
+  // outfit_items rows cascade via FK ON DELETE CASCADE.
+  // wear_logs.outfit_id is ON DELETE SET NULL, so per-item wear history is preserved.
+  const { error } = await (
+    supabase.from('outfits') as ReturnType<typeof supabase.from>
+  )
+    .delete()
+    .eq('id', outfitId)
+    .eq('user_id', user.id);
+
+  if (error) {
+    console.error('Error deleting outfit:', error);
+    throw new Error('Failed to delete outfit');
+  }
+
+  revalidatePath('/outfits');
+  redirect('/outfits');
 }
