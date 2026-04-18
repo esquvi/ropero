@@ -392,7 +392,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  hero: { aspectRatio: 1, backgroundColor: '#f3f4f6' },
+  // 3:2 photo ratio keeps the hero prominent but not screen-dominating;
+  // square was eating ~45% of vertical space and pushing the items grid
+  // below the fold.
+  hero: { aspectRatio: 1.5, backgroundColor: '#f3f4f6' },
   heroGrid: {
     flex: 1,
     flexDirection: 'row',
@@ -471,7 +474,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     gap: 10,
   },
-  itemTile: { width: '31.5%' },
+  // 31% * 3 + 10px gap * 2 fits inside the padded container; 31.5% did not,
+  // so tiles wrapped to 2 per row.
+  itemTile: { width: '31%' },
   itemImage: { width: '100%', aspectRatio: 1, borderRadius: 8 },
   itemPlaceholder: {
     backgroundColor: '#f3f4f6',
