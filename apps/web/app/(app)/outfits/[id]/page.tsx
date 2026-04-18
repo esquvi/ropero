@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, Layers, Shirt, Star } from 'lucide-react';
+import { ArrowLeft, Layers, Pencil, Shirt, Star } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -111,6 +111,12 @@ export default async function OutfitDetailPage({
               label="Wear Outfit"
             />
           )}
+          <Link href={`/outfits/${outfit.id}/edit`}>
+            <Button variant="outline" size="default">
+              <Pencil className="h-4 w-4 sm:mr-2" />
+              <span className="hidden sm:inline">Edit</span>
+            </Button>
+          </Link>
         </div>
       </div>
 

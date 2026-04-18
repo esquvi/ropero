@@ -17,7 +17,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { createOutfit } from './actions';
+import { createOutfit, updateOutfit } from './actions';
 
 const OCCASIONS = [
   'casual',
@@ -41,21 +41,35 @@ interface WardrobeItem {
   photo_urls: string[];
 }
 
-interface OutfitBuilderProps {
-  items: WardrobeItem[];
+interface ExistingOutfit {
+  id: string;
+  name: string;
+  occasion: string | null;
+  rating: number | null;
+  notes: string | null;
+  tags: string[] | null;
+  itemIds: string[];
 }
 
-export function OutfitBuilder({ items }: OutfitBuilderProps) {
+interface OutfitBuilderProps {
+  items: WardrobeItem[];
+  existing?: ExistingOutfit;
+}
+
+export function OutfitBuilder({ items, existing }: OutfitBuilderProps) {
   const router = useRouter();
-  const [selectedItems, setSelectedItems] = useState<Set<string>>(new Set());
+  const isEditing = existing !== undefined;
+  const [selectedItems, setSelectedItems] = useState<Set<string>>(
+    () => new Set(existing?.itemIds ?? [])
+  );
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [name, setName] = useState('');
-  const [occasion, setOccasion] = useState<string>('');
-  const [rating, setRating] = useState<number>(0);
-  const [notes, setNotes] = useState('');
+  const [name, setName] = useState(existing?.name ?? '');
+  const [occasion, setOccasion] = useState<string>(existing?.occasion ?? '');
+  const [rating, setRating] = useState<number>(existing?.rating ?? 0);
+  const [notes, setNotes] = useState(existing?.notes ?? '');
   const [tagInput, setTagInput] = useState('');
-  const [tags, setTags] = useState<string[]>([]);
+  const [tags, setTags] = useState<string[]>(existing?.tags ?? []);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const categories = useMemo(() => {
@@ -108,17 +122,26 @@ export function OutfitBuilder({ items }: OutfitBuilderProps) {
 
     setIsSubmitting(true);
     try {
-      await createOutfit({
+      const payload = {
         name: name.trim(),
         occasion: occasion || null,
         rating: rating || null,
         notes: notes.trim() || null,
         tags,
         itemIds: Array.from(selectedItems),
-      });
-      router.push('/outfits');
+      };
+      if (existing) {
+        await updateOutfit({ id: existing.id, ...payload });
+        router.push(`/outfits/${existing.id}`);
+      } else {
+        await createOutfit(payload);
+        router.push('/outfits');
+      }
     } catch (error) {
-      console.error('Error creating outfit:', error);
+      console.error(
+        existing ? 'Error updating outfit:' : 'Error creating outfit:',
+        error
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -353,7 +376,7 @@ export function OutfitBuilder({ items }: OutfitBuilderProps) {
               className="w-full"
             >
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Save Outfit
+              {isEditing ? 'Save Changes' : 'Save Outfit'}
             </Button>
           </CardContent>
         </Card>

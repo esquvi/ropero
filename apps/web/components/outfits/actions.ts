@@ -13,6 +13,10 @@ interface CreateOutfitInput {
   itemIds: string[];
 }
 
+interface UpdateOutfitInput extends CreateOutfitInput {
+  id: string;
+}
+
 export async function createOutfit(input: CreateOutfitInput) {
   const supabase = await createClient();
   const {
@@ -63,6 +67,67 @@ export async function createOutfit(input: CreateOutfitInput) {
   }
 
   revalidatePath('/outfits');
+}
+
+export async function updateOutfit(input: UpdateOutfitInput) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    throw new Error('Not authenticated');
+  }
+
+  const outfitData = {
+    name: input.name,
+    occasion: input.occasion,
+    rating: input.rating,
+    notes: input.notes,
+    tags: input.tags,
+  };
+
+  const { error: updateError } = await (
+    supabase.from('outfits') as ReturnType<typeof supabase.from>
+  )
+    .update(outfitData)
+    .eq('id', input.id)
+    .eq('user_id', user.id);
+
+  if (updateError) {
+    console.error('Error updating outfit:', updateError);
+    throw new Error('Failed to update outfit');
+  }
+
+  const { error: deleteError } = await (
+    supabase.from('outfit_items') as ReturnType<typeof supabase.from>
+  )
+    .delete()
+    .eq('outfit_id', input.id);
+
+  if (deleteError) {
+    console.error('Error clearing outfit items:', deleteError);
+    throw new Error('Failed to update outfit items');
+  }
+
+  if (input.itemIds.length > 0) {
+    const outfitItems = input.itemIds.map((itemId) => ({
+      outfit_id: input.id,
+      item_id: itemId,
+    }));
+
+    const { error: itemsError } = await (
+      supabase.from('outfit_items') as ReturnType<typeof supabase.from>
+    ).insert(outfitItems);
+
+    if (itemsError) {
+      console.error('Error inserting outfit items:', itemsError);
+      throw new Error('Failed to add items to outfit');
+    }
+  }
+
+  revalidatePath('/outfits');
+  revalidatePath(`/outfits/${input.id}`);
 }
 
 export async function deleteOutfit(outfitId: string) {
