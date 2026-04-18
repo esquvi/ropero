@@ -1,10 +1,15 @@
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { ArrowLeft, Layers, Pencil, Shirt, Star } from 'lucide-react';
+import { ArrowLeft, Check, Layers, Pencil, Shirt, Star } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
 import { LogWearButton } from '@/components/wear/log-wear-button';
 import { DeleteOutfitButton } from '@/components/outfits/delete-outfit-button';
 
@@ -41,27 +46,81 @@ interface FlattenedOutfit {
   items: OutfitItem[];
 }
 
+interface WearLogRow {
+  id: string;
+  worn_at: string;
+  occasion: string | null;
+  notes: string | null;
+}
+
+interface WearEvent {
+  worn_at: string;
+  occasions: string[];
+  notes: string | null;
+  logCount: number;
+}
+
+function groupOutfitWearLogs(rows: WearLogRow[]): WearEvent[] {
+  const byDate = new Map<string, WearEvent>();
+  for (const row of rows) {
+    const existing = byDate.get(row.worn_at);
+    if (existing) {
+      existing.logCount += 1;
+      if (row.occasion && !existing.occasions.includes(row.occasion)) {
+        existing.occasions.push(row.occasion);
+      }
+      if (!existing.notes && row.notes) existing.notes = row.notes;
+      continue;
+    }
+    byDate.set(row.worn_at, {
+      worn_at: row.worn_at,
+      occasions: row.occasion ? [row.occasion] : [],
+      notes: row.notes,
+      logCount: 1,
+    });
+  }
+  return Array.from(byDate.values());
+}
+
+function formatWearDate(dateStr: string) {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffDays = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+  );
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return `${diffDays} days ago`;
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
 export default async function OutfitDetailPage({
   params,
 }: OutfitDetailPageProps) {
   const { id } = await params;
   const supabase = await createClient();
 
-  const { data, error } = await (
-    supabase.from('outfits') as ReturnType<typeof supabase.from>
-  )
-    .select(
-      `id, name, occasion, rating, notes, tags, created_at,
-       outfit_items(items(id, name, category, photo_urls))`,
-    )
-    .eq('id', id)
-    .single();
+  const [outfitRes, wearLogsRes] = await Promise.all([
+    (supabase.from('outfits') as ReturnType<typeof supabase.from>)
+      .select(
+        `id, name, occasion, rating, notes, tags, created_at,
+         outfit_items(items(id, name, category, photo_urls))`,
+      )
+      .eq('id', id)
+      .single(),
+    (supabase.from('wear_logs') as ReturnType<typeof supabase.from>)
+      .select('id, worn_at, occasion, notes')
+      .eq('outfit_id', id)
+      .order('worn_at', { ascending: false })
+      .order('created_at', { ascending: false })
+      .limit(50),
+  ]);
 
-  if (error || !data) {
+  if (outfitRes.error || !outfitRes.data) {
     notFound();
   }
 
-  const raw = data as unknown as OutfitRow;
+  const raw = outfitRes.data as unknown as OutfitRow;
   const items: OutfitItem[] = (raw.outfit_items ?? [])
     .map((row) => row.items)
     .filter((it): it is OutfitItem => it !== null);
@@ -83,6 +142,12 @@ export default async function OutfitDetailPage({
     .slice(0, 4);
   const itemCount = outfit.items.length;
   const createdLabel = new Date(outfit.created_at).toLocaleDateString();
+
+  const wearEvents = groupOutfitWearLogs(
+    (wearLogsRes.data ?? []) as unknown as WearLogRow[],
+  );
+  const totalWears = wearEvents.length;
+  const lastWornAt = totalWears > 0 ? wearEvents[0].worn_at : null;
 
   return (
     <div className="space-y-6">
@@ -224,6 +289,17 @@ export default async function OutfitDetailPage({
               </CardContent>
             </Card>
           )}
+
+          {totalWears > 0 && lastWornAt && (
+            <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground">
+              <Check className="h-4 w-4 text-green-600" />
+              <span>
+                Worn {totalWears} {totalWears === 1 ? 'time' : 'times'}
+              </span>
+              <span aria-hidden>·</span>
+              <span>Last worn {formatWearDate(lastWornAt).toLowerCase()}</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -269,6 +345,47 @@ export default async function OutfitDetailPage({
           </p>
         )}
       </div>
+
+      {wearEvents.length > 0 && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Wear History</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className="divide-y">
+              {wearEvents.slice(0, 5).map((event) => (
+                <li
+                  key={event.worn_at}
+                  className="flex items-start gap-3 py-3 first:pt-0 last:pb-0"
+                >
+                  <Check className="mt-0.5 h-4 w-4 shrink-0 text-muted-foreground" />
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-sm font-medium">
+                        {formatWearDate(event.worn_at)}
+                      </span>
+                      {event.occasions.map((o) => (
+                        <Badge
+                          key={o}
+                          variant="secondary"
+                          className="capitalize"
+                        >
+                          {o}
+                        </Badge>
+                      ))}
+                    </div>
+                    {event.notes && (
+                      <p className="truncate text-xs text-muted-foreground">
+                        {event.notes}
+                      </p>
+                    )}
+                  </div>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Destructive action */}
       <div className="flex justify-end border-t pt-6">
