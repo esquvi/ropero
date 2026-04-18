@@ -4,6 +4,8 @@ Wardrobe management app with outfit building, wear logging, and smart trip packi
 
 Known bugs and rough edges are tracked in `KNOWN-ISSUES.md` at the repo root. Check there before spending time reproducing something and add to it (no PR needed, doc-only) when you find a new non-urgent issue.
 
+Past session summaries are in `SESSION-LOG.md` at the repo root. Claude should read the most recent entry at the start of every session for context (what's been shipped recently, open threads, user preferences picked up so far), and append a new dated entry at the end of the session. Doc-only, direct to main is fine.
+
 ## Monorepo Structure
 - `apps/web` — Next.js 15 (App Router), port 3000
 - `apps/mobile` — Expo (React Native, Expo Router)
