@@ -104,6 +104,10 @@ function groupWearLogs(rows: WearLogRow[]): ActivityEntry[] {
 
 export default function HomeScreen() {
   const { user } = useAuth();
+  // Prefer the display name saved on the profile; fall back to the email local
+  // part so new accounts still see a sensible greeting before setting a name.
+  const displayName = (user?.user_metadata?.name as string | undefined)?.trim();
+  const greetingName = displayName || user?.email?.split('@')[0] || null;
   const [stats, setStats] = useState<Stats>({ totalItems: 0, totalOutfits: 0, upcomingTrips: 0 });
   const [activity, setActivity] = useState<ActivityEntry[]>([]);
   const [outfits, setOutfits] = useState<Outfit[]>([]);
@@ -225,7 +229,7 @@ export default function HomeScreen() {
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
     >
       <Text style={styles.greeting}>
-        Hey{user?.email ? `, ${user.email.split('@')[0]}` : ''}
+        Hey{greetingName ? `, ${greetingName}` : ''}
       </Text>
       <Text style={styles.subtitle}>Your wardrobe at a glance</Text>
 
