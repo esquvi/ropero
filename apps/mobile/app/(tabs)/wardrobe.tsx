@@ -72,6 +72,7 @@ export default function WardrobeScreen() {
         data={filters}
         keyExtractor={(item) => item}
         showsHorizontalScrollIndicator={false}
+        style={styles.filterList}
         contentContainerStyle={styles.filterContainer}
         renderItem={({ item: category }) => (
           <TouchableOpacity
@@ -131,6 +132,9 @@ export default function WardrobeScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
+  // Horizontal FlatLists default to flex: 1, which would stretch the chips
+  // vertically inside the flex: 1 container. Lock it to content height.
+  filterList: { flexGrow: 0, flexShrink: 0 },
   filterContainer: { paddingHorizontal: 12, paddingVertical: 8, gap: 8 },
   filterChip: {
     paddingHorizontal: 14,
