@@ -23,12 +23,33 @@ interface Stats {
   upcomingTrips: number;
 }
 
-interface WearLog {
+interface WearLogRow {
   id: string;
   worn_at: string;
   occasion: string | null;
+  outfit_id: string | null;
   items: { name: string };
+  outfits: { name: string } | null;
 }
+
+// An activity entry is either a single item wear or a group of items worn
+// together as an outfit on the same day.
+type ActivityEntry =
+  | {
+      kind: 'item';
+      key: string;
+      worn_at: string;
+      occasion: string | null;
+      item_name: string;
+    }
+  | {
+      kind: 'outfit';
+      key: string;
+      worn_at: string;
+      occasion: string | null;
+      outfit_name: string;
+      item_count: number;
+    };
 
 interface Outfit {
   id: string;
@@ -36,10 +57,55 @@ interface Outfit {
   occasion: string | null;
 }
 
+// Collapse wear_logs that share the same outfit_id + worn_at into a single
+// outfit entry. Standalone item wears pass through untouched. Preserves the
+// server-side order (worn_at desc, then created_at desc) and returns at most
+// MAX_ACTIVITY_ENTRIES groups.
+const MAX_ACTIVITY_ENTRIES = 5;
+
+function groupWearLogs(rows: WearLogRow[]): ActivityEntry[] {
+  const out: ActivityEntry[] = [];
+  const outfitGroupByKey = new Map<string, Extract<ActivityEntry, { kind: 'outfit' }>>();
+
+  for (const row of rows) {
+    if (row.outfit_id) {
+      const key = `${row.outfit_id}:${row.worn_at}`;
+      const existing = outfitGroupByKey.get(key);
+      if (existing) {
+        existing.item_count += 1;
+        continue;
+      }
+      // Only start a new group if we still have a display slot.
+      if (out.length >= MAX_ACTIVITY_ENTRIES) continue;
+      const entry: Extract<ActivityEntry, { kind: 'outfit' }> = {
+        kind: 'outfit',
+        key,
+        worn_at: row.worn_at,
+        occasion: row.occasion,
+        outfit_name: row.outfits?.name ?? 'Outfit',
+        item_count: 1,
+      };
+      outfitGroupByKey.set(key, entry);
+      out.push(entry);
+    } else {
+      if (out.length >= MAX_ACTIVITY_ENTRIES) continue;
+      out.push({
+        kind: 'item',
+        key: `item:${row.id}`,
+        worn_at: row.worn_at,
+        occasion: row.occasion,
+        item_name: row.items.name,
+      });
+    }
+  }
+
+  return out;
+}
+
 export default function HomeScreen() {
   const { user } = useAuth();
   const [stats, setStats] = useState<Stats>({ totalItems: 0, totalOutfits: 0, upcomingTrips: 0 });
-  const [wearLogs, setWearLogs] = useState<WearLog[]>([]);
+  const [activity, setActivity] = useState<ActivityEntry[]>([]);
   const [outfits, setOutfits] = useState<Outfit[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [wearingOutfit, setWearingOutfit] = useState<Outfit | null>(null);
@@ -55,9 +121,13 @@ export default function HomeScreen() {
         .select('*', { count: 'exact', head: true }),
       (supabase.from('trips') as ReturnType<typeof supabase.from>)
         .select('*', { count: 'exact', head: true }).gte('start_date', today),
+      // Pull more than we display so outfit wears that span multiple rows
+      // still collapse cleanly into a single activity entry of 5.
       (supabase.from('wear_logs') as ReturnType<typeof supabase.from>)
-        .select('id, worn_at, occasion, items(name)')
-        .order('worn_at', { ascending: false }).limit(5),
+        .select('id, worn_at, occasion, outfit_id, items(name), outfits(name)')
+        .order('worn_at', { ascending: false })
+        .order('created_at', { ascending: false })
+        .limit(25),
       (supabase.from('outfits') as ReturnType<typeof supabase.from>)
         .select('id, name, occasion')
         .order('created_at', { ascending: false }).limit(5),
@@ -68,7 +138,9 @@ export default function HomeScreen() {
       totalOutfits: outfitsRes.count ?? 0,
       upcomingTrips: tripsRes.count ?? 0,
     });
-    if (logsRes.data) setWearLogs(logsRes.data as unknown as WearLog[]);
+    if (logsRes.data) {
+      setActivity(groupWearLogs(logsRes.data as unknown as WearLogRow[]));
+    }
     if (outfitListRes.data) setOutfits(outfitListRes.data as unknown as Outfit[]);
   }, []);
 
@@ -179,17 +251,33 @@ export default function HomeScreen() {
       {/* Recent Wear Logs */}
       <View style={styles.section}>
         <Text style={styles.sectionTitle}>Recent Activity</Text>
-        {wearLogs.length > 0 ? (
-          wearLogs.map((log) => (
-            <View key={log.id} style={styles.logRow}>
-              <Ionicons name="checkmark-circle" size={18} color="#22c55e" />
+        {activity.length > 0 ? (
+          activity.map((entry) => (
+            <View key={entry.key} style={styles.logRow}>
+              <Ionicons
+                name={entry.kind === 'outfit' ? 'layers' : 'checkmark-circle'}
+                size={18}
+                color={entry.kind === 'outfit' ? '#6366f1' : '#22c55e'}
+              />
               <View style={styles.logInfo}>
-                <Text style={styles.logItem}>Wore {log.items.name}</Text>
-                {log.occasion && (
-                  <Text style={styles.logOccasion}>{log.occasion}</Text>
-                )}
+                <Text style={styles.logItem}>
+                  {entry.kind === 'outfit'
+                    ? `Wore ${entry.outfit_name}`
+                    : `Wore ${entry.item_name}`}
+                </Text>
+                <View style={styles.logMetaRow}>
+                  {entry.kind === 'outfit' && (
+                    <Text style={styles.logMeta}>
+                      {entry.item_count}{' '}
+                      {entry.item_count === 1 ? 'item' : 'items'}
+                    </Text>
+                  )}
+                  {entry.occasion && (
+                    <Text style={styles.logOccasion}>{entry.occasion}</Text>
+                  )}
+                </View>
               </View>
-              <Text style={styles.logDate}>{formatDate(log.worn_at)}</Text>
+              <Text style={styles.logDate}>{formatDate(entry.worn_at)}</Text>
             </View>
           ))
         ) : (
@@ -309,6 +397,8 @@ const styles = StyleSheet.create({
   },
   logInfo: { flex: 1 },
   logItem: { fontSize: 14, color: '#111' },
+  logMetaRow: { flexDirection: 'row', alignItems: 'center', gap: 6, marginTop: 2 },
+  logMeta: { fontSize: 12, color: '#9ca3af' },
   logOccasion: { fontSize: 12, color: '#6b7280', textTransform: 'capitalize' },
   logDate: { fontSize: 12, color: '#9ca3af' },
   outfitRow: {
