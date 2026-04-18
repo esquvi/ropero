@@ -11,6 +11,8 @@ import { Ionicons } from '@expo/vector-icons';
 import {
   BottomSheetBackdrop,
   BottomSheetBackdropProps,
+  BottomSheetFooter,
+  BottomSheetFooterProps,
   BottomSheetModal,
   BottomSheetScrollView,
   BottomSheetTextInput,
@@ -102,6 +104,37 @@ export function LogWearSheet({
     [],
   );
 
+  // Floating footer that stays at the bottom of the sheet regardless of
+  // scroll position. BottomSheetFooter handles the positioning; we just
+  // style the row of buttons it renders.
+  const renderFooter = useCallback(
+    (props: BottomSheetFooterProps) => (
+      <BottomSheetFooter {...props} bottomInset={0}>
+        <View style={styles.footer}>
+          <TouchableOpacity
+            style={styles.cancelButton}
+            onPress={onClose}
+            disabled={submitting}
+          >
+            <Text style={styles.cancelText}>Cancel</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={[styles.submitButton, submitting && styles.submitDisabled]}
+            onPress={handleSubmit}
+            disabled={submitting}
+          >
+            {submitting ? (
+              <ActivityIndicator color="#fff" size="small" />
+            ) : (
+              <Text style={styles.submitText}>Log Wear</Text>
+            )}
+          </TouchableOpacity>
+        </View>
+      </BottomSheetFooter>
+    ),
+    [onClose, submitting, handleSubmit],
+  );
+
   // Two snap points: sheet opens at 65% (comfortable form size with context)
   // and extends to 92% when the keyboard rises. `extend` requires fixed snap
   // points to work, so dynamic sizing is off.
@@ -112,6 +145,7 @@ export function LogWearSheet({
       ref={sheetRef}
       onDismiss={onClose}
       backdropComponent={renderBackdrop}
+      footerComponent={renderFooter}
       snapPoints={snapPoints}
       enableDynamicSizing={false}
       keyboardBehavior="extend"
@@ -218,27 +252,6 @@ export function LogWearSheet({
           numberOfLines={3}
         />
       </BottomSheetScrollView>
-
-      <View style={styles.footer}>
-        <TouchableOpacity
-          style={styles.cancelButton}
-          onPress={onClose}
-          disabled={submitting}
-        >
-          <Text style={styles.cancelText}>Cancel</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={[styles.submitButton, submitting && styles.submitDisabled]}
-          onPress={handleSubmit}
-          disabled={submitting}
-        >
-          {submitting ? (
-            <ActivityIndicator color="#fff" size="small" />
-          ) : (
-            <Text style={styles.submitText}>Log Wear</Text>
-          )}
-        </TouchableOpacity>
-      </View>
     </BottomSheetModal>
   );
 }
@@ -258,7 +271,9 @@ const styles = StyleSheet.create({
   title: { fontSize: 18, fontWeight: '600', color: '#111' },
   body: {
     paddingHorizontal: 20,
-    paddingBottom: 8,
+    // Clear the floating footer (buttons ~82px tall) so the notes field is
+    // not hidden under it when scrolled to the end.
+    paddingBottom: 100,
   },
   label: { fontSize: 14, fontWeight: '500', color: '#374151', marginBottom: 8 },
   optional: { fontWeight: '400', color: '#9ca3af' },
