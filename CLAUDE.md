@@ -2,6 +2,8 @@
 
 Wardrobe management app with outfit building, wear logging, and smart trip packing.
 
+Known bugs and rough edges are tracked in `KNOWN-ISSUES.md` at the repo root. Check there before spending time reproducing something and add to it (no PR needed, doc-only) when you find a new non-urgent issue.
+
 ## Monorepo Structure
 - `apps/web` — Next.js 15 (App Router), port 3000
 - `apps/mobile` — Expo (React Native, Expo Router)
