@@ -24,8 +24,12 @@ export default function SignUpPage() {
 
     const supabase = await createClient();
 
-    // Validate invite code exists and has remaining uses
-    const { data: codeData } = await (supabase.from('invite_codes') as any)
+    // Validate invite code exists and has remaining uses.
+    // invite_codes is not in the generated DB types yet, so the chain is
+    // typed via ReturnType. Regenerating types is tracked separately.
+    const { data: codeData } = await (
+      supabase.from('invite_codes') as ReturnType<typeof supabase.from>
+    )
       .select('code, times_used, max_uses')
       .eq('code', inviteCode.toUpperCase())
       .single();

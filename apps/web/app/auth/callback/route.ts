@@ -16,7 +16,13 @@ export async function GET(request: Request) {
       const inviteCode = user?.user_metadata?.invite_code;
 
       if (inviteCode && user) {
-        await (supabase.rpc as any)('redeem_invite_code', {
+        // The redeem_invite_code RPC is not in the generated DB types yet.
+        await (
+          supabase.rpc as unknown as (
+            fn: 'redeem_invite_code',
+            args: { invite_code: string; redeemer_id: string },
+          ) => Promise<unknown>
+        )('redeem_invite_code', {
           invite_code: inviteCode,
           redeemer_id: user.id,
         });

@@ -45,7 +45,7 @@ export function WearHistory({ logs, maxHeight = '300px' }: WearHistoryProps) {
             {/* Timeline line */}
             <div className="absolute left-3 top-2 bottom-2 w-px bg-border" />
 
-            {logs.map((log, index) => (
+            {logs.map((log) => (
               <div key={log.id} className="relative flex gap-4 pb-4">
                 {/* Timeline dot */}
                 <div className="relative z-10 mt-1.5">

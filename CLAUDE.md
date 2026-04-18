@@ -47,7 +47,7 @@ Wardrobe management app with outfit building, wear logging, and smart trip packi
 - PR titles become the squash-merge commit message on `main`: use imperative mood, keep under 70 characters, no trailing period
 - Write clear PR descriptions with a summary and test plan
 - Never use em-dashes (—) in PR descriptions, titles, or commit messages. Use periods, commas, colons, semicolons, or parentheses instead
-- PRs require passing CI typecheck and tests before merging. Lint is advisory today (CI uses `continue-on-error` on the lint step)
+- PRs require passing CI typecheck, lint, and tests before merging. Lint runs against `apps/web` only today; other workspaces have no ESLint config
 - Squash-merge PRs to keep `main` history clean
 - Delete branches after merging
 - Commit prefixes like `feat:` / `fix:` / `chore:` are not required. Use them if helpful, but consistency is not enforced
