@@ -3,7 +3,7 @@ import { Shirt, Layers, Plane, TrendingUp, Plus, BookOpen } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/server';
 import { StatCard } from '@/components/dashboard/stat-card';
-import { RecentActivity } from '@/components/dashboard/recent-activity';
+import { RecentActivity, WearLogRow } from '@/components/dashboard/recent-activity';
 import { UpcomingTrips } from '@/components/dashboard/upcoming-trips';
 
 export default async function DashboardPage() {
@@ -30,7 +30,9 @@ export default async function DashboardPage() {
     sb.from('items').select('*', { count: 'exact', head: true }).eq('status', 'archived'),
     sb.from('outfits').select('*', { count: 'exact', head: true }),
     sb.from('items').select('purchase_price').eq('status', 'active').not('purchase_price', 'is', null),
-    sb.from('wear_logs').select('id, worn_at, occasion, items(name, category)').order('worn_at', { ascending: false }).limit(10),
+    // Pull more than we display so outfit wears that span multiple rows
+    // still collapse cleanly in groupWearLogs (mirrors mobile's 25/5 ratio).
+    sb.from('wear_logs').select('id, worn_at, occasion, outfit_id, items(name, category), outfits(name)').order('worn_at', { ascending: false }).order('created_at', { ascending: false }).limit(50),
     sb.from('trips').select('id, name, destination, start_date, end_date, trip_type, packing_lists(status)').gte('start_date', new Date().toISOString().split('T')[0]).order('start_date').limit(3),
     sb.from('items').select('category').eq('status', 'active'),
     sb.from('items').select('id, name, times_worn, photo_urls').eq('status', 'active').order('times_worn', { ascending: false }).limit(3),
@@ -107,7 +109,7 @@ export default async function DashboardPage() {
 
       {/* Most/Least Worn + Activity + Trips */}
       <div className="grid gap-4 md:grid-cols-2">
-        <RecentActivity wearLogs={wearLogs ?? []} />
+        <RecentActivity wearLogs={(wearLogs ?? []) as unknown as WearLogRow[]} />
         <UpcomingTrips trips={upcomingTrips ?? []} />
       </div>
 
