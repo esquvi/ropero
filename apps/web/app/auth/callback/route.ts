@@ -16,15 +16,15 @@ export async function GET(request: Request) {
       const inviteCode = user?.user_metadata?.invite_code;
 
       if (inviteCode && user) {
-        // The redeem_invite_code RPC is not in the generated DB types yet.
+        // The redeem_invite_code RPC derives the redeemer from auth.uid()
+        // server-side, so we do not (and must not) pass a user id here.
         await (
           supabase.rpc as unknown as (
             fn: 'redeem_invite_code',
-            args: { invite_code: string; redeemer_id: string },
+            args: { invite_code: string },
           ) => Promise<unknown>
         )('redeem_invite_code', {
           invite_code: inviteCode,
-          redeemer_id: user.id,
         });
         // Clear invite_code from metadata after redemption
         await supabase.auth.updateUser({
