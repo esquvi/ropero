@@ -27,11 +27,17 @@ export function ProfileForm({ initialName, email }: ProfileFormProps) {
     const { error } = await supabase.auth.updateUser({
       data: { name: name.trim() },
     });
-    setSaving(false);
     if (error) {
+      setSaving(false);
       Alert.alert('Error', 'Failed to update name');
       return;
     }
+    // Refresh so the session user carries the new metadata immediately.
+    // Without this, consumers like the home greeting (which reads
+    // user.user_metadata.name from the AuthContext) keep showing the old
+    // value until the next sign in.
+    await supabase.auth.refreshSession();
+    setSaving(false);
     setSavedFlash(true);
     setTimeout(() => setSavedFlash(false), 1500);
   };
