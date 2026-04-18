@@ -6,9 +6,9 @@ Claude should read this at the start of every session for context, and append a 
 
 ---
 
-## 2026-04-18: mobile parity + device smoke test sprint
+## 2026-04-18: mobile parity + device smoke test sprint + QA sweep
 
-### Shipped (22 PRs, #7 through #28)
+### Shipped (25 PRs, #7 through #31, plus two doc-only commits to main)
 
 **Mobile feature parity** with web for all core object types:
 - Wear logging enhancements: date presets, occasion chips, notes (#7).
@@ -45,9 +45,25 @@ Claude should read this at the start of every session for context, and append a 
 - **Parallel subagent worktrees proved valuable.** Two agents in parallel + one manual workstream shipped three non-conflicting PRs (#18, #19, #20) in roughly the time of one. Pattern: scope by file (different apps, or different files within an app), use `isolation: "worktree"` on the Agent tool, always review the diff before opening the PR.
 - **Smoke-testing on device is non-optional.** Several pre-existing bugs only manifested when the app was actually on a phone with data. Wardrobe filter chip bug had been there since the feature shipped. Home-row greeting using email prefix instead of display name was present since profile metadata was introduced. Future sessions: schedule a device smoke test at least every few mobile PRs, do not let a backlog of unverified mobile work accumulate.
 
+### QA sweep addendum (end of session)
+
+Before wrapping, ran a comprehensive QA subagent across everything shipped in the last two sessions. Three findings landed as their own PRs (#29, #30, #31); the other ~25 non-critical findings were logged in `KNOWN-ISSUES.md` tagged `[QA-2026-04-18]`. Highlights worth remembering beyond what's in that file:
+
+- **`redeem_invite_code` had an identity spoof (#30).** The SECURITY DEFINER function accepted a caller-supplied `redeemer_id` uuid and wrote it into `invite_redemptions.redeemed_by`. Any authenticated user could pollute another user's redemption history by passing their uuid. Fix: new migration drops the param and reads `auth.uid()` internally.
+- **`invite_codes` table had a world-readable SELECT policy (#31).** Because Postgres RLS policies OR together, a `USING (true)` policy next to an owner-scoped one meant any authenticated user could enumerate every invite code. Fix: drop the permissive policy, add `validate_invite_code(p_code)` RPC granted to anon + authenticated that exposes only yes/no/remaining.
+- **Dashboard had a dead `Log Wear` link pointing at `/wear-log` (#29).** Never existed. Removed; logging wear is a contextual action from item/outfit surfaces.
+- Both #30 and #31 require `npx supabase db push` against the cloud project after merge. User ran this at session end.
+
 ### Known issues open (see KNOWN-ISSUES.md)
 
-- iOS keyboard over-lifts the log wear sheet when focusing the notes field. Cosmetic; user can type but surrounding context scrolls off.
+- iOS keyboard over-lifts the log wear sheet when focusing the notes field. Cosmetic.
+- ~25 non-critical findings from the QA sweep, grouped by surface (mobile bugs, web bugs, tech debt, UX, security, testing, infra) and tagged `[QA-2026-04-18]`. Highlights worth a direct call-out next time:
+  - **OCCASIONS forked across 3 files** with different values; web `outfit-builder.tsx` uses `interview`/`workout` that the Zod schema in core will reject if ever validated server-side.
+  - **Zod major version skew** between `packages/core` (v3) and `apps/web` (v4) will break shared schemas.
+  - **Nested `TouchableOpacity` on home outfit row** fires both taps (Wear pill + row navigation).
+  - **Mobile errors silently swallowed** across several fetchers; look like "not found" to the user.
+  - **Outfit edit save is not transactional**; partial failure leaves outfit with zero items.
+  - **Zero mobile tests, zero real E2E coverage.**
 
 ### Next session starting points
 
