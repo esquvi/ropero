@@ -20,7 +20,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { cn } from '@/lib/utils';
-import { logWear } from './actions';
+import { logWear, wearOutfit } from './actions';
 
 const OCCASIONS = [
   'work',
@@ -35,18 +35,27 @@ const OCCASIONS = [
   'other',
 ] as const;
 
+export type LogWearTarget =
+  | { type: 'item'; itemId: string }
+  | { type: 'outfit'; outfitId: string };
+
 interface LogWearButtonProps {
-  itemId: string;
+  target: LogWearTarget;
   variant?: 'default' | 'outline' | 'ghost' | 'secondary';
   size?: 'default' | 'sm' | 'lg' | 'icon';
   className?: string;
+  label?: string;
+  /** Stops click events bubbling to parent (useful when the trigger sits inside a link). */
+  stopPropagation?: boolean;
 }
 
 export function LogWearButton({
-  itemId,
+  target,
   variant = 'outline',
   size = 'sm',
   className,
+  label,
+  stopPropagation = false,
 }: LogWearButtonProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
@@ -54,23 +63,50 @@ export function LogWearButton({
   const [occasion, setOccasion] = useState<string>('');
   const [notes, setNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const isOutfit = target.type === 'outfit';
+  const triggerLabel = label ?? (isOutfit ? 'Wear' : 'Log Wear');
+  const heading = isOutfit ? 'Wear Outfit' : 'Log Wear';
+  const description = isOutfit
+    ? 'Logs a wear for every item in this outfit.'
+    : 'Record when you wore this item.';
+  const submitLabel = isOutfit ? 'Log Outfit Wear' : 'Log Wear';
 
   const handleSubmit = async () => {
     setIsSubmitting(true);
+    setError(null);
     try {
-      await logWear({
-        itemId,
-        wornAt: format(date, 'yyyy-MM-dd'),
-        occasion: occasion || null,
-        notes: notes || null,
-      });
+      const wornAt = format(date, 'yyyy-MM-dd');
+      const occasionValue = occasion || null;
+      const notesValue = notes || null;
+
+      if (target.type === 'item') {
+        await logWear({
+          itemId: target.itemId,
+          wornAt,
+          occasion: occasionValue,
+          notes: notesValue,
+        });
+      } else {
+        await wearOutfit({
+          outfitId: target.outfitId,
+          wornAt,
+          occasion: occasionValue,
+          notes: notesValue,
+        });
+      }
+
       setOpen(false);
       setOccasion('');
       setNotes('');
       setDate(new Date());
       router.refresh();
-    } catch (error) {
-      console.error('Error logging wear:', error);
+    } catch (err) {
+      console.error('Error logging wear:', err);
+      const message =
+        err instanceof Error ? err.message : 'Something went wrong';
+      setError(message);
     } finally {
       setIsSubmitting(false);
     }
@@ -79,17 +115,31 @@ export function LogWearButton({
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button variant={variant} size={size} className={className}>
-          Log Wear
+        <Button
+          variant={variant}
+          size={size}
+          className={className}
+          onClick={(e) => {
+            if (stopPropagation) {
+              e.stopPropagation();
+              e.preventDefault();
+            }
+          }}
+        >
+          {triggerLabel}
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80" align="start">
+      <PopoverContent
+        className="w-80"
+        align="start"
+        onClick={(e) => {
+          if (stopPropagation) e.stopPropagation();
+        }}
+      >
         <div className="space-y-4">
           <div className="space-y-2">
-            <h4 className="font-medium">Log Wear</h4>
-            <p className="text-sm text-muted-foreground">
-              Record when you wore this item.
-            </p>
+            <h4 className="font-medium">{heading}</h4>
+            <p className="text-sm text-muted-foreground">{description}</p>
           </div>
 
           <div className="space-y-2">
@@ -144,6 +194,12 @@ export function LogWearButton({
             />
           </div>
 
+          {error && (
+            <p className="text-sm text-destructive" role="alert">
+              {error}
+            </p>
+          )}
+
           <div className="flex justify-end gap-2">
             <Button
               variant="outline"
@@ -155,7 +211,7 @@ export function LogWearButton({
             </Button>
             <Button size="sm" onClick={handleSubmit} disabled={isSubmitting}>
               {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-              Log Wear
+              {submitLabel}
             </Button>
           </div>
         </div>

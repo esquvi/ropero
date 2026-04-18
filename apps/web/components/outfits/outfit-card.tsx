@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Layers, Star } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
+import { LogWearButton } from '@/components/wear/log-wear-button';
 
 interface OutfitItem {
   id: string;
@@ -21,10 +22,11 @@ interface OutfitCardProps {
 
 export function OutfitCard({ outfit }: OutfitCardProps) {
   const itemPhotos = outfit.items?.slice(0, 4).map((item) => item.photo_urls[0]).filter(Boolean) ?? [];
+  const itemCount = outfit.items?.length ?? 0;
 
   return (
-    <Link href={`/outfits/${outfit.id}`}>
-      <Card className="overflow-hidden transition-shadow hover:shadow-md">
+    <Card className="overflow-hidden transition-shadow hover:shadow-md">
+      <Link href={`/outfits/${outfit.id}`} className="block">
         <div className="aspect-square relative bg-muted">
           {outfit.photo_url ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -74,11 +76,21 @@ export function OutfitCard({ outfit }: OutfitCardProps) {
           </div>
           {outfit.items && (
             <p className="mt-2 text-xs text-muted-foreground">
-              {outfit.items.length} {outfit.items.length === 1 ? 'item' : 'items'}
+              {itemCount} {itemCount === 1 ? 'item' : 'items'}
             </p>
           )}
         </CardContent>
-      </Card>
-    </Link>
+      </Link>
+      {itemCount > 0 && (
+        <div className="flex justify-end border-t px-3 py-2">
+          <LogWearButton
+            target={{ type: 'outfit', outfitId: outfit.id }}
+            size="sm"
+            variant="outline"
+            stopPropagation
+          />
+        </div>
+      )}
+    </Card>
   );
 }
