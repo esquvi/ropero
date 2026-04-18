@@ -142,7 +142,7 @@ export function ItemDetail({ item, wearLogs = [], onStatusChange }: ItemDetailPr
         </div>
         <div className="flex items-center gap-2">
           {item.status === 'active' && (
-            <LogWearButton itemId={item.id} />
+            <LogWearButton target={{ type: 'item', itemId: item.id }} />
           )}
           <Button variant="outline" onClick={() => setIsEditing(true)}>
             <Pencil className="mr-2 h-4 w-4" />
