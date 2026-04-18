@@ -102,13 +102,19 @@ export function LogWearSheet({
     [],
   );
 
+  // Two snap points: sheet opens at 65% (comfortable form size with context)
+  // and extends to 92% when the keyboard rises. `extend` requires fixed snap
+  // points to work, so dynamic sizing is off.
+  const snapPoints = ['65%', '92%'];
+
   return (
     <BottomSheetModal
       ref={sheetRef}
       onDismiss={onClose}
       backdropComponent={renderBackdrop}
-      enableDynamicSizing
-      keyboardBehavior="interactive"
+      snapPoints={snapPoints}
+      enableDynamicSizing={false}
+      keyboardBehavior="extend"
       keyboardBlurBehavior="restore"
       android_keyboardInputMode="adjustResize"
       handleIndicatorStyle={styles.handle}
