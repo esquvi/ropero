@@ -6,11 +6,16 @@ import {
   ScrollView,
   RefreshControl,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/auth';
+import {
+  LogWearSheet,
+  LogWearValues,
+} from '../../components/log-wear-sheet';
 
 interface Stats {
   totalItems: number;
@@ -37,6 +42,8 @@ export default function HomeScreen() {
   const [wearLogs, setWearLogs] = useState<WearLog[]>([]);
   const [outfits, setOutfits] = useState<Outfit[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [wearingOutfit, setWearingOutfit] = useState<Outfit | null>(null);
+  const [loggingWear, setLoggingWear] = useState(false);
 
   const fetchData = useCallback(async () => {
     const today = new Date().toISOString().split('T')[0];
@@ -74,6 +81,60 @@ export default function HomeScreen() {
     await fetchData();
     setRefreshing(false);
   }, [fetchData]);
+
+  const handleWearOutfit = async (values: LogWearValues) => {
+    if (!user || !wearingOutfit) return;
+
+    setLoggingWear(true);
+    try {
+      // Fetch the outfit's items
+      const { data: itemRows, error: itemsErr } = await (
+        supabase.from('outfit_items') as ReturnType<typeof supabase.from>
+      )
+        .select('item_id')
+        .eq('outfit_id', wearingOutfit.id);
+
+      if (itemsErr || !itemRows) {
+        Alert.alert('Error', 'Could not load outfit items');
+        return;
+      }
+
+      const items = itemRows as unknown as Array<{ item_id: string }>;
+
+      if (items.length === 0) {
+        Alert.alert(
+          'Empty outfit',
+          'This outfit has no items, so nothing to log.',
+        );
+        setWearingOutfit(null);
+        return;
+      }
+
+      // Insert one wear_log per item, all linked to this outfit
+      const rows = items.map((it) => ({
+        user_id: user.id,
+        item_id: it.item_id,
+        outfit_id: wearingOutfit.id,
+        worn_at: values.wornAt,
+        occasion: values.occasion,
+        notes: values.notes,
+      }));
+
+      const { error: insertErr } = await (
+        supabase.from('wear_logs') as ReturnType<typeof supabase.from>
+      ).insert(rows);
+
+      if (insertErr) {
+        Alert.alert('Error', 'Failed to log outfit wear');
+        return;
+      }
+
+      setWearingOutfit(null);
+      await fetchData();
+    } finally {
+      setLoggingWear(false);
+    }
+  };
 
   const formatDate = (dateStr: string) => {
     const date = new Date(dateStr);
@@ -156,6 +217,14 @@ export default function HomeScreen() {
               {outfit.occasion && (
                 <Text style={styles.outfitOccasion}>{outfit.occasion}</Text>
               )}
+              <TouchableOpacity
+                style={styles.wearButton}
+                onPress={() => setWearingOutfit(outfit)}
+                hitSlop={6}
+              >
+                <Ionicons name="checkmark-circle-outline" size={14} color="#fff" />
+                <Text style={styles.wearButtonText}>Wear</Text>
+              </TouchableOpacity>
             </View>
           ))
         ) : (
@@ -168,6 +237,13 @@ export default function HomeScreen() {
           </TouchableOpacity>
         )}
       </View>
+
+      <LogWearSheet
+        visible={wearingOutfit !== null}
+        submitting={loggingWear}
+        onClose={() => setWearingOutfit(null)}
+        onSubmit={handleWearOutfit}
+      />
     </ScrollView>
   );
 }
@@ -254,4 +330,15 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   emptyText: { fontSize: 14, color: '#9ca3af' },
+  wearButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    backgroundColor: '#111',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    marginLeft: 6,
+  },
+  wearButtonText: { fontSize: 11, color: '#fff', fontWeight: '600' },
 });
