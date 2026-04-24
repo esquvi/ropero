@@ -11,11 +11,11 @@
     "generate-types": "supabase gen types typescript --local > src/database.types.ts"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2"
+    "@supabase/supabase-js": "^2.104.1"
   },
   "devDependencies": {
+    "supabase": "^2.95.2",
     "typescript": "^5",
-    "vitest": "^3",
-    "supabase": "^2"
+    "vitest": "^3"
   }
 }
