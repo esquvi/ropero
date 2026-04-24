@@ -181,14 +181,6 @@ Same shape (user_id, item_id, optional outfit_id, worn_at, occasion, notes).
 
 **Fix direction:** lift into `@ropero/core`. Also a good opportunity to add unit tests (neither copy is tested).
 
-### Next.js 16 deprecates `middleware.ts` in favor of `proxy.ts` [HYGIENE-2026-04-24]
-
-**Severity:** tech debt. Next.js 16 logs a deprecation warning on every dev-server start: `The "middleware" file convention is deprecated. Please use "proxy" instead.` Still functional today; will be removed in a future major.
-
-**Surface:** `apps/web/middleware.ts`.
-
-**Fix direction:** rename `middleware.ts` to `proxy.ts` and update any documentation references. Logic stays the same. Do this before upgrading to Next.js 17.
-
 ## UX and copy
 
 ### Copy inconsistencies on the wear action [QA-2026-04-18]
