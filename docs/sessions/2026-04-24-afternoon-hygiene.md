@@ -133,3 +133,67 @@ The first `workflow_dispatch` run found one real orphan: `claude/resume-session-
 - `main` is at the commit created by merging PR #59.
 - Four-layer hygiene defense in place; first weekly run scheduled for next Sunday.
 - The CI workflow's first on-demand run demonstrated the orphan-detection branch of the check by surfacing `claude/resume-session-8qj6g`, awaiting user decision on deletion (separate Claude Code web session artifact, safe to delete once confirmed).
+
+## Turn to product: brand audit, matcha decision, brand-preview iteration tool
+
+With the hygiene work done, the user asked "what should we build next?" Three candidate paths surfaced: brand + design tokens (unblocks visual polish), AI outfit suggestions (the marquee unshipped Phase 10 feature), internal quality pass (Supabase type regen, atomic outfit edit, real E2E auth fixture). My recommendation was the brand path: it had been parked since March with 25 HTML design explorations in `docs/brand/` "awaiting co-founder review", and everything visual downstream (onboarding, shareability, marketing surface) was implicitly blocked by it.
+
+User raised a real concern: "What if I pick now and have to redo the entire theming later?" That triggered a palette audit across the codebase to measure actual swap cost.
+
+### Palette audit findings
+
+- **Web: effectively fully tokenized.** All shadcn components use semantic CSS vars (`bg-primary`, `text-foreground`, etc.) via `apps/web/app/globals.css`. Only ~15 non-semantic hardcodes exist, all meaningful: `bg-zinc-50 dark:bg-zinc-950` in three page shells ([`page.tsx`](../../apps/web/app/page.tsx), [`(auth)/layout.tsx`](../../apps/web/app/(auth)/layout.tsx), [`(app)/layout.tsx`](../../apps/web/app/(app)/layout.tsx)), status-badge hue pairs for trip categories and wear states (`bg-blue-100 text-blue-800` patterns), weather-icon tints, and genuinely-literal uses (Google-logo SVG fills, color-picker defaults). Palette swap cost for web: ~30 minutes, mostly editing the `:root` and `.dark` blocks in `globals.css`.
+- **Mobile: fully hardcoded.** 293 color literals across 17 files, almost all in React Native `StyleSheet.create()` calls (`color: '#111'`, `backgroundColor: '#fff'`, `color: '#22c55e'`). `packages/ui/src/tokens.ts` exists but nothing in mobile imports it. Surprising upside: mobile is currently palette-**agnostic** — it uses neutral black/white/gray + semantic greens/reds. The brand palette isn't wired anywhere on mobile today, so picking a web palette creates zero "redo" cost on mobile. Whenever mobile wants to adopt brand colors, that's a new project (1-2 focused sessions), not rework.
+- **`packages/ui/src/tokens.ts`: mostly dead.** Defines a blue-primary palette that nothing imports. Either tokenize mobile against it, replace it with a semantic wrapper, or delete when mobile tokenization happens.
+
+The audit resolved the user's concern decisively: web swap cost is genuinely tiny, and mobile has no brand-color investment to redo.
+
+### Shipped (product direction)
+
+- **PR #60** Tokenize page shell backgrounds to `bg-background`. Replaces `bg-zinc-50 dark:bg-zinc-950` in the three page shells identified by the audit. Cards keep visual definition via the Card component's existing `bg-card` + `border` + `shadow-sm`. In dark mode this is actually crisper: `--card` (oklch 0.205) becomes visibly lighter than `--background` (oklch 0.145), giving a proper elevated-surface look. **Still open** at end of session; user has not merged, also briefly reverted locally during brand-preview branch checkout (presumed deliberate — they may want to wait until globals.css matcha rewrite so the matcha warm off-white `#EEEFE8` applies to the shells automatically).
+- **PR #61** Brand-preview route for matcha typography and shape iteration. After the user chose **matcha** as the palette direction (from [`docs/brand/matcha.html`](../brand/matcha.html)), they asked to iterate further on fonts and shapes before locking in. New `/brand-preview` route applies matcha globally (scoped `--bp-*` vars) and provides three live switchers: display font (6 options: Josefin Sans, Manrope, Space Grotesk, Jost, Inter, DM Sans unified), radius (0 / 2 / 4 / 8 px), accent mode (dual green+gold vs green-only), plus dark mode. Shows the full component spectrum in context — hero wordmark, typography specimen, dashboard with sidebar + stat cards + item cards, buttons, form inputs, badges, phone mockup. Layout exports `robots: noindex`; proxy matcher excludes the route for unauth access so co-founder can review on a Vercel preview URL. Uses Google Fonts CDN `@import` (not `next/font`) because the route needs runtime font switching — `next/font` requires static imports and is the wrong tool here.
+- **`24296ce` (direct to main)** `.impeccable.md` at repo root. Canonical design-context file produced by the `/teach-impeccable` skill. Four equally-weighted personas (intentional minimalist, curator, re-wearer, packer), brand personality in three words (intentional · considered · quiet), matcha aesthetic direction with explicit references (Totême, Auralee, Issey Miyake, Lemaire) and anti-references (Stylebook, Instagram, Depop, Shein, Notion), WCAG 2.1 AA baseline, and five load-bearing design principles.
+- **`e21cdb8` (direct to main)** `.github/copilot-instructions.md` mirroring `.impeccable.md`'s Design Context section, adapted for Copilot: includes code-convention reminders, a "when suggesting code" section tying the five design principles to concrete suggestion guidance (use semantic tokens, compose shadcn primitives, match brand voice in microcopy, no em-dashes, always include RLS on new tables).
+
+### Decisions worth remembering (product direction)
+
+- **Matcha is the chosen palette direction.** Primary accent matcha green `#5A7852`, secondary ochre gold `#A88840`, warm off-white bg `#EEEFE8` (has a subtle green undertone — not neutral white), near-black dark `#0C0F0A`. Philosophy: "Japanese minimalism meets Milanese detail." Dual-accent vs green-only still under active iteration via PR #61.
+- **Typography is still under iteration.** Candidate display fonts range from Josefin Sans (matcha's default, most distinctive, has a 1920s Deco undertone when used aggressively-uppercased) to Inter (safest baseline, reads "app" not "brand"). DM Sans remains the body font regardless. Final pick waits until the user sits with `/brand-preview` on desktop and phone with their co-founder.
+- **Radius is still under iteration.** Matcha specs 0px everywhere. Candidates: 0, 2, 4, 8 px. Tradeoff between editorial hard-edge (feels designed but can be clinical) and ergonomic soft-edge (feels friendlier but breaks the Milanese precision). No wrong answer, just a feel call.
+- **`next/font` is the right tool for the production palette wiring**, not for the brand-preview iteration route. Production needs static imports for zero-CLS and self-hosting; preview needs runtime swapping. Different tools for different jobs. Worth capturing because the PostToolUse validator flagged the preview route's Google Fonts CDN as a violation — it's a false positive in this specific case.
+- **The user's "redo later" concern is a real concern for most codebases, but doesn't apply here.** Ropero's web is already disciplined enough that palette evolution is cheap. This is the payoff of earlier work (shadcn's token system, the audit's 5 principles codified in `.impeccable.md` as "Token discipline, always"). The discipline is load-bearing — the moment someone writes `bg-[#5A7852]` in a component the advantage evaporates.
+
+### Design principles (excerpted from `.impeccable.md`)
+
+Five load-bearing directives that rank ambiguous design decisions:
+
+1. **Restraint over assertion.** No bright primaries beyond matcha green and ochre gold, no urgency, no gamified hooks.
+2. **Let the wardrobe be the hero.** Items are the content; UI chrome supports them.
+3. **Intention over engagement.** Metrics reward thought (cost-per-wear, re-wear rate), never frequency (streaks, DAU).
+4. **Editorial precision, ergonomic reality.** Hard edges and wide letter-spacing for gravitas; touch targets still ≥44pt; body stays highly legible.
+5. **Token discipline, always.** Every color, radius, font-size, spacing goes through a named token. Never hardcode.
+
+### Next session starting points (revised)
+
+1. **Pick the font + radius + accent-mode on `/brand-preview`** and open the follow-up PR that writes those into `globals.css`, wires the display font via `next/font/google`, sets `--radius` globally, implements the accent-mode decision, then deletes `/brand-preview` and reverses the proxy matcher exclusion. Probably resolve PR #60 in the same commit (or merge it first if it stays independent).
+2. **Start the AI outfit suggestions arc** (never-shipped Phase 10). Weather + wardrobe + wear history → "wear this today." Biggest single feature bet for the product. Multi-session.
+3. **Delete the `claude/resume-session-8qj6g` orphan remote branch** (flagged by the hygiene workflow).
+4. **Fix the `ExternalLink.tsx` typed-routes cast** (`[HYGIENE-2026-04-24]` tag, remaining).
+5. **Decide on the `packages/ui/src/tokens.ts` fate**: tokenize mobile against it (big project), replace with a semantic wrapper mirroring `globals.css` token names (thin), or delete (cleanest if mobile tokenization is deferred far enough that the wrapper rots).
+6. **Triage any Dependabot PRs** that appear between sessions. Expect steady-state of 1-2/week from the root-only config now that `/apps/mobile` entry is removed.
+
+### Process notes picked up
+
+- **"Is that a dumb concern?" questions are a valuable signal.** The user's worry about palette lock-in led to the codebase audit, which surfaced both the mobile tokenization latent debt and the `packages/ui/tokens.ts` dead-file issue. Taking the concern at face value and investigating (rather than just reassuring) uncovered real value. Same pattern likely applies to future "is X going to be a problem later?" questions — investigate before answering.
+- **The `/teach-impeccable` skill pairs well with a mid-project kickoff.** Done at project start it would have been guessing; done after today's brand decision and palette audit, it synthesized real signal into durable guardrails. For future projects, run it *after* the first real design decision lands, not before.
+- **`preview_click` with `.bp-chip:nth-child(3)` matches multiple elements across separate parent selectors.** Use more precise selectors (e.g. `[data-testid]` or compound selectors like `.bp-chip-row:first-of-type .bp-chip:nth-child(3)`) when testing interactive state. Noted mid-session.
+
+### Final state at end of session
+
+- `main` at `e21cdb8`.
+- Working tree clean.
+- Local branches: `main`, `chore/tokenize-page-shell-backgrounds` (PR #60 open), `feat/brand-preview-matcha` (PR #61 open). No `[gone]` branches.
+- Open PRs: #60 (page-shell tokenization, awaiting user decision), #61 (brand-preview iteration tool, awaiting co-founder review + typography + radius + accent-mode picks).
+- Remote orphan: `claude/resume-session-8qj6g` still present, flagged by hygiene workflow, awaiting user deletion.
+- Design context persisted in `.impeccable.md` + `.github/copilot-instructions.md`. Both files note the sync requirement.
+- KNOWN-ISSUES: one remaining `[HYGIENE-2026-04-24]` entry (`ExternalLink.tsx` typed-routes cast).
