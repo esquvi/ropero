@@ -34,10 +34,62 @@ interface Outfit {
   items: OutfitItem[];
 }
 
+interface WearLogRow {
+  id: string;
+  worn_at: string;
+  occasion: string | null;
+  notes: string | null;
+}
+
+interface WearEvent {
+  worn_at: string;
+  occasions: string[];
+  notes: string | null;
+  logCount: number;
+}
+
+// Collapse wear_logs that share worn_at (for this outfit) into single events,
+// mirroring the home screen's groupWearLogs. Rows are expected to arrive sorted
+// by worn_at desc, so insertion order is preserved.
+function groupOutfitWearLogs(rows: WearLogRow[]): WearEvent[] {
+  const byDate = new Map<string, WearEvent>();
+  for (const row of rows) {
+    const existing = byDate.get(row.worn_at);
+    if (existing) {
+      existing.logCount += 1;
+      if (row.occasion && !existing.occasions.includes(row.occasion)) {
+        existing.occasions.push(row.occasion);
+      }
+      if (!existing.notes && row.notes) existing.notes = row.notes;
+      continue;
+    }
+    byDate.set(row.worn_at, {
+      worn_at: row.worn_at,
+      occasions: row.occasion ? [row.occasion] : [],
+      notes: row.notes,
+      logCount: 1,
+    });
+  }
+  return Array.from(byDate.values());
+}
+
+function formatWearDate(dateStr: string) {
+  const date = new Date(dateStr);
+  const now = new Date();
+  const diffDays = Math.floor(
+    (now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24),
+  );
+  if (diffDays === 0) return 'Today';
+  if (diffDays === 1) return 'Yesterday';
+  if (diffDays < 7) return `${diffDays}d ago`;
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
 export default function OutfitDetailScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const { user } = useAuth();
   const [outfit, setOutfit] = useState<Outfit | null>(null);
+  const [wearEvents, setWearEvents] = useState<WearEvent[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
@@ -47,22 +99,28 @@ export default function OutfitDetailScreen() {
   const fetchOutfit = useCallback(async () => {
     if (!id) return;
 
-    const { data } = await (
-      supabase.from('outfits') as ReturnType<typeof supabase.from>
-    )
-      .select(
-        `id, name, occasion, rating, notes, tags, created_at,
-         outfit_items(items(id, name, category, photo_urls))`,
-      )
-      .eq('id', id)
-      .single();
+    const [outfitRes, wearLogsRes] = await Promise.all([
+      (supabase.from('outfits') as ReturnType<typeof supabase.from>)
+        .select(
+          `id, name, occasion, rating, notes, tags, created_at,
+           outfit_items(items(id, name, category, photo_urls))`,
+        )
+        .eq('id', id)
+        .single(),
+      (supabase.from('wear_logs') as ReturnType<typeof supabase.from>)
+        .select('id, worn_at, occasion, notes')
+        .eq('outfit_id', id)
+        .order('worn_at', { ascending: false })
+        .order('created_at', { ascending: false }),
+    ]);
 
-    if (!data) {
+    if (!outfitRes.data) {
       setOutfit(null);
+      setWearEvents([]);
       return;
     }
 
-    const raw = data as unknown as {
+    const raw = outfitRes.data as unknown as {
       id: string;
       name: string;
       occasion: string | null;
@@ -89,6 +147,12 @@ export default function OutfitDetailScreen() {
       created_at: raw.created_at,
       items,
     });
+
+    setWearEvents(
+      groupOutfitWearLogs(
+        (wearLogsRes.data ?? []) as unknown as WearLogRow[],
+      ),
+    );
   }, [id]);
 
   useEffect(() => {
@@ -253,6 +317,20 @@ export default function OutfitDetailScreen() {
         )}
       </View>
 
+      {wearEvents.length > 0 && (
+        <View style={styles.wearStatRow}>
+          <Ionicons name="checkmark-circle" size={16} color="#22c55e" />
+          <Text style={styles.wearStatText}>
+            Worn {wearEvents.length}{' '}
+            {wearEvents.length === 1 ? 'time' : 'times'}
+          </Text>
+          <Text style={styles.wearStatSeparator}>·</Text>
+          <Text style={styles.wearStatText}>
+            Last worn {formatWearDate(wearEvents[0].worn_at).toLowerCase()}
+          </Text>
+        </View>
+      )}
+
       {/* Primary actions */}
       <View style={styles.actionRow}>
         <TouchableOpacity
@@ -303,6 +381,40 @@ export default function OutfitDetailScreen() {
         </View>
       ) : (
         <Text style={styles.emptyText}>No items in this outfit</Text>
+      )}
+
+      {wearEvents.length > 0 && (
+        <>
+          <Text style={styles.sectionTitle}>Wear History</Text>
+          <View style={styles.wearList}>
+            {wearEvents.slice(0, 5).map((event) => (
+              <View key={event.worn_at} style={styles.wearRow}>
+                <Ionicons
+                  name="checkmark-circle-outline"
+                  size={16}
+                  color="#6b7280"
+                />
+                <View style={styles.wearRowInfo}>
+                  <View style={styles.wearRowTopLine}>
+                    <Text style={styles.wearRowDate}>
+                      {formatWearDate(event.worn_at)}
+                    </Text>
+                    {event.occasions.map((o) => (
+                      <View key={o} style={styles.wearOccasionBadge}>
+                        <Text style={styles.wearOccasionText}>{o}</Text>
+                      </View>
+                    ))}
+                  </View>
+                  {event.notes && (
+                    <Text style={styles.wearRowNotes} numberOfLines={1}>
+                      {event.notes}
+                    </Text>
+                  )}
+                </View>
+              </View>
+            ))}
+          </View>
+        </>
       )}
 
       {outfit.notes && (
@@ -501,6 +613,46 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     paddingHorizontal: 20,
   },
+
+  wearStatRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 20,
+    marginTop: 12,
+  },
+  wearStatText: { fontSize: 13, color: '#374151' },
+  wearStatSeparator: { fontSize: 13, color: '#9ca3af' },
+
+  wearList: { paddingHorizontal: 20, gap: 10 },
+  wearRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 10,
+    paddingVertical: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f3f4f6',
+  },
+  wearRowInfo: { flex: 1, gap: 2 },
+  wearRowTopLine: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  wearRowDate: { fontSize: 13, color: '#111', fontWeight: '500' },
+  wearOccasionBadge: {
+    backgroundColor: '#f3f4f6',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  wearOccasionText: {
+    fontSize: 11,
+    color: '#6b7280',
+    textTransform: 'capitalize',
+  },
+  wearRowNotes: { fontSize: 12, color: '#6b7280' },
 
   tagRow: {
     flexDirection: 'row',
