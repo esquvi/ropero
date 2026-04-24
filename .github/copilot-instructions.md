@@ -43,7 +43,7 @@ Shared across all four: design-conscious, quality-over-quantity, treats the ward
 - **Theme**: Japanese minimalism meets Milanese detail. Restrained, architectural, quietly confident. Editorial, not promotional.
 - **Palette**: Matcha. Primary accent matcha green `#5A7852`, secondary ochre gold `#A88840`, warm off-white bg `#EEEFE8`, near-black dark `#0C0F0A`. Dual-accent vs green-only still under iteration (see PR #61 / `/brand-preview`).
 - **Typography**: Jost, single committed family (Google Fonts). Weight contrast 300 / 400 / 500 / 700 carries hierarchy. All-caps labels use tracking tokens `--track-caps-sm` (0.18em), `--track-caps-md` (0.24em), `--track-caps-lg` (0.30em). Body stays regular-case and highly legible. Documented runner-up for future redesigns: Cabinet Grotesk (Fontshare, free, editorial grotesque) for an Italian-editorial pivot.
-- **Shape**: hard edges. Default radius 0px to 4px; never large pillow corners. 1.5px borders for precision.
+- **Shape**: 2-token radius scale. `--radius-structural: 0px` (cards, dividers, markers, surfaces). `--radius-interactive: 2px` (buttons, inputs, chips, badges, tags). 1.5px borders for precision. Never large pillow corners.
 - **Light and dark mode**: both equally considered. Dark is not an afterthought.
 - **References**: Totême, Auralee, Issey Miyake, Lemaire. Aesop for restraint, Jil Sander for architectural precision.
 - **Anti-references** (do not emulate): Stylebook, Instagram, Pinterest, Depop, Vinted, Shein, Zara, Notion-style productivity apps.

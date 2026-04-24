@@ -46,6 +46,13 @@
           One rule, recitable. Generalizes — any agent generating a new Ropero screen
           knows: if it's a count, date, or value, it goes gold.
 
+        RADIUS: 2-token scale (2026-04-24).
+          --radius-structural: 0px   (cards, dividers, markers, surfaces)
+          --radius-interactive: 2px  (buttons, inputs, chips, badges, tags)
+          Structural surfaces hold the architectural hard-edge identity;
+          interactive elements soften just enough to read touchable.
+          PRODUCT.md Principle 4: "Precision should never fight use."
+
         TYPOGRAPHY: Jost (Google Fonts, single committed family).
           Chosen 2026-04-24 from a 5-way shootout (Jost, Josefin Sans + DM Sans,
           Satoshi, Cabinet Grotesk, Switzer). Matrix scores: Cabinet 30/30,
@@ -97,9 +104,12 @@
          future editorial-Milanese redesigns. See PRODUCT.md for full context. */
       --font-display: 'Jost', system-ui, sans-serif;
       --font-body:    'Jost', system-ui, sans-serif;
-      --radius:       0px;
-      --radius-sm:    0px;
-      --radius-lg:    0px;
+
+      /* Radius scale (2-token): structural surfaces stay hard-edge (0);
+         interactive elements soften to 2px so they read touchable.
+         Principle 4: "Precision should never fight use." */
+      --radius-structural: 0px;   /* cards, dividers, markers, surfaces */
+      --radius-interactive: 2px;  /* buttons, inputs, chips, badges, tags */
 
       /* Letter-spacing scale for ALL-CAPS text (body text keeps its own values) */
       --track-caps-sm: 0.18em;  /* small-cap labels, tags, inputs */
@@ -124,7 +134,7 @@
     .hero-ref.primary { color: var(--accent); }
     .hero-tags { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
     /* Hero tags unified on green — gold reserved for semantic flags (see audit) */
-    .hero-tag { font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-sm); color: var(--accent); background: var(--accent-lo); padding: 5px 14px; border-radius: 0; font-family: var(--font-display); text-transform: uppercase; }
+    .hero-tag { font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-sm); color: var(--accent); background: var(--accent-lo); padding: 5px 14px; border-radius: var(--radius-interactive); font-family: var(--font-display); text-transform: uppercase; }
 
     .section { padding: 60px 0 0; }
     .section-label { font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-md); text-transform: uppercase; color: var(--text-dim); margin-bottom: 28px; font-family: var(--font-display); }
@@ -175,7 +185,7 @@
     .card { background: var(--white); overflow: hidden; }
     .card-img { height: 140px; background: var(--surface); display: flex; align-items: center; justify-content: center; position: relative; }
     .card-img-label { font-family: var(--font-display); font-size: 32px; font-weight: 700; color: var(--accent-lo); letter-spacing: 0.12em; text-transform: uppercase; }
-    .card-badge { position: absolute; top: 10px; right: 10px; background: var(--gold); color: var(--white); font-size: 8px; font-weight: 700; letter-spacing: var(--track-caps-sm); padding: 3px 8px; font-family: var(--font-display); text-transform: uppercase; }
+    .card-badge { position: absolute; top: 10px; right: 10px; background: var(--gold); color: var(--white); font-size: 8px; font-weight: 700; letter-spacing: var(--track-caps-sm); padding: 3px 8px; border-radius: var(--radius-interactive); font-family: var(--font-display); text-transform: uppercase; }
     .card-body { padding: 18px; }
     .card-label { font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-md); text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; font-family: var(--font-display); }
     .card-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--accent); line-height: 1.2; margin-bottom: 6px; letter-spacing: 0.04em; text-transform: uppercase; }
@@ -197,7 +207,7 @@
 
     /* Buttons */
     .button-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
-    .btn { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: var(--track-caps-md); text-transform: uppercase; padding: 13px 28px; border-radius: 0; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; }
+    .btn { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: var(--track-caps-md); text-transform: uppercase; padding: 13px 28px; border-radius: var(--radius-interactive); cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; }
     .btn-primary { background: var(--accent); color: var(--white); }
     .btn-gold { background: var(--gold); color: var(--white); }
     .btn-secondary { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
@@ -208,13 +218,13 @@
     .input-row { display: flex; gap: 16px; align-items: flex-start; }
     .field { flex: 1; }
     .field label { display: block; font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-md); text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; font-family: var(--font-display); }
-    .field input { width: 100%; background: var(--white); border: 1.5px solid var(--border); border-radius: 0; font-family: var(--font-body); font-size: 14px; font-weight: 300; color: var(--text); padding: 11px 16px; outline: none; }
+    .field input { width: 100%; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius-interactive); font-family: var(--font-body); font-size: 14px; font-weight: 300; color: var(--text); padding: 11px 16px; outline: none; }
     .field input:focus { border-color: var(--accent); }
     .field input::placeholder { color: var(--text-dim); }
 
     /* Tag row — tag-gold and tag-outline-gold demoted to this specimen only */
     .tag-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .tag { font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-sm); padding: 6px 14px; border-radius: 0; text-transform: uppercase; font-family: var(--font-display); }
+    .tag { font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-sm); padding: 6px 14px; border-radius: var(--radius-interactive); text-transform: uppercase; font-family: var(--font-display); }
     .tag-green { background: var(--accent); color: var(--white); }
     .tag-gold { background: var(--gold); color: var(--white); }
     .tag-outline-green { border: 1.5px solid var(--accent); color: var(--accent); }
@@ -291,7 +301,7 @@
     .phone-detail-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: var(--accent); line-height: 1.1; margin-bottom: 8px; letter-spacing: 0.06em; text-transform: uppercase; }
     .phone-detail-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-mid); font-weight: 300; padding: 5px 0; border-bottom: 1px solid var(--surface-2); }
     /* phone-detail-action stays gold — this is the "Log Wear" action on the gold-flagged item */
-    .phone-detail-action { margin: 10px 0 0; background: var(--gold); color: var(--white); font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-sm); text-align: center; padding: 10px; text-transform: uppercase; font-family: var(--font-display); }
+    .phone-detail-action { margin: 10px 0 0; background: var(--gold); color: var(--white); font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-sm); text-align: center; padding: 10px; border-radius: var(--radius-interactive); text-transform: uppercase; font-family: var(--font-display); }
 
     /* ── PAGE FOOTER ── */
     .page-footer {
