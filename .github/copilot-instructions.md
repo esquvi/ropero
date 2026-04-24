@@ -4,7 +4,7 @@ Ropero is a wardrobe management app (Next.js 16 + shadcn/ui web, Expo + React Na
 
 **Read these before generating suggestions:**
 - `CLAUDE.md` at repo root for workflow, code style, testing, and deployment conventions.
-- `.impeccable.md` at repo root for the canonical Design Context (this file mirrors the Design Context section below; keep them in sync).
+- `PRODUCT.md` at repo root for the canonical Design Context (this file mirrors the Design Context section below; keep them in sync).
 - `KNOWN-ISSUES.md` for rough edges and tech debt we're aware of.
 
 ## Code conventions (load-bearing)
@@ -18,7 +18,7 @@ Ropero is a wardrobe management app (Next.js 16 + shadcn/ui web, Expo + React Na
 
 ## Design Context
 
-This section mirrors `.impeccable.md`. If one is updated, update both.
+This section mirrors `PRODUCT.md`. If one is updated, update both.
 
 ### Users
 

@@ -8,9 +8,49 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
+    /*
+      Matcha — Direction 20
+      Audit decisions (2026-04-24 unified rewrite + combined gold expansion):
+
+        GOLD — SEMANTIC USES ONLY (decorative uses all removed):
+          Light mode:
+            - .card-gold variant              (the semantic special-item card)
+            - .btn-gold variant               ("mark special" action)
+            - .card-fav-flag                  (favorited indicator under meta — curator/minimalist)
+            - .stat-gold                      (chronological emphasis: well-earned wear counts)
+            - .rewear-cue                     ("Rediscover" prompt — re-wearer persona)
+            - .phone-card.fav-flag            (favorite marker in mobile-row listings)
+            - phone-detail Silk Haori path    (the one gold-flagged item detail view)
+            - tag-gold / tag-outline-gold     (demoted to tag specimen row only)
+          Dark mode (warmer, more chroma — gold reads brighter against cool ground):
+            - .dark-band .section-label       (dark-register editorial heading)
+            - .dark-band .card-gold .card-label (the word "Special" glows gold in dark)
+            - .stat-gold-dark                 (chronological time-period suffix on dark card meta)
+
+        GOLD — DELIBERATELY REMOVED (were decorative or AI tells):
+          - Hero MAT/CHA gold-half           (half-word color splits are an AI tell; weight 300/700 carries)
+          - Type specimen WARD/ROBE split    (same pattern; weight contrast suffices)
+          - .hero-tag.gold                   (decorative pairing; gold earns a flag, not a chip)
+          - phone-detail-img linear-gradient (decorative gradient; flat surface is confident)
+          - dark-band-line2 CHA gold          (dark hero is single-voice matcha)
+
+        DARK MODE: own register — brighter matcha (#9EBF94), warmer gold (#DCBB6A), lit-from-within cards.
+          Ground #0C0F0A, Card #141A0E, neutrals warmed up to meet WCAG AA.
+          See .dark-band block for per-value contrast notes.
+
+        LETTER-SPACING TOKENS: --track-caps-sm/md/lg consolidated from 8+ values.
+
+        THE GOLD RULE (systemic): "Gold marks the data."
+          Numbers, dates, quantities, and detail-row values render in gold.
+          Labels, titles, categories, and UI chrome stay neutral/green.
+          One rule, recitable. Generalizes — any agent generating a new Ropero screen
+          knows: if it's a count, date, or value, it goes gold.
+    */
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
+      /* Light palette */
       --bg:        #EEEFE8;
       --bg-dark:   #0C0F0A;
       --surface:   #E0E2D6;
@@ -27,11 +67,28 @@
       --gold-lo:   #E8D8A0;
       --white:     #F6F7F2;
 
+      /* Dark palette — own register (brighter, warmer, more chroma) */
+      --d-ground:    #0C0F0A;   /* page ground */
+      --d-card:      #141A0E;   /* card surface (lit-from-within) */
+      --d-divider:   #2A3020;   /* between-card rule */
+      --d-img-bg:    #0C1008;   /* image tile bg inside card */
+      --d-img-faded: #1E2818;   /* decorative giant numerals */
+      --d-accent:    #9EBF94;   /* brighter matcha (OKLCH ~75% L, ~0.07 C, ~135 H). ~9:1 on card */
+      --d-gold:      #DCBB6A;   /* warmer gold  (OKLCH ~78% L, ~0.10 C, ~85  H). ~8.9:1 on card */
+      --d-text:      #E4E8DC;   /* primary text (~13:1 on card, reserved but defined) */
+      --d-text-mid:  #8A9C80;   /* warm neutral body (~4.9:1 on card, passes AA) */
+      --d-text-dim:  #7A8870;   /* warm neutral dim label (~3.8:1, large-caps-tracked ONLY) */
+
       --font-display: 'Josefin Sans', Arial, sans-serif;
       --font-body:    'DM Sans', system-ui, sans-serif;
       --radius:       0px;
       --radius-sm:    0px;
       --radius-lg:    0px;
+
+      /* Letter-spacing scale for ALL-CAPS text (body text keeps its own values) */
+      --track-caps-sm: 0.18em;  /* small-cap labels, tags, inputs */
+      --track-caps-md: 0.24em;  /* standard editorial tracking (card labels, section labels) */
+      --track-caps-lg: 0.30em;  /* large-display caps, eyebrows */
     }
 
     html { background: var(--bg); color: var(--text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
@@ -39,63 +96,92 @@
     .page { max-width: 960px; margin: 0 auto; padding: 0 44px 120px; }
 
     .hero { padding: 80px 0 64px; border-bottom: 1px solid var(--border); animation: fadeUp 0.9s ease both; }
-    .hero-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 36px; font-family: var(--font-display); }
+    .hero-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: var(--track-caps-lg); text-transform: uppercase; color: var(--text-dim); margin-bottom: 36px; font-family: var(--font-display); }
     .hero-title { font-family: var(--font-display); font-size: 96px; font-weight: 300; line-height: 0.9; color: var(--accent); margin-bottom: 32px; letter-spacing: 0.08em; text-transform: uppercase; }
-    .hero-title em { font-style: normal; color: var(--gold); font-weight: 700; }
+    /* Hero single-voice — weight contrast (300 vs 700) carries, no color split. Half-word color splits
+       are an AI tell (same family as gradient text). Gold is reserved for semantic moments below. */
+    .hero-title em { font-style: normal; color: var(--accent); font-weight: 700; }
     .hero-split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: end; }
     .hero-desc { font-size: 15px; font-weight: 300; line-height: 1.75; color: var(--text-mid); }
-    .hero-refs-label { font-size: 9px; font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; font-family: var(--font-display); }
+    .hero-refs-label { font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-md); text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; font-family: var(--font-display); }
     .hero-ref { font-family: var(--font-display); font-size: 17px; font-weight: 300; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-mid); line-height: 1.9; display: block; }
     .hero-ref.primary { color: var(--accent); }
     .hero-tags { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
-    .hero-tag { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; color: var(--accent); background: var(--accent-lo); padding: 5px 14px; border-radius: 0; font-family: var(--font-display); text-transform: uppercase; }
-    .hero-tag.gold { color: var(--gold-dk); background: var(--gold-lo); }
+    /* Hero tags unified on green — gold reserved for semantic flags (see audit) */
+    .hero-tag { font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-sm); color: var(--accent); background: var(--accent-lo); padding: 5px 14px; border-radius: 0; font-family: var(--font-display); text-transform: uppercase; }
 
     .section { padding: 60px 0 0; }
-    .section-label { font-size: 9px; font-weight: 700; letter-spacing: 0.3em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 28px; font-family: var(--font-display); }
+    .section-label { font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-md); text-transform: uppercase; color: var(--text-dim); margin-bottom: 28px; font-family: var(--font-display); }
 
     /* Palette — dual accent */
     .palette { display: flex; gap: 0; overflow: hidden; height: 88px; }
     .swatch { flex: 1; display: flex; align-items: flex-end; padding: 8px 10px; }
     .swatch-label { font-size: 9px; font-weight: 600; letter-spacing: 0.1em; font-family: var(--font-display); color: rgba(255,255,255,0.75); text-transform: uppercase; }
-    .swatch-label.dark { color: rgba(0,0,0,0.35); }
+    .swatch-label.dark { color: rgba(0,0,0,0.55); }  /* bumped for AA on light swatches */
     .palette-divider { width: 2px; background: var(--bg); flex-shrink: 0; }
 
     /* Dual accent callout */
     .dual-accent { display: flex; gap: 24px; margin-top: 16px; }
     .accent-swatch { flex: 1; padding: 20px; border: 1px solid var(--border); display: flex; gap: 16px; align-items: center; }
     .accent-dot { width: 40px; height: 40px; flex-shrink: 0; }
-    .accent-info-label { font-size: 9px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; font-family: var(--font-display); }
+    .accent-info-label { font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-sm); text-transform: uppercase; color: var(--text-dim); margin-bottom: 4px; font-family: var(--font-display); }
     .accent-info-name { font-family: var(--font-display); font-size: 16px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; }
-    .accent-info-hex { font-size: 11px; color: var(--text-dim); font-weight: 400; margin-top: 2px; }
+    .accent-info-hex { font-size: 12px; color: var(--text-dim); font-weight: 400; margin-top: 2px; }
 
     /* Type specimen */
     .type-specimen { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
     .type-block { padding: 36px; background: var(--white); border: 1px solid var(--border); }
-    .type-block-label { font-size: 9px; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 16px; font-family: var(--font-display); }
+    .type-block-label { font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-md); text-transform: uppercase; color: var(--text-dim); margin-bottom: 16px; font-family: var(--font-display); }
     .type-display { font-family: var(--font-display); font-size: 56px; font-weight: 300; line-height: 0.9; color: var(--accent); margin-bottom: 8px; letter-spacing: 0.08em; text-transform: uppercase; }
-    .type-display-gold { font-family: var(--font-display); font-size: 56px; font-weight: 700; line-height: 0.9; color: var(--gold); text-transform: uppercase; letter-spacing: 0.06em; }
+    /* WARD/ROBE: reverted from gold — weight contrast (300 vs 700) alone carries it.
+       Principle 1: restraint over assertion. Principle 2: one tonal voice per block. */
+    .type-display-bold { font-family: var(--font-display); font-size: 56px; font-weight: 700; line-height: 0.9; color: var(--accent); text-transform: uppercase; letter-spacing: 0.06em; }
     .type-body-sample { font-size: 14px; font-weight: 300; line-height: 1.7; color: var(--text-mid); }
-    .type-detail { font-size: 10px; font-weight: 700; letter-spacing: 0.22em; color: var(--text-dim); margin-top: 12px; text-transform: uppercase; font-family: var(--font-display); }
+    .type-detail { font-size: 10px; font-weight: 700; letter-spacing: var(--track-caps-md); color: var(--text-dim); margin-top: 12px; text-transform: uppercase; font-family: var(--font-display); }
+
+    /* Type scale ladder (product sizes) */
+    .scale-ladder { border: 1px solid var(--border); background: var(--white); }
+    .scale-row { display: grid; grid-template-columns: 180px 1fr; gap: 24px; align-items: baseline; padding: 20px 28px; border-bottom: 1px solid var(--border); }
+    .scale-row:last-child { border-bottom: none; }
+    .scale-meta { font-family: var(--font-display); font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-sm); text-transform: uppercase; color: var(--text-dim); line-height: 1.5; }
+    .scale-meta strong { display: block; color: var(--text-mid); font-weight: 700; font-size: 10px; margin-bottom: 2px; letter-spacing: var(--track-caps-sm); }
+    .scale-sample { color: var(--text); }
+    .scale-48 { font-family: var(--font-display); font-size: 48px; font-weight: 300; line-height: 1.0; letter-spacing: 0.04em; color: var(--accent); text-transform: uppercase; }
+    .scale-32 { font-family: var(--font-display); font-size: 32px; font-weight: 400; line-height: 1.1; letter-spacing: 0.04em; color: var(--accent); text-transform: uppercase; }
+    .scale-24 { font-family: var(--font-display); font-size: 24px; font-weight: 600; line-height: 1.2; letter-spacing: 0.04em; color: var(--accent); text-transform: uppercase; }
+    .scale-18 { font-family: var(--font-display); font-size: 18px; font-weight: 400; line-height: 1.3; letter-spacing: 0.02em; color: var(--text-mid); }
+    .scale-14 { font-family: var(--font-body); font-size: 14px; font-weight: 300; line-height: 1.6; color: var(--text-mid); }
+    .scale-12 { font-family: var(--font-body); font-size: 12px; font-weight: 400; line-height: 1.5; color: var(--text-dim); }
+    .scale-11 { font-family: var(--font-display); font-size: 11px; font-weight: 700; letter-spacing: var(--track-caps-sm); color: var(--text-dim); text-transform: uppercase; }
 
     /* Components */
     .component-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--border); }
     .card { background: var(--white); overflow: hidden; }
     .card-img { height: 140px; background: var(--surface); display: flex; align-items: center; justify-content: center; position: relative; }
     .card-img-label { font-family: var(--font-display); font-size: 32px; font-weight: 700; color: var(--accent-lo); letter-spacing: 0.12em; text-transform: uppercase; }
-    .card-badge { position: absolute; top: 10px; right: 10px; background: var(--gold); color: var(--white); font-size: 8px; font-weight: 700; letter-spacing: 0.14em; padding: 3px 8px; font-family: var(--font-display); text-transform: uppercase; }
+    .card-badge { position: absolute; top: 10px; right: 10px; background: var(--gold); color: var(--white); font-size: 8px; font-weight: 700; letter-spacing: var(--track-caps-sm); padding: 3px 8px; font-family: var(--font-display); text-transform: uppercase; }
     .card-body { padding: 18px; }
-    .card-label { font-size: 8px; font-weight: 700; letter-spacing: 0.26em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; font-family: var(--font-display); }
+    .card-label { font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-md); text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; font-family: var(--font-display); }
     .card-title { font-family: var(--font-display); font-size: 16px; font-weight: 600; color: var(--accent); line-height: 1.2; margin-bottom: 6px; letter-spacing: 0.04em; text-transform: uppercase; }
-    .card-meta { font-size: 11px; color: var(--text-dim); font-weight: 300; }
+    .card-meta { font-size: 12px; color: var(--text-dim); font-weight: 300; }
 
-    /* Gold card variant */
+    /* Gold card variant — KEPT: semantic "special item" flag */
     .card-gold .card-title { color: var(--gold-dk); }
     .card-gold .card-badge { background: var(--accent); }
 
+    /* Persona-anchored semantic gold — favorites, high-activity, re-wear cue.
+       Each of these reads only where a real user-action earns it. */
+    .card-fav-flag { font-family: var(--font-display); font-size: 8px; font-weight: 700; letter-spacing: var(--track-caps-md); color: var(--gold-dk); text-transform: uppercase; margin-top: 8px; display: flex; align-items: center; gap: 6px; }
+    .card-fav-flag::before { content: ''; display: inline-block; width: 4px; height: 4px; background: var(--gold); flex-shrink: 0; }
+    .stat-gold { color: var(--gold-dk); font-weight: 500; }
+    .rewear-cue { font-family: var(--font-display); font-weight: 700; color: var(--gold-dk); text-transform: uppercase; letter-spacing: var(--track-caps-sm); }
+    .stat-gold-dark { color: var(--d-gold); font-weight: 500; }
+    .phone-card.fav-flag .phone-card-tag { justify-content: space-between; }
+    .phone-card.fav-flag .phone-card-tag::after { content: '★'; color: var(--gold); margin-left: auto; font-size: 10px; letter-spacing: 0; }
+
     /* Buttons */
     .button-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
-    .btn { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; padding: 13px 28px; border-radius: 0; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; }
+    .btn { font-family: var(--font-display); font-size: 10px; font-weight: 700; letter-spacing: var(--track-caps-md); text-transform: uppercase; padding: 13px 28px; border-radius: 0; cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; }
     .btn-primary { background: var(--accent); color: var(--white); }
     .btn-gold { background: var(--gold); color: var(--white); }
     .btn-secondary { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
@@ -105,36 +191,55 @@
     /* Input */
     .input-row { display: flex; gap: 16px; align-items: flex-start; }
     .field { flex: 1; }
-    .field label { display: block; font-size: 9px; font-weight: 700; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; font-family: var(--font-display); }
+    .field label { display: block; font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-md); text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; font-family: var(--font-display); }
     .field input { width: 100%; background: var(--white); border: 1.5px solid var(--border); border-radius: 0; font-family: var(--font-body); font-size: 14px; font-weight: 300; color: var(--text); padding: 11px 16px; outline: none; }
     .field input:focus { border-color: var(--accent); }
     .field input::placeholder { color: var(--text-dim); }
 
-    /* Tag row */
+    /* Tag row — tag-gold and tag-outline-gold demoted to this specimen only */
     .tag-row { display: flex; gap: 10px; flex-wrap: wrap; }
-    .tag { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; padding: 6px 14px; border-radius: 0; text-transform: uppercase; font-family: var(--font-display); }
+    .tag { font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-sm); padding: 6px 14px; border-radius: 0; text-transform: uppercase; font-family: var(--font-display); }
     .tag-green { background: var(--accent); color: var(--white); }
     .tag-gold { background: var(--gold); color: var(--white); }
     .tag-outline-green { border: 1.5px solid var(--accent); color: var(--accent); }
-    .tag-outline-gold { border: 1.5px solid var(--gold); color: var(--gold); }
+    .tag-outline-gold { border: 1.5px solid var(--gold); color: var(--gold-dk); }
     .tag-neutral { background: var(--surface); color: var(--text-mid); }
 
-    /* Dark section */
-    .dark-band { background: var(--bg-dark); margin: 60px -44px 0; padding: 60px 44px; }
-    .dark-band .section-label { color: #2C3820; }
-    .dark-band .component-row { background: #2A3020; }
-    .dark-band .card { background: #141A0E; }
-    .dark-band .card-title { color: #90B878; }
-    .dark-band .card-gold .card-title { color: #C8A850; }
-    .dark-band .card-label { color: #2C3820; }
-    .dark-band .card-meta { color: #2C3820; }
-    .dark-band .card-img { background: #0C1008; }
-    .dark-band .card-img-label { color: #1E2818; }
-    .dark-band .btn-primary { background: #6A9060; }
-    .dark-band .btn-gold { background: #C8A040; }
-    .dark-band .btn-secondary { border-color: #6A9060; color: #6A9060; }
-    .dark-band-line1 { font-family: var(--font-display); font-size: 72px; font-weight: 300; color: #6A9060; letter-spacing: 0.08em; text-transform: uppercase; line-height: 0.9; }
-    .dark-band-line2 { font-family: var(--font-display); font-size: 72px; font-weight: 700; color: #C8A040; letter-spacing: 0.06em; text-transform: uppercase; line-height: 0.9; margin-bottom: 32px; }
+    /* ─────────────────── Dark section ───────────────────
+       "Own register" — NOT a light-mode inversion. Brighter matcha green for legibility,
+       warmer/higher-chroma gold, warm neutrals for body copy. Cards feel lit-from-within.
+
+       Contrast notes (text-on-bg, WCAG relative luminance, AA thresholds 4.5:1 body / 3:1 large):
+         #9EBF94 matcha on #141A0E card  → ~8.7:1   (pass AA/AAA)
+         #9EBF94 matcha on #0C0F0A ground→ ~9.0:1   (pass AA/AAA)
+         #DCBB6A gold   on #141A0E card  → ~8.9:1   (pass AA/AAA)
+         #DCBB6A gold   on #0C0F0A ground→ ~9.2:1   (pass AA/AAA)
+         #8A9C80 neutral on #141A0E card → ~4.9:1   (pass AA body)
+         #7A8870 dim    on #141A0E card  → ~3.8:1   (pass AA LARGE / 3:1 only — use for tracked caps ≥14px or weight 700 caps ≥11px per WCAG large-text definition)
+         #0C0F0A on #9EBF94 btn-primary  → ~9.0:1   (pass)
+         #0C0F0A on #DCBB6A btn-gold     → ~9.2:1   (pass)
+         #1E2818 decorative faded numeral on #141A0E → ~1.3:1 (INTENTIONAL — non-informational) */
+    .dark-band { background: var(--d-ground); margin: 60px -44px 0; padding: 60px 44px; color: var(--d-text); }
+    /* Dark-mode gold lift: section label and special card-label promoted to gold. Dark is where
+       gold reads warmest against the cool ground, so semantic accents carry more weight here. */
+    .dark-band .section-label { color: var(--d-gold); }
+    .dark-band .card-gold .card-label { color: var(--d-gold); }
+    .dark-band .component-row { background: var(--d-divider); }
+    .dark-band .card { background: var(--d-card); }
+    .dark-band .card-title { color: var(--d-accent); }
+    .dark-band .card-gold .card-title { color: var(--d-gold); }
+    .dark-band .card-label { color: var(--d-text-mid); }   /* 4.9:1 — body AA */
+    .dark-band .card-meta  { color: var(--d-text-mid); }   /* 4.9:1 — body AA */
+    .dark-band .card-img { background: var(--d-img-bg); }
+    .dark-band .card-img-label { color: var(--d-img-faded); }  /* decorative, intentionally low-chroma */
+    .dark-band .btn-primary   { background: var(--d-accent); color: var(--d-ground); }
+    .dark-band .btn-gold      { background: var(--d-gold);   color: var(--d-ground); }
+    .dark-band .btn-secondary { border-color: var(--d-accent); color: var(--d-accent); background: transparent; }
+    .dark-band .btn-ghost     { color: var(--d-text-mid); }
+    .dark-band-line1 { font-family: var(--font-display); font-size: 72px; font-weight: 300; color: var(--d-accent); letter-spacing: 0.08em; text-transform: uppercase; line-height: 0.9; }
+    /* dark-band-line2: reverted to the dark-accent green — dark mode hero is a single-voice statement.
+       The gold flourish lives in light hero and in the one semantic path (special-item). */
+    .dark-band-line2 { font-family: var(--font-display); font-size: 72px; font-weight: 700; color: var(--d-accent); letter-spacing: 0.06em; text-transform: uppercase; line-height: 0.9; margin-bottom: 32px; }
 
     /* Phone mockup */
     .phone-row { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
@@ -145,28 +250,32 @@
     .phone-nav-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; }
     .phone-nav-sub { font-size: 10px; color: var(--text-dim); font-weight: 300; margin-top: 2px; letter-spacing: 0.08em; font-family: var(--font-display); text-transform: uppercase; }
     .phone-body { flex: 1; padding: 14px; overflow: hidden; display: flex; flex-direction: column; gap: 10px; }
-    .phone-card { background: var(--surface); padding: 12px; border-left: 2px solid var(--accent); }
-    .phone-card.gold-border { border-left-color: var(--gold); }
-    .phone-card-tag { font-size: 7px; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-family: var(--font-display); }
-    .phone-card.gold-border .phone-card-tag { color: var(--gold); }
+    /* Side-stripe dropped. Semantic flag carried by phone-card-tag color + (for special) the flush-left gold square. */
+    .phone-card { background: var(--surface); padding: 12px; position: relative; }
+    .phone-card-tag { display: flex; align-items: center; gap: 6px; font-size: 8px; font-weight: 700; letter-spacing: var(--track-caps-md); text-transform: uppercase; color: var(--accent); margin-bottom: 4px; font-family: var(--font-display); }
+    .phone-card.gold-flag .phone-card-tag { color: var(--gold-dk); }
+    /* 4px flush-left square inside the tag row — replaces the banned 2px colored left-border */
+    .phone-card.gold-flag .phone-card-tag::before { content: ''; display: inline-block; width: 4px; height: 4px; background: var(--gold); flex-shrink: 0; }
     .phone-card-name { font-family: var(--font-display); font-size: 13px; font-weight: 600; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase; }
-    .phone-card.gold-border .phone-card-name { color: var(--gold-dk); }
-    .phone-card-meta { font-size: 9px; color: var(--text-dim); font-weight: 300; margin-top: 3px; }
+    .phone-card.gold-flag .phone-card-name { color: var(--gold-dk); }
+    .phone-card-meta { font-size: 10px; color: var(--text-dim); font-weight: 300; margin-top: 3px; }
     .phone-tab-bar { display: flex; justify-content: space-around; padding: 10px 0 16px; border-top: 1px solid var(--border); background: var(--white); }
     .phone-tab { display: flex; flex-direction: column; align-items: center; gap: 3px; }
     .phone-tab-dot { width: 16px; height: 2px; background: var(--surface-2); }
     .phone-tab-dot.active { background: var(--accent); }
-    .phone-tab-label { font-size: 7px; font-weight: 700; color: var(--text-dim); letter-spacing: 0.14em; font-family: var(--font-display); text-transform: uppercase; }
+    .phone-tab-label { font-size: 7px; font-weight: 700; color: var(--text-dim); letter-spacing: var(--track-caps-sm); font-family: var(--font-display); text-transform: uppercase; }
     .phone-tab-label.active { color: var(--accent); }
 
-    /* Detail phone */
-    .phone-detail-img { height: 160px; background: linear-gradient(160deg, var(--accent-lo) 0%, var(--gold-lo) 100%); display: flex; align-items: center; justify-content: center; }
-    .phone-detail-icon { font-family: var(--font-display); font-size: 44px; font-weight: 700; color: var(--gold); opacity: 0.5; letter-spacing: 0.1em; text-transform: uppercase; }
+    /* Detail phone — this screen is the Silk Haori detail, so gold IS semantic here.
+       Gradient dropped: flat surface only, one of the audit items. */
+    .phone-detail-img { height: 160px; background: var(--accent-lo); display: flex; align-items: center; justify-content: center; }
+    .phone-detail-icon { font-family: var(--font-display); font-size: 44px; font-weight: 700; color: var(--gold-dk); opacity: 0.55; letter-spacing: 0.1em; text-transform: uppercase; }
     .phone-detail-info { padding: 14px; flex: 1; }
-    .phone-detail-category { font-size: 8px; font-weight: 700; letter-spacing: 0.24em; text-transform: uppercase; color: var(--gold); margin-bottom: 6px; font-family: var(--font-display); }
+    .phone-detail-category { font-size: 8px; font-weight: 700; letter-spacing: var(--track-caps-md); text-transform: uppercase; color: var(--gold-dk); margin-bottom: 6px; font-family: var(--font-display); }
     .phone-detail-title { font-family: var(--font-display); font-size: 20px; font-weight: 600; color: var(--accent); line-height: 1.1; margin-bottom: 8px; letter-spacing: 0.06em; text-transform: uppercase; }
-    .phone-detail-row { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); font-weight: 300; padding: 5px 0; border-bottom: 1px solid var(--surface-2); }
-    .phone-detail-action { margin: 10px 0 0; background: var(--accent); color: var(--white); font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-align: center; padding: 10px; text-transform: uppercase; font-family: var(--font-display); }
+    .phone-detail-row { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-mid); font-weight: 300; padding: 5px 0; border-bottom: 1px solid var(--surface-2); }
+    /* phone-detail-action stays gold — this is the "Log Wear" action on the gold-flagged item */
+    .phone-detail-action { margin: 10px 0 0; background: var(--gold); color: var(--white); font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-sm); text-align: center; padding: 10px; text-transform: uppercase; font-family: var(--font-display); }
 
     /* ── PAGE FOOTER ── */
     .page-footer {
@@ -178,19 +287,28 @@
       padding: 0 40px;
       z-index: 100;
     }
-    .footer-brand { font-size: 10px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim); min-width: 120px; }
+    .footer-brand { font-size: 10px; font-weight: 500; letter-spacing: var(--track-caps-sm); text-transform: uppercase; color: var(--text-dim); min-width: 120px; }
     .footer-nav { display: flex; gap: 5px; align-items: center; }
+    /* Active state uses transform (compositor-friendly) — avoids layout-animating width.
+       Inactive dots stay a 7px circle; active dot scales horizontally into a pill. */
     .footer-dot {
       display: block; width: 7px; height: 7px; border-radius: 50%;
       background: var(--border); cursor: pointer;
-      transition: background 0.15s, width 0.15s;
+      transform-origin: left center;
+      transition: transform 0.15s ease, background-color 0.15s ease, border-radius 0.15s ease;
       text-decoration: none; flex-shrink: 0;
     }
     .footer-dot:hover { background: var(--text-dim); }
-    .footer-dot.active { background: var(--accent); width: 18px; border-radius: 4px; }
+    .footer-dot.active { background: var(--accent); transform: scaleX(2.5); border-radius: 4px; }
     .footer-arrows { display: flex; gap: 20px; align-items: center; min-width: 120px; justify-content: flex-end; }
-    .footer-prev, .footer-next { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); text-decoration: none; white-space: nowrap; }
+    .footer-prev, .footer-next { font-size: 9px; letter-spacing: var(--track-caps-sm); text-transform: uppercase; color: var(--text-dim); text-decoration: none; white-space: nowrap; }
     .footer-prev:hover, .footer-next:hover { color: var(--text); }
+
+    @media (prefers-reduced-motion: reduce) {
+      .hero { animation: none; }
+      .footer-dot { transition: background-color 0.15s ease; }
+      .footer-dot.active { transform: none; width: 18px; }
+    }
   </style>
 </head>
 <body>
@@ -198,16 +316,16 @@
 
   <!-- Hero -->
   <section class="hero">
-    <p class="hero-eyebrow">Ropero · Direction 20</p>
+    <p class="hero-eyebrow">Ropero · <span class="stat-gold">Direction 20</span></p>
     <div class="hero-split">
       <div>
         <h1 class="hero-title">MAT<br><em>CHA</em></h1>
         <p class="hero-desc">Two accents, one harmony. Matcha green anchors the structure while ochre gold catches the light. Josefin Sans — geometric, spare, with long ascenders — makes every label feel designed. Japanese minimalism meets Milanese detail.</p>
         <div class="hero-tags">
           <span class="hero-tag">Minimal</span>
-          <span class="hero-tag gold">Dual Accent</span>
+          <span class="hero-tag">Dual Accent</span>
           <span class="hero-tag">Josefin Sans</span>
-          <span class="hero-tag gold">Green + Gold</span>
+          <span class="hero-tag">Green + Gold</span>
         </div>
       </div>
       <div>
@@ -253,7 +371,7 @@
         <div>
           <p class="accent-info-label">Secondary Accent</p>
           <p class="accent-info-name" style="color: var(--gold-dk);">Ochre Gold</p>
-          <p class="accent-info-hex">#A88840 — Highlights, badges, special items</p>
+          <p class="accent-info-hex">#A88840 — Highlights, favorites, special-item flag</p>
         </div>
       </div>
     </div>
@@ -266,13 +384,48 @@
       <div class="type-block">
         <p class="type-block-label">Display — Josefin Sans</p>
         <p class="type-display">WARD</p>
-        <p class="type-display-gold">ROBE</p>
+        <p class="type-display-bold">ROBE</p>
         <p class="type-detail">ABCDEFG · 300 · 700</p>
       </div>
       <div class="type-block">
         <p class="type-block-label">Body — DM Sans</p>
         <p class="type-body-sample">A well-curated wardrobe is less about quantity and more about intention. Each piece carries its own weight — texture, memory, occasion.</p>
         <p class="type-detail" style="font-family: var(--font-body);">Labels · 300 · 500</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Type Scale at Product Sizes -->
+  <section class="section">
+    <p class="section-label">Type Scale at Product Sizes</p>
+    <div class="scale-ladder">
+      <div class="scale-row">
+        <div class="scale-meta"><strong>48 / Display</strong>Page hero</div>
+        <div class="scale-sample scale-48">Your Wardrobe</div>
+      </div>
+      <div class="scale-row">
+        <div class="scale-meta"><strong>32 / Display</strong>Section header</div>
+        <div class="scale-sample scale-32">Recently Worn</div>
+      </div>
+      <div class="scale-row">
+        <div class="scale-meta"><strong>24 / Display</strong>Card · screen title</div>
+        <div class="scale-sample scale-24">Linen Overcoat</div>
+      </div>
+      <div class="scale-row">
+        <div class="scale-meta"><strong>18 / Display</strong>Subtitle</div>
+        <div class="scale-sample scale-18">Worn 4 times this month</div>
+      </div>
+      <div class="scale-row">
+        <div class="scale-meta"><strong>14 / Body</strong>Running copy</div>
+        <div class="scale-sample scale-14">A well-considered piece earns its space. Log each wear to see the pattern emerge.</div>
+      </div>
+      <div class="scale-row">
+        <div class="scale-meta"><strong>12 / Body</strong>Metadata</div>
+        <div class="scale-sample scale-12">Last worn Thursday · 4 wears this season</div>
+      </div>
+      <div class="scale-row">
+        <div class="scale-meta"><strong>11 / Label</strong>Micro caps</div>
+        <div class="scale-sample scale-11">Outerwear · Linen · Ivory</div>
       </div>
     </div>
   </section>
@@ -284,12 +437,13 @@
       <div class="card">
         <div class="card-img">
           <span class="card-img-label">01</span>
-          <span class="card-badge">新着</span>
+          <span class="card-badge">NEW</span>
         </div>
         <div class="card-body">
           <p class="card-label">Outerwear</p>
           <p class="card-title">Linen Overcoat</p>
-          <p class="card-meta">Worn 4 times · Last Thu</p>
+          <p class="card-meta">Worn <span class="stat-gold">4 times</span> · <span class="stat-gold">Last Thu</span></p>
+          <p class="card-fav-flag">Favorite</p>
         </div>
       </div>
       <div class="card card-gold">
@@ -299,7 +453,7 @@
         <div class="card-body">
           <p class="card-label">Special</p>
           <p class="card-title">Silk Haori</p>
-          <p class="card-meta">Worn 2 times · Last Fri</p>
+          <p class="card-meta">Worn <span class="stat-gold">2 times</span> · <span class="stat-gold">Last Fri</span></p>
         </div>
       </div>
       <div class="card">
@@ -309,7 +463,7 @@
         <div class="card-body">
           <p class="card-label">Bottoms</p>
           <p class="card-title">Wide Trousers</p>
-          <p class="card-meta">Worn 8 times · Yesterday</p>
+          <p class="card-meta">Worn <span class="stat-gold">47 times</span> this season · <span class="stat-gold">Yesterday</span></p>
         </div>
       </div>
     </div>
@@ -353,28 +507,28 @@
         <div class="phone-screen">
           <div class="phone-nav">
             <div class="phone-nav-title">Wardrobe</div>
-            <div class="phone-nav-sub">42 Pieces</div>
+            <div class="phone-nav-sub"><span class="stat-gold">42</span> Pieces</div>
           </div>
           <div class="phone-body">
-            <div class="phone-card">
+            <div class="phone-card fav-flag">
               <div class="phone-card-tag">Outerwear</div>
               <div class="phone-card-name">Linen Overcoat</div>
-              <div class="phone-card-meta">Worn 4 × · Last Thu</div>
+              <div class="phone-card-meta">Worn <span class="stat-gold">4 ×</span> · <span class="stat-gold">Last Thu</span></div>
             </div>
-            <div class="phone-card gold-border">
+            <div class="phone-card gold-flag">
               <div class="phone-card-tag">Special</div>
               <div class="phone-card-name">Silk Haori</div>
-              <div class="phone-card-meta">Worn 2 × · Last Fri</div>
+              <div class="phone-card-meta">Worn <span class="stat-gold">2 ×</span> · <span class="stat-gold">Last Fri</span></div>
             </div>
             <div class="phone-card">
               <div class="phone-card-tag">Bottoms</div>
               <div class="phone-card-name">Wide Trousers</div>
-              <div class="phone-card-meta">Worn 8 × · Yesterday</div>
+              <div class="phone-card-meta">Worn <span class="stat-gold">8 ×</span> · <span class="stat-gold">Yesterday</span></div>
             </div>
             <div class="phone-card">
-              <div class="phone-card-tag">Tops</div>
-              <div class="phone-card-name">Boxy White Tee</div>
-              <div class="phone-card-meta">Worn 14 × · Today</div>
+              <div class="phone-card-tag">Bottoms</div>
+              <div class="phone-card-name">Navy Pleated Skirt</div>
+              <div class="phone-card-meta"><span class="rewear-cue">Rediscover</span> · <span class="stat-gold">6 months</span></div>
             </div>
           </div>
           <div class="phone-tab-bar">
@@ -395,11 +549,11 @@
           <div class="phone-detail-info">
             <div class="phone-detail-category">Special · Gold</div>
             <div class="phone-detail-title">Silk<br>Haori</div>
-            <div class="phone-detail-row"><span>Brand</span><span>Auralee</span></div>
-            <div class="phone-detail-row"><span>Color</span><span>Ivory</span></div>
-            <div class="phone-detail-row"><span>Worn</span><span>2 times</span></div>
-            <div class="phone-detail-row"><span>Last worn</span><span>Friday</span></div>
-            <div class="phone-detail-action" style="background: var(--gold);">Log Wear Today</div>
+            <div class="phone-detail-row"><span>Brand</span><span class="stat-gold">Auralee</span></div>
+            <div class="phone-detail-row"><span>Color</span><span class="stat-gold">Ivory</span></div>
+            <div class="phone-detail-row"><span>Worn</span><span class="stat-gold">2 times</span></div>
+            <div class="phone-detail-row"><span>Last worn</span><span class="stat-gold">Friday</span></div>
+            <div class="phone-detail-action">Log Wear Today</div>
           </div>
           <div class="phone-tab-bar">
             <div class="phone-tab"><div class="phone-tab-dot active"></div><div class="phone-tab-label active">Wardrobe</div></div>
@@ -415,7 +569,7 @@
 
   <!-- Dark Mode Band -->
   <div class="dark-band">
-    <p class="section-label">Dark Mode</p>
+    <p class="section-label">Dark Mode — Own Register</p>
     <p class="dark-band-line1">MAT</p>
     <p class="dark-band-line2">CHA</p>
     <div class="button-row" style="margin-bottom: 28px;">
@@ -429,7 +583,7 @@
         <div class="card-body">
           <p class="card-label">Outerwear</p>
           <p class="card-title">Linen Overcoat</p>
-          <p class="card-meta">4 wears</p>
+          <p class="card-meta"><span class="stat-gold-dark">4 wears</span> · <span class="stat-gold-dark">this month</span></p>
         </div>
       </div>
       <div class="card dark-band card-gold">
@@ -437,7 +591,7 @@
         <div class="card-body">
           <p class="card-label">Special</p>
           <p class="card-title">Silk Haori</p>
-          <p class="card-meta">2 wears</p>
+          <p class="card-meta"><span class="stat-gold-dark">2 wears</span> · <span class="stat-gold-dark">this year</span></p>
         </div>
       </div>
       <div class="card dark-band">
@@ -445,7 +599,7 @@
         <div class="card-body">
           <p class="card-label">Bottoms</p>
           <p class="card-title">Wide Trousers</p>
-          <p class="card-meta">8 wears</p>
+          <p class="card-meta"><span class="stat-gold-dark">8 wears</span> · <span class="stat-gold-dark">this week</span></p>
         </div>
       </div>
     </div>
