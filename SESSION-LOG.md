@@ -6,6 +6,7 @@ Claude should read the most recent session at the start of every new session for
 
 ## 2026
 
+- [2026-04-24 (evening): Design system shaping via /impeccable — palette, type, radius, color posture](docs/sessions/2026-04-24-evening-design-system.md)
 - [2026-04-24 (afternoon): Repo hygiene sweep — uncommitted cleanup, stale branches, per-file triage](docs/sessions/2026-04-24-afternoon-hygiene.md)
 - [2026-04-24: KNOWN-ISSUES sweep via parallel subagents + per-feature PRs](docs/sessions/2026-04-24-known-issues-sweep.md)
 - [2026-04-18: mobile parity + device smoke test sprint + QA sweep](docs/sessions/2026-04-18-mobile-parity-qa.md)
