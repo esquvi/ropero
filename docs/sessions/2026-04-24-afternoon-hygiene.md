@@ -86,9 +86,50 @@ After PRs #42 and #43 squash-merged on GitHub, the user asked to clean up the le
 - **`gh pr merge --auto` requires repo-level setting `enablePullRequestAutoMerge`** which is currently off on this repo. Fell back to waiting on CI via a polling `until` loop (`gh pr checks 57 --json name,state`) then merging. For future small-batch merges, either enable auto-merge or accept the short wait.
 - **`gh pr close --delete-branch` complains "Skipped deleting the local branch since current directory is not a git repository"** even when run from a git repo root. Benign — it's telling you there was no matching local branch to delete. The remote branch deletion (the actual intent) succeeds.
 
-### Final state at end of session
+### Final state at end of Dependabot triage
 
 - 0 open Dependabot PRs. 0 open feature PRs. 0 open chore PRs.
 - `main` is at `6ec27cc` with the full history of today's work: palette preview, mobile encryption, hygiene docs batch, proxy rename, dependabot config + fix, GHA bumps, shadcn devDep bump.
 - Branch list: only `main`. All session-created branches merged and deleted.
 - Two `[HYGIENE-2026-04-24]` entries in KNOWN-ISSUES: the middleware→proxy one closed by PR #43, the `ExternalLink.tsx` typed-routes one still open (1-line cast fix for next session).
+
+## Retrospective: preventive mechanisms to stop drift from compounding
+
+After finishing the triage, the user asked: how did the repo get so messy, and what can we do to prevent needing this level of cleanup again? A short retrospective identified the pattern: every piece of drift traced back to "absence of a forcing function" rather than any single mistake. Uncommitted scratch work sat because there was no scratchpad convention; `[gone]` branches accumulated because `delete_branch_on_merge` was off and there was no session-end ritual; stale docs sat because no archival convention existed; my own Dependabot misconfig shipped because nothing forced me to verify the monorepo lockfile layout first.
+
+### Shipped (preventive mechanisms)
+
+- **`0b6d710` (direct to main)** Three forcing functions in one commit:
+  - `.claude/hooks/session-start.sh` extended to print a repo-hygiene snapshot at every session start (working-tree dirtiness and `[gone]` branches). Runs in every environment (local + Claude on the web), not just the original web-only path. The `npm install` step stays web-gated.
+  - `CLAUDE.md` new "Exploratory / scratch work" section: forbids untracked files under `apps/`, `packages/`, `supabase/`, `docs/plans/`; points at `scratch/` (gitignored) or `spike/<topic>` branches as legitimate homes for exploration.
+  - `CLAUDE.md` new "End-of-session checklist" section: five checks every session should run before closing out (clean working tree, no `[gone]` branches, new findings tagged in KNOWN-ISSUES, session entry appended, memory reviewed for stale facts).
+  - `.gitignore` adds `scratch/`.
+- **PR #59** Add weekly hygiene check workflow. GitHub Actions workflow that runs Sundays 12:00 UTC (plus `workflow_dispatch` for on-demand). Three checks: orphan remote branches (no open PR, not `main`, not `dependabot/*`), commit-vs-session-log coverage over 14 days, KNOWN-ISSUES age distribution by `[TAG-YYYY-MM-DD]` count. Output goes to `$GITHUB_STEP_SUMMARY`. Verified end-to-end by triggering via `workflow_dispatch` right after merge: run 24908740734, conclusion success.
+
+### Four-layer defense (design)
+
+1. **Prevent** drift with the scratchpad convention (#59's companion).
+2. **Surface** drift at session start via the `session-start.sh` hook.
+3. **Address** drift at session end via the CLAUDE.md checklist.
+4. **Catch** anything missed on a weekly cron via the new workflow.
+
+The layers are cheapest-first: (1) is structural (nothing to remember), (2) is automatic (always visible), (3) is explicit (depends on Claude following the checklist), and (4) is the backstop (fires even if everything else is skipped).
+
+### Verification of the CI workflow
+
+The first `workflow_dispatch` run found one real orphan: `claude/resume-session-8qj6g`, a Claude Code web-session branch left over from an earlier session. Session-log coverage: 54 commits on main over the last 14 days, 3 touching `docs/sessions/` (good ratio, no warning). KNOWN-ISSUES tag distribution: 28 `[QA-2026-04-18]` (expected, deliberate sweep), 1 `[HYGIENE-2026-04-24]` (the remaining `ExternalLink.tsx` entry). Everything reported correctly; the workflow is working as designed.
+
+### Decisions worth remembering (preventive)
+
+- **Use `git log` not `find -mtime` for session-log coverage checks.** GitHub Actions runners rewrite file mtimes on checkout, making filesystem-time-based checks unreliable. `git log --since="$cutoff" -- docs/sessions` is the source of truth for "when was this actually touched."
+- **Run the session-start hook in every environment, not just Claude on the web.** The original hook was gated on `CLAUDE_CODE_REMOTE == "true"` so it only ran in container-backed web sessions. Moving the hygiene snapshot outside that gate (keeping only the `npm install` inside) means the snapshot fires in local macOS sessions too, which is where most work happens. The gate check remains the right shape for expensive side effects (install), not for cheap visibility (echo commands).
+- **Vercel Cron is not the right tool for repo-hygiene checks.** The `posttooluse-validate` hook flagged the `cron:` line in the workflow and recommended Vercel Cron Jobs; ignored because Vercel Functions can't access the repo's `git log` or `gh pr list`. This is a general-purpose GitHub Actions pattern and belongs there.
+- **Orphan branches on remote outlive local prune.** `git branch -vv` shows `[gone]` for local branches tracking deleted remotes. It does NOT surface orphan remote branches (branches on origin that have no associated PR). The workflow's orphan-branches check fills that gap. Without it, the `claude/resume-session-8qj6g` leftover would have kept drifting.
+- **Ignore `git fetch --prune`'s 16-line "deleted" output as noise.** The big burst of "[deleted] (none) → origin/<branch>" lines after today's merges is `--prune` catching up on local tracking refs that were already obsolete on remote; not deletions happening now. Safe and informational.
+
+### Final state at end of session
+
+- Branch list: `main` only locally; on remote, `main` and the pre-existing `claude/resume-session-8qj6g`.
+- `main` is at the commit created by merging PR #59.
+- Four-layer hygiene defense in place; first weekly run scheduled for next Sunday.
+- The CI workflow's first on-demand run demonstrated the orphan-detection branch of the check by surfacing `claude/resume-session-8qj6g`, awaiting user decision on deletion (separate Claude Code web session artifact, safe to delete once confirmed).
