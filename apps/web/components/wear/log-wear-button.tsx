@@ -19,21 +19,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { OCCASIONS } from '@ropero/core';
 import { cn } from '@/lib/utils';
 import { logWear, wearOutfit } from './actions';
-
-const OCCASIONS = [
-  'work',
-  'casual',
-  'formal',
-  'date',
-  'party',
-  'wedding',
-  'interview',
-  'workout',
-  'travel',
-  'other',
-] as const;
 
 export type LogWearTarget =
   | { type: 'item'; itemId: string }
