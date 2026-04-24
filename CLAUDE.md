@@ -4,10 +4,10 @@ Wardrobe management app with outfit building, wear logging, and smart trip packi
 
 Known bugs and rough edges are tracked in `KNOWN-ISSUES.md` at the repo root. Check there before spending time reproducing something and add to it (no PR needed, doc-only) when you find a new non-urgent issue.
 
-Past session summaries are in `SESSION-LOG.md` at the repo root. Claude should read the most recent entry at the start of every session for context (what's been shipped recently, open threads, user preferences picked up so far), and append a new dated entry at the end of the session. Doc-only, direct to main is fine.
+Past session summaries live under `docs/sessions/` with an index at `SESSION-LOG.md`. Claude should read the most recent entry at the start of every session for context (what's been shipped recently, open threads, user preferences picked up so far), and append a new dated file under `docs/sessions/` plus an index line in `SESSION-LOG.md` at the end of the session. Doc-only, direct to main is fine.
 
 ## Monorepo Structure
-- `apps/web` — Next.js 15 (App Router), port 3000
+- `apps/web` — Next.js 16 (App Router), port 3000
 - `apps/mobile` — Expo (React Native, Expo Router)
 - `packages/core` — Shared TypeScript types, Zod validation, business logic
 - `packages/supabase` — Supabase client, generated DB types, query helpers
@@ -46,15 +46,19 @@ Past session summaries are in `SESSION-LOG.md` at the repo root. Claude should r
 - shadcn/ui is web-only — mobile app uses React Native primitives with shared tokens
 
 ## Git Workflow
-- Code, migrations, dependencies, and deploy config changes must go through feature branches and PRs. Doc-only edits (CLAUDE.md, READMEs, code comments) may be committed directly to `main`
+- Code, migrations, dependencies, and deploy config changes must go through feature branches and PRs. Doc-only edits (CLAUDE.md, READMEs, KNOWN-ISSUES, session logs, code comments) may be committed directly to `main`
 - Branch naming: `feature/description`, `fix/description`, `chore/description`
 - PR titles become the squash-merge commit message on `main`: use imperative mood, keep under 70 characters, no trailing period
-- Write clear PR descriptions with a summary and test plan
+- Write clear PR descriptions with a summary and test plan (use `.github/pull_request_template.md`)
 - Never use em-dashes (—) in PR descriptions, titles, or commit messages. Use periods, commas, colons, semicolons, or parentheses instead
 - PRs require passing CI typecheck, lint, and tests before merging. Lint runs against `apps/web` only today; other workspaces have no ESLint config
 - Squash-merge PRs to keep `main` history clean
 - Delete branches after merging
 - Commit prefixes like `feat:` / `fix:` / `chore:` are not required. Use them if helpful, but consistency is not enforced
+
+### Branch protection on `main`
+
+Classic branch protection is enabled on `main`: PR required, required status check `check`, no force pushes, no deletions. `enforce_admins` is deliberately OFF so the admin (repo owner) can push doc-only edits directly per the rule above. GitHub will narrate this as "Bypassed rule violations" on the push; that is expected and not an error. The protection's real job is to catch accidental direct pushes of code and serve as a firm rule for any future non-admin contributor.
 
 ## Testing
 - TDD: write failing test first, then implement
