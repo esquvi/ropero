@@ -54,3 +54,41 @@ User asked for a general hygiene pass: "how do you think the folder structure cu
 - **"Let's do all of these" = authorize a full batch.** When the user is reviewing a punch list and says "let's do all of these", it means execute the whole list with minimal interrupts. Ask only for the decisions that genuinely need input (branch protection (a) vs (b)), not for each subtask. Keep the user informed via tight status messages between steps rather than pre-action confirmations.
 - **Doc-only commits direct to main are the convention.** CLAUDE.md was already explicit but now reinforced. Every time the user pushed a doc-only commit this session, the branch protection bypass warning appeared; that is fine and expected per the new CLAUDE.md subsection.
 - **User wants `Co-Authored-By` on all Claude-generated commits** (established rule); fixed mid-session when a commit was missed, via `git reset --soft HEAD~1` + recommit (unpushed state, safe rewrite).
+
+## Follow-up: post-merge cleanup and Dependabot triage
+
+After PRs #42 and #43 squash-merged on GitHub, the user asked to clean up the leftover local state and then to address the two things I had flagged earlier (the orphan remote branch and the freshly-opened Dependabot PRs).
+
+### Shipped (follow-up)
+
+- **Deleted 4 merged local branches** post squash-merge: `chore/dependabot`, `chore/rename-middleware-to-proxy`, `feat/palette-preview-route`, `fix/mobile-encryption-declaration`. Three were marked `[gone]` from the fetch prune; the fourth (`chore/rename-middleware-to-proxy`) was not `[gone]` because GitHub had not auto-deleted the remote branch. Deleted all four locally plus the orphan remote branch via `git push origin --delete chore/rename-middleware-to-proxy`.
+- **Enabled `delete_branch_on_merge` on the repo** via `gh api -X PATCH repos/esquvi/ropero -f delete_branch_on_merge=true`. This prevents future orphan remote branches after merge. Previously `false`.
+- **Merged Dependabot #44 / #45 / #46** (`supabase/setup-cli` 1 → 2, `actions/checkout` 4 → 6, `actions/setup-node` 4 → 6). GitHub Actions version bumps, CI green, zero blast radius beyond CI.
+- **Merged Dependabot #58** (`actions/upload-artifact` 4 → 7). Same class as the above, showed up mid-triage, CI green, merged.
+- **PR #57** (direct-to-main via merge) Remove `/apps/mobile` dependabot entry. Turned out my initial `.github/dependabot.yml` (PR #42) was wrong: I had configured two npm entries (`/` and `/apps/mobile`) on a mistaken assumption that `apps/mobile` has its own `node_modules` because "Expo doesn't play well with hoisted workspace deps." Reality: this repo has a single root `package-lock.json` with hoisted deps for all workspaces, and no `apps/mobile/node_modules/` or `apps/mobile/package-lock.json`. The duplicate entry meant every bump got proposed twice (once per entry), and the `/apps/mobile` version updated `apps/mobile/package.json` without syncing the root lockfile, making `npm ci` fail on every such PR.
+- **Merged Dependabot #55** (`shadcn` 3.8.5 → 4.4.0). Web `devDependencies` only (the shadcn CLI used to add components). No runtime impact, CI green.
+- **Closed 9 Dependabot PRs with explanatory comments** (remote branches auto-deleted via the `--delete-branch` flag):
+  - #47, #48, #49, #50, #51 — all from the broken `/apps/mobile` entry. Closed with a comment explaining the lockfile-sync root cause and pointing at the fix in #57. They will not be re-opened because the `/apps/mobile` entry is gone.
+  - #52 — minor-and-patch group with 21 updates from the root entry. CI failed but this one was a real issue, not a lockfile bug: the newer React Native version surfaces two type errors (`StyleSheet.absoluteFillObject` renamed to `absoluteFill` at `app/outfits/new.tsx:634`; `useColorScheme`'s `ColorSchemeName` no longer narrows to `"light" | "dark"` at `components/useColorScheme.ts:4`). Both are ~1-line code fixes but need to land before this group can merge, and both need to be coordinated with the Expo SDK 54 → 55 upgrade. Closed with that explanation.
+  - #53, #54, #56 — `expo-updates` 29 → 55, `expo-linking` 8 → 55, `expo-symbols` 1 → 55. CI green individually but each bump targets an Expo SDK 55 compatible version, and we're on SDK 54 (`"expo": "^54"` in `apps/mobile/package.json`). Merging any of these one-at-a-time would leave the app in a partially-upgraded state that Expo does not support. Closed with a pointer to the future SDK upgrade task (`npx expo install --fix` path).
+
+### Decisions worth remembering (follow-up)
+
+- **Dependabot + npm workspaces: one root entry, not per-workspace entries.** This applies to any monorepo with a single root `package-lock.json`. Multiple entries create both duplication and a real breakage (per-workspace entries update the workspace's `package.json` without syncing the root lockfile, making `npm ci` fail). See commit `5a06dc8` / PR #57. Future monorepo configs should assume the root entry handles every workspace unless proven otherwise.
+- **"Close" is a legitimate triage outcome for Dependabot PRs with real blockers.** Closed PRs don't get re-proposed unless the target version changes, so closing them serves as a weekly reminder that the underlying upgrade work (Expo SDK 54 → 55 in our case) is still outstanding. More durable than a TODO that rots in a file.
+- **Dependabot opens PRs from a cold start much faster than expected.** The first time `.github/dependabot.yml` lands on `main`, expect a flurry of PRs within minutes as Dependabot scans the lockfile against registry. On Ropero's first scan we got 13 PRs in the first ~3 minutes. Budget for this: either set tighter `open-pull-requests-limit` values, or plan a triage pass immediately after the config lands.
+- **Triage comments should cite the specific failure reason and say "do not re-open."** Dependabot itself watches for the string `@dependabot reopen` and similar in comments; a clear "do not re-open" signal to future humans plus a specific root-cause explanation (lockfile sync, SDK coordination, type error at file:line) prevents someone else from thinking the PR was closed accidentally. Templates for both closure reasons are in this session's transcript.
+- **Session log stays live.** The user's explicit instruction: "always log the latest changes." Update the session's doc file whenever a meaningful new block of work completes, not just at end of session. Saved to auto-memory as `feedback_session_log_latest.md`.
+
+### Process notes (follow-up)
+
+- **Batch PR triage via `gh pr view <n> --json statusCheckRollup`** in a for loop. Much faster than opening each PR's GitHub UI to read CI status. See commit `5a06dc8` thread for the pattern.
+- **`gh pr merge --auto` requires repo-level setting `enablePullRequestAutoMerge`** which is currently off on this repo. Fell back to waiting on CI via a polling `until` loop (`gh pr checks 57 --json name,state`) then merging. For future small-batch merges, either enable auto-merge or accept the short wait.
+- **`gh pr close --delete-branch` complains "Skipped deleting the local branch since current directory is not a git repository"** even when run from a git repo root. Benign — it's telling you there was no matching local branch to delete. The remote branch deletion (the actual intent) succeeds.
+
+### Final state at end of session
+
+- 0 open Dependabot PRs. 0 open feature PRs. 0 open chore PRs.
+- `main` is at `6ec27cc` with the full history of today's work: palette preview, mobile encryption, hygiene docs batch, proxy rename, dependabot config + fix, GHA bumps, shadcn devDep bump.
+- Branch list: only `main`. All session-created branches merged and deleted.
+- Two `[HYGIENE-2026-04-24]` entries in KNOWN-ISSUES: the middleware→proxy one closed by PR #43, the `ExternalLink.tsx` typed-routes one still open (1-line cast fix for next session).
