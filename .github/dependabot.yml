@@ -1,7 +1,11 @@
 version: 2
 updates:
-  # Root workspace covers apps/web, packages/core, packages/supabase, packages/ui
-  # (npm workspaces are resolved from the root package.json).
+  # Single root npm entry covers every workspace (apps/web, apps/mobile,
+  # packages/core, packages/supabase, packages/ui). This repo uses npm
+  # workspaces with a single root package-lock.json and no per-workspace
+  # lockfiles, so dependabot's npm-workspaces support updates every
+  # workspace's package.json and keeps the root lockfile in sync from
+  # one entry here.
   - package-ecosystem: npm
     directory: /
     schedule:
@@ -10,24 +14,6 @@ updates:
     open-pull-requests-limit: 5
     labels:
       - dependencies
-    groups:
-      minor-and-patch:
-        applies-to: version-updates
-        update-types:
-          - minor
-          - patch
-
-  # apps/mobile has its own node_modules because Expo does not play well
-  # with hoisted workspace dependencies, so dependabot needs a second entry.
-  - package-ecosystem: npm
-    directory: /apps/mobile
-    schedule:
-      interval: weekly
-      day: monday
-    open-pull-requests-limit: 5
-    labels:
-      - dependencies
-      - mobile
     groups:
       minor-and-patch:
         applies-to: version-updates
