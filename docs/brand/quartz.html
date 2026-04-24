@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ropero — Direction 16: Quartz</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Yeseva+One&family=Raleway:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #F4F0F6;
+      --bg-dark:   #160E1E;
+      --surface:   #EAE2F0;
+      --surface-2: #DDD0EC;
+      --border:    #C8B8DC;
+      --text:      #231530;
+      --text-mid:  #5C3E78;
+      --text-dim:  #A88CC0;
+      --accent:    #8466A0;
+      --accent-dk: #623880;
+      --accent-lo: #E4D4F4;
+      --white:     #FBF8FF;
+
+      --font-display: 'Yeseva One', Georgia, serif;
+      --font-body:    'Raleway', system-ui, sans-serif;
+      --radius:       8px;
+      --radius-sm:    4px;
+      --radius-lg:    16px;
+    }
+
+    html { background: var(--bg); color: var(--text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    .page { max-width: 960px; margin: 0 auto; padding: 0 44px 120px; }
+
+    .hero { padding: 80px 0 64px; border-bottom: 1px solid var(--border); animation: fadeUp 0.9s ease both; }
+    .hero-eyebrow { font-size: 10px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 36px; }
+    .hero-title { font-family: var(--font-display); font-size: 96px; font-weight: 400; line-height: 0.9; color: var(--accent); margin-bottom: 32px; }
+    .hero-title em { font-style: italic; color: var(--text); }
+    .hero-split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: end; }
+    .hero-desc { font-size: 15px; font-weight: 400; line-height: 1.75; color: var(--text-mid); }
+    .hero-refs-label { font-size: 9px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
+    .hero-ref { font-family: var(--font-display); font-size: 18px; color: var(--text-mid); line-height: 1.9; display: block; }
+    .hero-ref.primary { color: var(--accent); }
+    .hero-tags { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+    .hero-tag { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; color: var(--accent); background: var(--accent-lo); padding: 5px 12px; border-radius: 100px; }
+
+    .section { padding: 60px 0 0; }
+    .section-label { font-size: 9px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 28px; }
+
+    /* Palette */
+    .palette { display: flex; gap: 0; border-radius: var(--radius-lg); overflow: hidden; height: 88px; }
+    .swatch { flex: 1; display: flex; align-items: flex-end; padding: 8px 10px; }
+    .swatch-label { font-size: 9px; font-weight: 600; letter-spacing: 0.08em; color: rgba(255,255,255,0.7); }
+    .swatch-label.dark { color: rgba(0,0,0,0.4); }
+
+    /* Type specimen */
+    .type-specimen { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+    .type-block { padding: 36px; background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); }
+    .type-block-label { font-size: 9px; font-weight: 600; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 16px; }
+    .type-display { font-family: var(--font-display); font-size: 52px; line-height: 1.0; color: var(--accent); margin-bottom: 8px; }
+    .type-body-sample { font-size: 14px; font-weight: 400; line-height: 1.7; color: var(--text-mid); }
+    .type-detail { font-size: 11px; font-weight: 500; letter-spacing: 0.12em; color: var(--text-dim); margin-top: 12px; text-transform: uppercase; }
+
+    /* Components */
+    .component-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+    .card { background: var(--white); border-radius: var(--radius); border: 1px solid var(--border); overflow: hidden; }
+    .card-img { height: 140px; background: var(--surface); display: flex; align-items: center; justify-content: center; position: relative; }
+    .card-img-label { font-family: var(--font-display); font-size: 32px; color: var(--accent-lo); }
+    .card-badge { position: absolute; top: 10px; right: 10px; background: var(--accent); color: var(--white); font-size: 9px; font-weight: 700; letter-spacing: 0.08em; padding: 3px 8px; border-radius: 100px; }
+    .card-body { padding: 18px; }
+    .card-label { font-size: 9px; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+    .card-title { font-family: var(--font-display); font-size: 18px; color: var(--accent); line-height: 1.25; margin-bottom: 6px; }
+    .card-meta { font-size: 12px; color: var(--text-dim); font-weight: 500; }
+
+    /* Buttons */
+    .button-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+    .btn { font-family: var(--font-body); font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding: 13px 28px; border-radius: var(--radius); cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary { background: var(--accent); color: var(--white); }
+    .btn-secondary { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+    .btn-ghost { background: transparent; color: var(--text-mid); }
+    .btn-sm { font-size: 10px; padding: 9px 18px; }
+
+    /* Input */
+    .input-row { display: flex; gap: 16px; align-items: flex-start; }
+    .field { flex: 1; }
+    .field label { display: block; font-size: 10px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+    .field input { width: 100%; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); font-family: var(--font-body); font-size: 14px; color: var(--text); padding: 11px 16px; outline: none; }
+    .field input:focus { border-color: var(--accent); }
+    .field input::placeholder { color: var(--text-dim); }
+
+    /* Tag / badge row */
+    .tag-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .tag { font-size: 11px; font-weight: 600; letter-spacing: 0.08em; padding: 6px 14px; border-radius: 100px; }
+    .tag-filled { background: var(--accent); color: var(--white); }
+    .tag-outline { border: 1.5px solid var(--accent); color: var(--accent); }
+    .tag-neutral { background: var(--surface); color: var(--text-mid); }
+    .tag-lo { background: var(--accent-lo); color: var(--accent-dk); }
+
+    /* Dark section */
+    .dark-band { background: var(--bg-dark); margin: 60px -44px 0; padding: 60px 44px; }
+    .dark-band .section-label { color: #7A6088; }
+    .dark-band .card { background: #261836; border-color: #3D2852; }
+    .dark-band .card-title { color: #D4A8F8; }
+    .dark-band .card-label { color: #7A6088; }
+    .dark-band .card-meta { color: #7A6088; }
+    .dark-band .card-img { background: #1C1028; }
+    .dark-band .card-img-label { color: #3D2852; }
+    .dark-band .btn-primary { background: #A87ACA; }
+    .dark-band .btn-secondary { border-color: #A87ACA; color: #A87ACA; }
+    .dark-band .btn-ghost { color: #9A80B0; }
+    .dark-band-accent { font-family: var(--font-display); font-size: 64px; color: #A87ACA; margin-bottom: 32px; line-height: 1.0; }
+
+    /* Phone mockup */
+    .phone-row { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
+    .phone { width: 220px; height: 440px; background: var(--white); border-radius: 36px; border: 2px solid var(--border); overflow: hidden; position: relative; flex-shrink: 0; box-shadow: 0 24px 64px rgba(132,102,160,0.15); }
+    .phone-notch { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 80px; height: 22px; background: var(--bg); border-radius: 100px; z-index: 10; }
+    .phone-screen { width: 100%; height: 100%; display: flex; flex-direction: column; }
+    .phone-nav { padding: 44px 16px 10px; background: var(--white); border-bottom: 1px solid var(--border); }
+    .phone-nav-title { font-family: var(--font-display); font-size: 22px; color: var(--accent); }
+    .phone-nav-sub { font-size: 10px; color: var(--text-dim); font-weight: 500; margin-top: 2px; }
+    .phone-body { flex: 1; padding: 14px; overflow: hidden; display: flex; flex-direction: column; gap: 10px; }
+    .phone-card { background: var(--surface); border-radius: var(--radius); padding: 12px; border: 1px solid var(--border); }
+    .phone-card-tag { font-size: 8px; font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .phone-card-name { font-family: var(--font-display); font-size: 14px; color: var(--accent); line-height: 1.2; }
+    .phone-card-meta { font-size: 9px; color: var(--text-dim); font-weight: 500; margin-top: 3px; }
+    .phone-tab-bar { display: flex; justify-content: space-around; padding: 10px 0 16px; border-top: 1px solid var(--border); background: var(--white); }
+    .phone-tab { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .phone-tab-dot { width: 18px; height: 18px; border-radius: 50%; background: var(--surface-2); }
+    .phone-tab-dot.active { background: var(--accent); }
+    .phone-tab-label { font-size: 8px; font-weight: 600; color: var(--text-dim); letter-spacing: 0.06em; }
+    .phone-tab-label.active { color: var(--accent); }
+
+    /* Detail phone */
+    .phone-detail-img { height: 160px; background: linear-gradient(160deg, var(--surface) 0%, var(--accent-lo) 100%); display: flex; align-items: center; justify-content: center; }
+    .phone-detail-icon { font-family: var(--font-display); font-size: 56px; color: var(--accent); opacity: 0.5; }
+    .phone-detail-info { padding: 14px; flex: 1; }
+    .phone-detail-category { font-size: 9px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+    .phone-detail-title { font-family: var(--font-display); font-size: 20px; color: var(--accent); line-height: 1.1; margin-bottom: 8px; }
+    .phone-detail-row { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); font-weight: 500; padding: 5px 0; border-bottom: 1px solid var(--surface-2); }
+    .phone-detail-action { margin: 10px 0 0; background: var(--accent); color: var(--white); font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-align: center; padding: 10px; border-radius: var(--radius); text-transform: uppercase; }
+
+    /* ── PAGE FOOTER ── */
+    .page-footer {
+      position: fixed; bottom: 0; left: 0; right: 0;
+      height: 52px;
+      background: var(--white, var(--bg));
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 40px;
+      z-index: 100;
+    }
+    .footer-brand { font-size: 10px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim); min-width: 120px; }
+    .footer-nav { display: flex; gap: 5px; align-items: center; }
+    .footer-dot {
+      display: block; width: 7px; height: 7px; border-radius: 50%;
+      background: var(--border); cursor: pointer;
+      transition: background 0.15s, width 0.15s;
+      text-decoration: none; flex-shrink: 0;
+    }
+    .footer-dot:hover { background: var(--text-dim); }
+    .footer-dot.active { background: var(--accent); width: 18px; border-radius: 4px; }
+    .footer-arrows { display: flex; gap: 20px; align-items: center; min-width: 120px; justify-content: flex-end; }
+    .footer-prev, .footer-next { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); text-decoration: none; white-space: nowrap; }
+    .footer-prev:hover, .footer-next:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Hero -->
+  <section class="hero">
+    <p class="hero-eyebrow">Ropero · Direction 16</p>
+    <div class="hero-split">
+      <div>
+        <h1 class="hero-title">Quar<em>tz</em></h1>
+        <p class="hero-desc">A dreamy, jewel-toned palette drawn from amethyst and smoky quartz. Soft violet grounds give way to rich purple accents — fashion as mood, as feeling. For the wardrobe that tells a story.</p>
+        <div class="hero-tags">
+          <span class="hero-tag">Dreamy</span>
+          <span class="hero-tag">Editorial</span>
+          <span class="hero-tag">Jewel-toned</span>
+          <span class="hero-tag">Yeseva One</span>
+        </div>
+      </div>
+      <div>
+        <p class="hero-refs-label">References</p>
+        <span class="hero-ref primary">Acne Studios</span>
+        <span class="hero-ref">Cecilie Bahnsen</span>
+        <span class="hero-ref">Ganni</span>
+        <span class="hero-ref">Sies Marjan</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- Palette -->
+  <section class="section">
+    <p class="section-label">Color Palette</p>
+    <div class="palette">
+      <div class="swatch" style="background:#F4F0F6"><span class="swatch-label dark">BG</span></div>
+      <div class="swatch" style="background:#EAE2F0"><span class="swatch-label dark">Surface</span></div>
+      <div class="swatch" style="background:#DDD0EC"><span class="swatch-label dark">Surface 2</span></div>
+      <div class="swatch" style="background:#C8B8DC"><span class="swatch-label dark">Border</span></div>
+      <div class="swatch" style="background:#A88CC0"><span class="swatch-label">Dim</span></div>
+      <div class="swatch" style="background:#8466A0"><span class="swatch-label">Accent</span></div>
+      <div class="swatch" style="background:#623880"><span class="swatch-label">Dark</span></div>
+      <div class="swatch" style="background:#231530"><span class="swatch-label">Text</span></div>
+    </div>
+  </section>
+
+  <!-- Typography -->
+  <section class="section">
+    <p class="section-label">Typography</p>
+    <div class="type-specimen">
+      <div class="type-block">
+        <p class="type-block-label">Display — Yeseva One</p>
+        <p class="type-display">Robe<br>de nuit</p>
+        <p class="type-detail">ABCDEFG · 0123456789</p>
+      </div>
+      <div class="type-block">
+        <p class="type-block-label">Body — Raleway</p>
+        <p class="type-body-sample">A well-curated wardrobe is less about quantity and more about intention. Each piece carries its own weight — texture, memory, occasion.</p>
+        <p class="type-detail" style="font-family: var(--font-body); letter-spacing:0.18em;">CAPS LABEL · 300 · 600</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Cards -->
+  <section class="section">
+    <p class="section-label">Wardrobe Cards</p>
+    <div class="component-row">
+      <div class="card">
+        <div class="card-img">
+          <span class="card-img-label">✦</span>
+          <span class="card-badge">NEW</span>
+        </div>
+        <div class="card-body">
+          <p class="card-label">Outerwear</p>
+          <p class="card-title">Velvet Blazer</p>
+          <p class="card-meta">Worn 4 times · Last Thu</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-img" style="background: var(--accent-lo);">
+          <span class="card-img-label">◈</span>
+        </div>
+        <div class="card-body">
+          <p class="card-label">Dress</p>
+          <p class="card-title">Slip in Ivory Satin</p>
+          <p class="card-meta">Worn 2 times · Last Fri</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-img" style="background: var(--surface-2);">
+          <span class="card-img-label">▲</span>
+        </div>
+        <div class="card-body">
+          <p class="card-label">Accessories</p>
+          <p class="card-title">Chain Bag, Muted Gold</p>
+          <p class="card-meta">Worn 9 times · Yesterday</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Buttons + Inputs -->
+  <section class="section">
+    <p class="section-label">Actions & Forms</p>
+    <div class="button-row" style="margin-bottom:28px;">
+      <button class="btn btn-primary">Add to Wardrobe</button>
+      <button class="btn btn-secondary">Log Outfit</button>
+      <button class="btn btn-ghost">Browse</button>
+      <button class="btn btn-primary btn-sm">+ Add</button>
+    </div>
+    <div class="input-row">
+      <div class="field">
+        <label>Item Name</label>
+        <input type="text" placeholder="e.g. Amethyst Blazer">
+      </div>
+      <div class="field">
+        <label>Category</label>
+        <input type="text" placeholder="Outerwear">
+      </div>
+    </div>
+    <div class="tag-row" style="margin-top:20px;">
+      <span class="tag tag-filled">Formal</span>
+      <span class="tag tag-outline">Evening</span>
+      <span class="tag tag-lo">Purple</span>
+      <span class="tag tag-neutral">Silk</span>
+      <span class="tag tag-outline">Statement</span>
+    </div>
+  </section>
+
+  <!-- Mobile Phones -->
+  <section class="section">
+    <p class="section-label">Mobile Preview</p>
+    <div class="phone-row">
+
+      <!-- Wardrobe list -->
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-nav">
+            <div class="phone-nav-title">Wardrobe</div>
+            <div class="phone-nav-sub">42 pieces</div>
+          </div>
+          <div class="phone-body">
+            <div class="phone-card">
+              <div class="phone-card-tag">Outerwear</div>
+              <div class="phone-card-name">Velvet Blazer</div>
+              <div class="phone-card-meta">Worn 4 × · Last Thu</div>
+            </div>
+            <div class="phone-card">
+              <div class="phone-card-tag">Dress</div>
+              <div class="phone-card-name">Ivory Slip</div>
+              <div class="phone-card-meta">Worn 2 × · Last Fri</div>
+            </div>
+            <div class="phone-card">
+              <div class="phone-card-tag">Accessories</div>
+              <div class="phone-card-name">Chain Bag</div>
+              <div class="phone-card-meta">Worn 9 × · Yesterday</div>
+            </div>
+            <div class="phone-card">
+              <div class="phone-card-tag">Tops</div>
+              <div class="phone-card-name">Lace Camisole</div>
+              <div class="phone-card-meta">Worn 1 × · 2 weeks ago</div>
+            </div>
+          </div>
+          <div class="phone-tab-bar">
+            <div class="phone-tab"><div class="phone-tab-dot active"></div><div class="phone-tab-label active">Wardrobe</div></div>
+            <div class="phone-tab"><div class="phone-tab-dot"></div><div class="phone-tab-label">Outfits</div></div>
+            <div class="phone-tab"><div class="phone-tab-dot"></div><div class="phone-tab-label">Log</div></div>
+            <div class="phone-tab"><div class="phone-tab-dot"></div><div class="phone-tab-label">Pack</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Item detail -->
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-detail-img">
+            <span class="phone-detail-icon">✦</span>
+          </div>
+          <div class="phone-detail-info">
+            <div class="phone-detail-category">Outerwear</div>
+            <div class="phone-detail-title">Velvet<br>Blazer</div>
+            <div class="phone-detail-row"><span>Brand</span><span>Acne Studios</span></div>
+            <div class="phone-detail-row"><span>Color</span><span>Deep Plum</span></div>
+            <div class="phone-detail-row"><span>Worn</span><span>4 times</span></div>
+            <div class="phone-detail-row"><span>Last worn</span><span>Thursday</span></div>
+            <div class="phone-detail-action">Log Wear Today</div>
+          </div>
+          <div class="phone-tab-bar">
+            <div class="phone-tab"><div class="phone-tab-dot active"></div><div class="phone-tab-label active">Wardrobe</div></div>
+            <div class="phone-tab"><div class="phone-tab-dot"></div><div class="phone-tab-label">Outfits</div></div>
+            <div class="phone-tab"><div class="phone-tab-dot"></div><div class="phone-tab-label">Log</div></div>
+            <div class="phone-tab"><div class="phone-tab-dot"></div><div class="phone-tab-label">Pack</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Dark Mode Band -->
+  <div class="dark-band">
+    <p class="section-label">Dark Mode</p>
+    <p class="dark-band-accent">Your wardrobe,<br>beautifully kept.</p>
+    <div class="button-row" style="margin-bottom: 28px;">
+      <button class="btn btn-primary" style="font-family:var(--font-body);">Add Piece</button>
+      <button class="btn btn-secondary" style="font-family:var(--font-body);">Log Outfit</button>
+      <button class="btn btn-ghost" style="font-family:var(--font-body); color:#9A80B0;">Browse</button>
+    </div>
+    <div class="component-row">
+      <div class="card dark-band">
+        <div class="card-img"><span class="card-img-label">✦</span></div>
+        <div class="card-body">
+          <p class="card-label">Outerwear</p>
+          <p class="card-title">Velvet Blazer</p>
+          <p class="card-meta">4 wears</p>
+        </div>
+      </div>
+      <div class="card dark-band">
+        <div class="card-img"><span class="card-img-label">◈</span></div>
+        <div class="card-body">
+          <p class="card-label">Dress</p>
+          <p class="card-title">Ivory Slip</p>
+          <p class="card-meta">2 wears</p>
+        </div>
+      </div>
+      <div class="card dark-band">
+        <div class="card-img"><span class="card-img-label">▲</span></div>
+        <div class="card-body">
+          <p class="card-label">Accessories</p>
+          <p class="card-title">Chain Bag</p>
+          <p class="card-meta">9 wears</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <div class="footer-brand">Ropero · Quartz</div>
+    <div class="footer-nav">
+      <a class="footer-dot" href="atelier.html" title="01: Atelier"></a>
+      <a class="footer-dot" href="studio.html" title="02: Studio"></a>
+      <a class="footer-dot" href="capsule.html" title="03: Capsule"></a>
+      <a class="footer-dot" href="archive.html" title="04: Archive"></a>
+      <a class="footer-dot" href="sable.html" title="05: Sable"></a>
+      <a class="footer-dot" href="cote.html" title="06: Côte"></a>
+      <a class="footer-dot" href="mineral.html" title="07: Mineral"></a>
+      <a class="footer-dot" href="verdure.html" title="08: Verdure"></a>
+      <a class="footer-dot" href="mist.html" title="09: Mist"></a>
+      <a class="footer-dot" href="sage.html" title="10: Sage"></a>
+      <a class="footer-dot" href="linden.html" title="11: Linden"></a>
+      <a class="footer-dot" href="gilt.html" title="12: Gilt"></a>
+      <a class="footer-dot" href="ciel.html" title="13: Ciel"></a>
+      <a class="footer-dot" href="toile.html" title="14: Toile"></a>
+      <a class="footer-dot" href="celadon.html" title="15: Celadon"></a>
+      <a class="footer-dot active" href="quartz.html" title="16: Quartz"></a>
+      <a class="footer-dot" href="cobalt.html" title="17: Cobalt"></a>
+      <a class="footer-dot" href="chalk.html" title="18: Chalk"></a>
+      <a class="footer-dot" href="dusk.html" title="19: Dusk"></a>
+      <a class="footer-dot" href="matcha.html" title="20: Matcha"></a>
+    </div>
+    <div class="footer-arrows">
+      <a class="footer-prev" href="celadon.html">← Celadon</a>
+      <a class="footer-next" href="cobalt.html">Cobalt →</a>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowRight') window.location.href = 'cobalt.html';
+      if (e.key === 'ArrowLeft')  window.location.href = 'celadon.html';
+    });
+  </script>
+
+</div>
+
+<!-- PAGE FOOTER — 24 dots -->
+<footer class="page-footer">
+  <span class="footer-brand">Ropero</span>
+  <nav class="footer-nav">
+    <a href="atelier.html" class="footer-dot" title="Atelier"></a>
+    <a href="studio.html" class="footer-dot" title="Studio"></a>
+    <a href="capsule.html" class="footer-dot" title="Capsule"></a>
+    <a href="archive.html" class="footer-dot" title="Archive"></a>
+    <a href="sable.html" class="footer-dot" title="Sable"></a>
+    <a href="cote.html" class="footer-dot" title="Côte"></a>
+    <a href="mineral.html" class="footer-dot" title="Mineral"></a>
+    <a href="verdure.html" class="footer-dot" title="Verdure"></a>
+    <a href="mist.html" class="footer-dot" title="Mist"></a>
+    <a href="sage.html" class="footer-dot" title="Sage"></a>
+    <a href="linden.html" class="footer-dot" title="Linden"></a>
+    <a href="gilt.html" class="footer-dot" title="Gilt"></a>
+    <a href="ciel.html" class="footer-dot" title="Ciel"></a>
+    <a href="toile.html" class="footer-dot" title="Toile"></a>
+    <a href="celadon.html" class="footer-dot" title="Celadon"></a>
+    <a href="quartz.html" class="footer-dot active" title="Quartz"></a>
+    <a href="cobalt.html" class="footer-dot" title="Cobalt"></a>
+    <a href="chalk.html" class="footer-dot" title="Chalk"></a>
+    <a href="dusk.html" class="footer-dot" title="Dusk"></a>
+    <a href="matcha.html" class="footer-dot" title="Matcha"></a>
+    <a href="verdant.html" class="footer-dot" title="Verdant"></a>
+    <a href="terroir.html" class="footer-dot" title="Terroir"></a>
+    <a href="maison.html" class="footer-dot" title="Maison"></a>
+    <a href="basalt.html" class="footer-dot" title="Basalt"></a>
+  </nav>
+  <div class="footer-arrows">
+    <a href="celadon.html" class="footer-prev">← Celadon</a>
+    <a href="cobalt.html" class="footer-next">Cobalt →</a>
+  </div>
+</footer>
+<script>
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight') window.location.href = 'cobalt.html';
+    if (e.key === 'ArrowLeft')  window.location.href = 'celadon.html';
+  });
+</script>
+</body>
+</html>

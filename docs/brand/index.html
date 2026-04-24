@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ropero — Brand Direction Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,400&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0F0D0C;
+      --surface: #1A1714;
+      --border: rgba(255,255,255,0.08);
+      --text: #F0E8D8;
+      --text-mid: #8A8078;
+      --text-dim: #4A4440;
+    }
+    html { background: var(--bg); color: var(--text); font-family: 'DM Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .page { max-width: 880px; margin: 0 auto; padding: 80px 40px 100px; }
+
+    .eyebrow {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 32px;
+      animation: fadeUp 0.6s ease both;
+    }
+    .hero-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 72px;
+      font-weight: 300;
+      line-height: 0.92;
+      color: var(--text);
+      margin-bottom: 20px;
+      animation: fadeUp 0.7s ease 0.05s both;
+    }
+    .hero-title em { font-style: italic; color: rgba(212,175,107,0.9); }
+    .hero-sub {
+      font-size: 15px;
+      font-weight: 400;
+      color: var(--text-mid);
+      line-height: 1.65;
+      max-width: 520px;
+      margin-bottom: 64px;
+      animation: fadeUp 0.7s ease 0.1s both;
+    }
+
+    .grid {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .direction-card {
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      align-items: center;
+      gap: 28px;
+      padding: 28px 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+      animation: fadeUp 0.6s ease both;
+    }
+    .direction-card:hover { background: #231F1B; border-color: rgba(255,255,255,0.14); }
+    .direction-card:hover .card-arrow { opacity: 1; transform: translateX(0); color: #D4AF6B; }
+
+    .card-num {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 13px;
+      font-weight: 400;
+      font-style: italic;
+      color: var(--text-dim);
+    }
+    .card-body {}
+    .card-name {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 28px;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+    .card-desc { font-size: 13px; font-weight: 400; color: var(--text-mid); }
+    .card-chips { display: flex; gap: 6px; margin-top: 10px; }
+    .chip {
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 2px;
+    }
+    .card-arrow {
+      font-size: 16px;
+      color: var(--text-dim);
+      opacity: 0.6;
+      transform: translateX(-4px);
+      transition: all 0.2s;
+    }
+    .card-swatch-row {
+      display: flex;
+      gap: 4px;
+      margin-top: 10px;
+    }
+    .mini-swatch {
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .footer {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-dim);
+      display: flex;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="eyebrow">Ropero · Brand Direction Review · March 2026</div>
+  <h1 class="hero-title">Twenty<br><em>directions.</em></h1>
+  <p class="hero-sub">Each guide shows the complete design language — colors, typography, components, and a live app preview. Click any direction to explore it in full.</p>
+
+  <div class="grid">
+
+    <a class="direction-card" href="atelier.html" style="animation-delay:0.15s;">
+      <div class="card-num">01</div>
+      <div class="card-body">
+        <div class="card-name">Atelier</div>
+        <div class="card-desc">Luxury editorial — Cormorant Garamond + DM Sans, warm gold on ivory</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#FAF8F5;"></div>
+          <div class="mini-swatch" style="background:#1A1714;"></div>
+          <div class="mini-swatch" style="background:#C9A96E;"></div>
+          <div class="mini-swatch" style="background:#F2EDE6;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(201,169,110,0.15);color:#C9A96E;">Curated</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Editorial</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Elevated</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="studio.html" style="animation-delay:0.2s;">
+      <div class="card-num">02</div>
+      <div class="card-body">
+        <div class="card-name">Studio</div>
+        <div class="card-desc">Organized & warm — Plus Jakarta Sans throughout, terracotta accent</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F7F4F0;"></div>
+          <div class="mini-swatch" style="background:#292524;"></div>
+          <div class="mini-swatch" style="background:#C2674A;"></div>
+          <div class="mini-swatch" style="background:#F0D6CC;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(194,103,74,0.15);color:#C2674A;">Organized</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Warm</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Purposeful</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="capsule.html" style="animation-delay:0.25s;">
+      <div class="card-num">03</div>
+      <div class="card-body">
+        <div class="card-name">Capsule</div>
+        <div class="card-desc">Quiet precision — EB Garamond display + Inter, single blush accent</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#FFFFFF;border-color:rgba(255,255,255,0.3);"></div>
+          <div class="mini-swatch" style="background:#0F0D0C;"></div>
+          <div class="mini-swatch" style="background:#C8917F;"></div>
+          <div class="mini-swatch" style="background:#F5F2EE;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(200,145,127,0.15);color:#C8917F;">Quiet</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Precise</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Timeless</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="archive.html" style="animation-delay:0.3s;">
+      <div class="card-num">04</div>
+      <div class="card-body">
+        <div class="card-name">Archive</div>
+        <div class="card-desc">Warm & personal — Lora + Inter, parchment background, amber accent</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F5F0E8;"></div>
+          <div class="mini-swatch" style="background:#2C2218;"></div>
+          <div class="mini-swatch" style="background:#D4A853;"></div>
+          <div class="mini-swatch" style="background:#EDE7DB;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(212,168,83,0.15);color:#B8903A;">Personal</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Warm</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Storied</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="sable.html" style="animation-delay:0.35s;">
+      <div class="card-num">05</div>
+      <div class="card-body">
+        <div class="card-name">Sable</div>
+        <div class="card-desc">Dark-first luxury — Cormorant + DM Sans, champagne gold on warm near-black</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#1A1714;"></div>
+          <div class="mini-swatch" style="background:#231F1B;"></div>
+          <div class="mini-swatch" style="background:#D4AF6B;"></div>
+          <div class="mini-swatch" style="background:#F0E8D8;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(212,175,107,0.15);color:#D4AF6B;">Dramatic</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Sophisticated</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Dark-First</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="cote.html" style="animation-delay:0.40s;">
+      <div class="card-num">06</div>
+      <div class="card-body">
+        <div class="card-name">Côte</div>
+        <div class="card-desc">European naval — Playfair Display + DM Sans, cornflower blue on warm ivory</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#FAFAF8;"></div>
+          <div class="mini-swatch" style="background:#1A2B42;"></div>
+          <div class="mini-swatch" style="background:#3D6494;"></div>
+          <div class="mini-swatch" style="background:#D4DFF0;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(61,100,148,0.18);color:#3D6494;">Naval</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Refined</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">European</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="mineral.html" style="animation-delay:0.45s;">
+      <div class="card-num">07</div>
+      <div class="card-body">
+        <div class="card-name">Mineral</div>
+        <div class="card-desc">Cool & functional — DM Sans throughout, steel blue on pale grey</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F4F5F7;"></div>
+          <div class="mini-swatch" style="background:#1C2433;"></div>
+          <div class="mini-swatch" style="background:#5B7FA0;"></div>
+          <div class="mini-swatch" style="background:#D0DCE8;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(91,127,160,0.18);color:#5B7FA0;">Precise</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Minimal</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Functional</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="verdure.html" style="animation-delay:0.50s;">
+      <div class="card-num">08</div>
+      <div class="card-body">
+        <div class="card-name">Verdure</div>
+        <div class="card-desc">Organic luxury — Playfair Display + Inter, forest green on warm parchment</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F3F2ED;"></div>
+          <div class="mini-swatch" style="background:#1E2B1A;"></div>
+          <div class="mini-swatch" style="background:#3D6B52;"></div>
+          <div class="mini-swatch" style="background:#D4E6DB;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(61,107,82,0.18);color:#3D6B52;">Organic</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Grounded</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Considered</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="mist.html" style="animation-delay:0.55s;">
+      <div class="card-num">09</div>
+      <div class="card-body">
+        <div class="card-name">Mist</div>
+        <div class="card-desc">Ethereal editorial — Cormorant Garamond + Inter, periwinkle on pale blue-grey</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F0F2F7;"></div>
+          <div class="mini-swatch" style="background:#1A1E2E;"></div>
+          <div class="mini-swatch" style="background:#7B92C8;"></div>
+          <div class="mini-swatch" style="background:#DDE4F0;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(123,146,200,0.18);color:#7B92C8;">Ethereal</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Precise</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Elevated</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="sage.html" style="animation-delay:0.60s;">
+      <div class="card-num">10</div>
+      <div class="card-body">
+        <div class="card-name">Sage</div>
+        <div class="card-desc">Sensory warmth — Fraunces + DM Sans, muted sage green on warm cream</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F5F3EE;"></div>
+          <div class="mini-swatch" style="background:#1C2018;"></div>
+          <div class="mini-swatch" style="background:#6B8C72;"></div>
+          <div class="mini-swatch" style="background:#D8E5DA;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(107,140,114,0.18);color:#6B8C72;">Sensory</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Warm</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Intentional</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="linden.html" style="animation-delay:0.65s;">
+      <div class="card-num">11</div>
+      <div class="card-body">
+        <div class="card-name">Linden</div>
+        <div class="card-desc">Dual accent — Bodoni Moda + Source Sans 3, forest green + warm gold, razor 2px radius</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F2F0EB;"></div>
+          <div class="mini-swatch" style="background:#1C2218;"></div>
+          <div class="mini-swatch" style="background:#4A7856;"></div>
+          <div class="mini-swatch" style="background:#B89448;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(74,120,86,0.18);color:#4A7856;">Green + Gold</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Heritage</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Dual Accent</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="gilt.html" style="animation-delay:0.70s;">
+      <div class="card-num">12</div>
+      <div class="card-body">
+        <div class="card-name">Gilt</div>
+        <div class="card-desc">Gold primary — Rozha One + Source Sans 3, gold headers on ivory, 0px radius</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F5F3EC;"></div>
+          <div class="mini-swatch" style="background:#1A1608;"></div>
+          <div class="mini-swatch" style="background:#C49A38;"></div>
+          <div class="mini-swatch" style="background:#405C44;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(196,154,56,0.18);color:#C49A38;">Gold First</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">House</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Rozha One</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="ciel.html" style="animation-delay:0.75s;">
+      <div class="card-num">13</div>
+      <div class="card-body">
+        <div class="card-name">Ciel</div>
+        <div class="card-desc">Sky editorial — Abril Fatface + Karla, sky blue headers at 108px, pale blue ground</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#EEF3F9;"></div>
+          <div class="mini-swatch" style="background:#0F1E30;"></div>
+          <div class="mini-swatch" style="background:#4B8CBF;"></div>
+          <div class="mini-swatch" style="background:#CCE0F0;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(75,140,191,0.18);color:#4B8CBF;">Sky Blue</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Editorial</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Abril Fatface</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="toile.html" style="animation-delay:0.80s;">
+      <div class="card-num">14</div>
+      <div class="card-body">
+        <div class="card-name">Toile</div>
+        <div class="card-desc">French newspaper — Libre Caslon Display + Karla, deep blue on ivory, 1px radius</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F8F7F2;"></div>
+          <div class="mini-swatch" style="background:#0C1428;"></div>
+          <div class="mini-swatch" style="background:#1E4FA0;"></div>
+          <div class="mini-swatch" style="background:#C0CCEC;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(30,79,160,0.18);color:#1E4FA0;">A.P.C.</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Newspaper</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">French</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="celadon.html" style="animation-delay:0.85s;">
+      <div class="card-num">15</div>
+      <div class="card-body">
+        <div class="card-name">Celadon</div>
+        <div class="card-desc">Muji-quiet — Rufina + Source Sans 3, deep teal headers on cool teal ground</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#EBF2F0;"></div>
+          <div class="mini-swatch" style="background:#162828;"></div>
+          <div class="mini-swatch" style="background:#2C7878;"></div>
+          <div class="mini-swatch" style="background:#BCDEDE;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(44,120,120,0.18);color:#2C7878;">Teal</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Muji</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Rufina</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="quartz.html" style="animation-delay:0.90s;">
+      <div class="card-num">16</div>
+      <div class="card-body">
+        <div class="card-name">Quartz</div>
+        <div class="card-desc">Jewel-toned dreamy — Yeseva One + Raleway, violet headers on soft amethyst ground</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F4F0F6;"></div>
+          <div class="mini-swatch" style="background:#231530;"></div>
+          <div class="mini-swatch" style="background:#8466A0;"></div>
+          <div class="mini-swatch" style="background:#E4D4F4;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(132,102,160,0.18);color:#8466A0;">Violet</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Dreamy</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Yeseva One</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="cobalt.html" style="animation-delay:0.95s;">
+      <div class="card-num">17</div>
+      <div class="card-body">
+        <div class="card-name">Cobalt</div>
+        <div class="card-desc">Roman precision — Cinzel small caps + Raleway, strong cobalt blue, 0px radius</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F0F3FC;"></div>
+          <div class="mini-swatch" style="background:#0B1440;"></div>
+          <div class="mini-swatch" style="background:#1E3EB8;"></div>
+          <div class="mini-swatch" style="background:#C0CEFC;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(30,62,184,0.18);color:#1E3EB8;">Cobalt</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Cinzel</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Architectural</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="chalk.html" style="animation-delay:1.00s;">
+      <div class="card-num">18</div>
+      <div class="card-body">
+        <div class="card-name">Chalk</div>
+        <div class="card-desc">Graphic bold — Big Shoulders Display 900 + Nunito Sans, near-black on warm off-white</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F8F7F4;"></div>
+          <div class="mini-swatch" style="background:#1C1C18;"></div>
+          <div class="mini-swatch" style="background:#383834;"></div>
+          <div class="mini-swatch" style="background:#ECEAE4;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(56,56,52,0.15);color:#5C5A54;">Graphic</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Bold</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Big Shoulders</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="dusk.html" style="animation-delay:1.05s;">
+      <div class="card-num">19</div>
+      <div class="card-body">
+        <div class="card-name">Dusk</div>
+        <div class="card-desc">Twilight luxury — Italiana + Source Sans 3, deep indigo headers, soft 14px radius</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F0EEF8;"></div>
+          <div class="mini-swatch" style="background:#1A1430;"></div>
+          <div class="mini-swatch" style="background:#5040A8;"></div>
+          <div class="mini-swatch" style="background:#D0C8F8;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(80,64,168,0.18);color:#5040A8;">Indigo</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Italiana</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Twilight</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="matcha.html" style="animation-delay:1.10s;">
+      <div class="card-num">20</div>
+      <div class="card-body">
+        <div class="card-name">Matcha</div>
+        <div class="card-desc">Dual accent — Josefin Sans + DM Sans, matcha green + ochre gold, Japanese minimal</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#EEEFE8;"></div>
+          <div class="mini-swatch" style="background:#1A1E14;"></div>
+          <div class="mini-swatch" style="background:#5A7852;"></div>
+          <div class="mini-swatch" style="background:#A88840;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(90,120,82,0.18);color:#5A7852;">Green + Gold</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Japanese</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Dual Accent</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="verdant.html" style="animation-delay:1.15s;">
+      <div class="card-num">21</div>
+      <div class="card-body">
+        <div class="card-name">Verdant</div>
+        <div class="card-desc">Hybrid — Linden palette + Cinzel + Source Sans 3, forest green + warm gold, heraldic authority</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F2F0E5;"></div>
+          <div class="mini-swatch" style="background:#252C1C;"></div>
+          <div class="mini-swatch" style="background:#4A7856;"></div>
+          <div class="mini-swatch" style="background:#B89448;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(74,120,86,0.18);color:#4A7856;">Hybrid</span>
+          <span class="chip" style="background:rgba(184,148,72,0.18);color:#B89448;">Green + Gold</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Cinzel</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="terroir.html" style="animation-delay:1.20s;">
+      <div class="card-num">22</div>
+      <div class="card-body">
+        <div class="card-name">Terroir</div>
+        <div class="card-desc">Hybrid — Matcha palette + Fraunces + DM Sans, organic green + ochre, literary warmth</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#EEEFE8;"></div>
+          <div class="mini-swatch" style="background:#252C1C;"></div>
+          <div class="mini-swatch" style="background:#5A7852;"></div>
+          <div class="mini-swatch" style="background:#A88840;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(90,120,82,0.18);color:#5A7852;">Hybrid</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Fraunces</span>
+          <span class="chip" style="background:rgba(168,136,64,0.18);color:#A88840;">Dual Accent</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="maison.html" style="animation-delay:1.25s;">
+      <div class="card-num">23</div>
+      <div class="card-body">
+        <div class="card-name">Maison</div>
+        <div class="card-desc">Hybrid — Toile palette + Bodoni Moda + Karla, French blue, Parisian editorial elegance</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F8F7F2;"></div>
+          <div class="mini-swatch" style="background:#18243C;"></div>
+          <div class="mini-swatch" style="background:#1E4FA0;"></div>
+          <div class="mini-swatch" style="background:#C8B890;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(30,79,160,0.18);color:#1E4FA0;">Hybrid</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Bodoni</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">French</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+    <a class="direction-card" href="basalt.html" style="animation-delay:1.30s;">
+      <div class="card-num">24</div>
+      <div class="card-body">
+        <div class="card-name">Basalt</div>
+        <div class="card-desc">Hybrid — Cobalt palette + Rufina + Raleway, deep blue, scholarly warmth of book culture</div>
+        <div class="card-swatch-row">
+          <div class="mini-swatch" style="background:#F0F3FC;"></div>
+          <div class="mini-swatch" style="background:#0B1440;"></div>
+          <div class="mini-swatch" style="background:#1E3EB8;"></div>
+          <div class="mini-swatch" style="background:#6A84C8;"></div>
+        </div>
+        <div class="card-chips">
+          <span class="chip" style="background:rgba(30,62,184,0.18);color:#1E3EB8;">Hybrid</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Rufina</span>
+          <span class="chip" style="background:rgba(255,255,255,0.05);color:#8A8078;">Deep Blue</span>
+        </div>
+      </div>
+      <div class="card-arrow">→</div>
+    </a>
+
+  </div>
+
+  <div class="footer">
+    <span>Ropero Brand Review · 2026</span>
+    <span>24 directions · Open each to evaluate</span>
+  </div>
+
+</div>
+</body>
+</html>

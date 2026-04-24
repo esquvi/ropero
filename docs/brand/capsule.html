@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ropero — Direction 03: Capsule</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #FFFFFF;
+      --bg-off:   #FAFAF9;
+      --bg-dark:  #181614;
+      --surface:  #F5F2EE;
+      --border:   #E8E4DF;
+      --border-dk: #242220;
+      --text:     #0F0D0C;
+      --text-mid: #6E6860;
+      --text-dim: #A8A098;
+      --accent:   #C8917F;
+      --accent-dk: #B07060;
+      --accent-lo: #F5E4DF;
+      --white:    #FFFFFF;
+
+      --font-display: 'EB Garamond', Georgia, serif;
+      --font-body:    'Inter', system-ui, sans-serif;
+      --radius:       5px;
+      --radius-sm:    3px;
+      --radius-lg:    8px;
+    }
+
+    html { background: var(--bg); color: var(--text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+
+    @keyframes appear {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .page { max-width: 900px; margin: 0 auto; padding: 0 48px 120px; animation: appear 0.8s ease both; }
+
+    /* ── HERO ── */
+    .hero { padding: 96px 0 72px; border-bottom: 1px solid var(--border); }
+    .hero-number {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-dim);
+      letter-spacing: 0.12em;
+      margin-bottom: 48px;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: 96px;
+      font-weight: 400;
+      line-height: 0.9;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-bottom: 36px;
+    }
+    .hero-title em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .hero-split { display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: end; margin-top: 48px; }
+    .hero-desc {
+      font-size: 15px;
+      font-weight: 400;
+      line-height: 1.75;
+      color: var(--text-mid);
+    }
+    .hero-refs-block {}
+    .hero-refs-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+    .hero-ref {
+      display: block;
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 400;
+      color: var(--text-mid);
+      line-height: 1.8;
+    }
+    .hero-ref.primary { color: var(--text); }
+    .hero-tags { display: flex; gap: 8px; margin-top: 20px; }
+    .hero-tag {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--text-mid);
+      border: 1px solid var(--border);
+      padding: 5px 12px;
+      border-radius: var(--radius-sm);
+    }
+
+    /* ── SECTION ── */
+    .section { padding: 64px 0 0; }
+    .section + .section { border-top: 1px solid var(--border); margin-top: 64px; }
+    .section-label {
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 40px;
+    }
+
+    /* ── COLORS ── */
+    .colors { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); }
+    .swatch {}
+    .swatch-block { height: 88px; }
+    .swatch-info { padding: 12px 14px; background: var(--bg); }
+    .swatch-role { font-size: 9px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 3px; }
+    .swatch-hex { font-size: 11px; color: var(--text-mid); font-variant-numeric: tabular-nums; }
+
+    /* ── TYPOGRAPHY ── */
+    .type-rows { display: flex; flex-direction: column; }
+    .type-row { display: grid; grid-template-columns: 64px 1fr 120px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid var(--border); gap: 24px; }
+    .type-lbl { font-size: 9px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim); padding-top: 4px; }
+    .type-meta { font-size: 10px; color: var(--text-dim); text-align: right; }
+    .t-display { font-family: var(--font-display); font-size: 72px; font-weight: 400; line-height: 1; letter-spacing: -0.01em; }
+    .t-h1 { font-family: var(--font-display); font-size: 44px; font-weight: 400; line-height: 1.1; }
+    .t-h1i { font-family: var(--font-display); font-size: 44px; font-weight: 400; font-style: italic; line-height: 1.1; color: var(--accent); }
+    .t-h2 { font-family: var(--font-display); font-size: 28px; font-weight: 400; }
+    .t-h3 { font-family: var(--font-body); font-size: 15px; font-weight: 500; letter-spacing: 0.01em; }
+    .t-body { font-family: var(--font-body); font-size: 14px; font-weight: 400; line-height: 1.7; color: var(--text-mid); }
+    .t-small { font-family: var(--font-body); font-size: 12px; font-weight: 400; color: var(--text-dim); }
+    .t-label { font-family: var(--font-body); font-size: 9px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); }
+
+    /* ── BUTTONS ── */
+    .btn {
+      font-family: var(--font-body);
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      border: none;
+      cursor: pointer;
+      padding: 11px 22px;
+      border-radius: var(--radius);
+      transition: all 0.2s ease;
+      display: inline-block;
+      text-decoration: none;
+    }
+    .btn-primary { background: var(--text); color: var(--bg); }
+    .btn-primary:hover { background: #333; }
+    .btn-accent { background: var(--accent); color: var(--white); }
+    .btn-accent:hover { background: var(--accent-dk); }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-lo); }
+    .btn-ghost { background: transparent; color: var(--text-mid); font-size: 12px; }
+    .btn-ghost:hover { color: var(--text); }
+    .btn-sm { font-size: 10px; padding: 8px 14px; }
+
+    /* ── INPUTS ── */
+    .input-label { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+    .input {
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 400;
+      color: var(--text);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      outline: none;
+      width: 100%;
+      max-width: 320px;
+      transition: border-color 0.15s;
+    }
+    .input:focus { border-color: var(--accent); }
+    .input::placeholder { color: var(--text-dim); }
+
+    /* ── TAGS ── */
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      border-radius: var(--radius-sm);
+      padding: 5px 10px;
+    }
+    .tag-neutral { background: var(--surface); color: var(--text-mid); }
+    .tag-accent { background: var(--accent-lo); color: var(--accent-dk); }
+    .tag-outline { border: 1px solid var(--border); color: var(--text-dim); background: transparent; }
+
+    /* ── CARDS ── */
+    .card { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg); transition: border-color 0.2s; }
+    .card:hover { border-color: var(--accent); }
+    .card-img { height: 160px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 30px; }
+    .card-body { padding: 16px; }
+    .card-category { font-size: 9px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+    .card-title { font-family: var(--font-display); font-size: 18px; font-weight: 400; color: var(--text); margin-bottom: 4px; }
+    .card-meta { font-size: 11px; color: var(--text-dim); }
+    .card-footer { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .card-worn { font-size: 10px; color: var(--text-dim); }
+    .card-accent-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+
+    /* ── APP PREVIEW ── */
+    .app-frame { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg-off); }
+    .app-nav {
+      height: 52px;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 28px;
+    }
+    .app-wordmark {
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 400;
+      color: var(--text);
+      letter-spacing: 0.02em;
+    }
+    .app-nav-links { display: flex; gap: 28px; }
+    .app-nav-link { font-size: 11px; font-weight: 500; color: var(--text-dim); text-decoration: none; letter-spacing: 0.04em; }
+    .app-nav-link.active { color: var(--text); }
+    .app-nav-link.active::after { content: ''; display: block; height: 1px; background: var(--accent); margin-top: 1px; }
+    .app-body { padding: 40px 28px 32px; }
+    .app-heading-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 32px; }
+    .app-heading { font-family: var(--font-display); font-size: 40px; font-weight: 400; color: var(--text); }
+    .app-heading em { font-style: italic; color: var(--accent); }
+    .app-sub { font-size: 12px; color: var(--text-dim); margin-top: 4px; letter-spacing: 0.06em; }
+    .app-action { background: var(--text); color: var(--bg); font-family: var(--font-body); font-size: 11px; font-weight: 500; padding: 9px 18px; border-radius: var(--radius); border: none; cursor: pointer; }
+    .app-filter-row { display: flex; gap: 6px; margin-bottom: 24px; }
+    .app-items { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .app-item { border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); cursor: pointer; overflow: hidden; transition: border-color 0.15s; }
+    .app-item:hover { border-color: var(--accent); }
+    .app-item-img { height: 100px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 24px; }
+    .app-item-body { padding: 10px 12px; }
+    .app-item-cat { font-size: 8px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 3px; }
+    .app-item-name { font-family: var(--font-display); font-size: 14px; font-weight: 400; color: var(--text); }
+    .app-item-worn { font-size: 10px; color: var(--text-dim); margin-top: 3px; }
+
+    /* ── DARK SECTION ── */
+    .dark-panel {
+      background: var(--bg-dark);
+      border-radius: var(--radius-lg);
+      padding: 56px;
+    }
+    .dark-inner { display: grid; grid-template-columns: 1fr auto; gap: 48px; align-items: center; }
+    .dark-eyebrow { font-size: 9px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: #6A6460; margin-bottom: 20px; }
+    .dark-heading { font-family: var(--font-display); font-size: 56px; font-weight: 400; color: #F2EDE6; line-height: 0.95; margin-bottom: 20px; }
+    .dark-heading em { font-style: italic; color: var(--accent); }
+    .dark-body-text { font-size: 13px; font-weight: 400; color: #5A5450; line-height: 1.7; max-width: 360px; margin-bottom: 24px; }
+    .dark-cta {
+      font-family: var(--font-body);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      background: transparent;
+      padding: 10px 20px;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .dark-cta:hover { background: var(--accent); color: var(--bg-dark); }
+    .dark-swatches { display: flex; flex-direction: column; gap: 6px; min-width: 160px; }
+    .dark-swatch { padding: 12px 14px; border-radius: var(--radius-sm); }
+    .dark-swatch-role { font-size: 8px; letter-spacing: 0.14em; text-transform: uppercase; opacity: 0.4; margin-bottom: 3px; font-family: var(--font-body); }
+    .dark-swatch-hex { font-size: 11px; }
+
+    /* ── PRINCIPLES ── */
+    .principles { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 32px; }
+    .principle { padding-top: 20px; border-top: 1px solid var(--border); }
+    .principle-num { font-family: var(--font-display); font-size: 13px; font-weight: 400; color: var(--text-dim); margin-bottom: 12px; }
+    .principle-title { font-size: 13px; font-weight: 500; color: var(--text); margin-bottom: 8px; line-height: 1.3; }
+    .principle-body { font-size: 12px; color: var(--text-mid); line-height: 1.6; }
+
+    /* ── COMP ROW ── */
+    .comp-group { margin-bottom: 32px; }
+    .comp-group-label { font-size: 9px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 14px; }
+    .comp-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+    /* ── FOOTER ── */
+    .page-footer { margin-top: 80px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .footer-brand { font-family: var(--font-display); font-size: 15px; font-weight: 400; color: var(--text-dim); }
+    .footer-dots { display: flex; gap: 6px; }
+    .footer-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--border); }
+    .footer-dot.active { background: var(--accent); }
+    .footer-next { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; color: var(--text-dim); text-decoration: none; }
+    .footer-next:hover { color: var(--text); }
+
+    /* ── MOBILE PREVIEW ── */
+    .phones-row { display:flex; gap:32px; justify-content:center; align-items:flex-start; flex-wrap:wrap; padding:8px 0; }
+    .phone-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; }
+    .phone-caption { font-family:var(--font-body); font-size:9px; font-weight:500; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-dim); }
+    .phone-device { width:188px; height:408px; background:#0F0D0C; border-radius:40px; padding:5px; box-shadow:0 28px 64px rgba(0,0,0,0.28); position:relative; flex-shrink:0; }
+    .phone-island { position:absolute; top:10px; left:50%; transform:translateX(-50%); width:70px; height:16px; border-radius:8px; background:#0F0D0C; z-index:10; }
+    .phone-screen { width:100%; height:100%; background:var(--bg); border-radius:35px; overflow:hidden; display:flex; flex-direction:column; }
+    .phone-status { height:36px; flex-shrink:0; display:flex; align-items:flex-end; justify-content:space-between; padding:0 18px 6px 22px; font-family:var(--font-body); font-size:8px; font-weight:500; color:var(--text-dim); }
+    .phone-content { flex:1; overflow:hidden; padding:12px 16px 0; }
+    .ph-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:14px; }
+    .ph-title { font-family:var(--font-display,var(--font-body)); font-size:24px; font-weight:400; color:var(--text); line-height:1; }
+    .ph-count-label { font-size:8px; color:var(--text-dim); letter-spacing:0.1em; }
+    .ph-search { display:flex; align-items:center; gap:5px; font-size:9px; color:var(--text-dim); background:var(--bg-off,var(--surface)); border:1px solid var(--border); border-radius:var(--radius); padding:7px 10px; margin-bottom:10px; }
+    .ph-filters { display:flex; gap:4px; margin-bottom:12px; overflow:hidden; }
+    .ph-tag { font-family:var(--font-body); font-size:7px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; padding:4px 8px; border-radius:var(--radius-sm); white-space:nowrap; }
+    .ph-tag-on { background:var(--accent-lo); color:var(--accent-dk); }
+    .ph-tag-off { border:1px solid var(--border); color:var(--text-dim); }
+    .ph-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .ph-card { border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; background:var(--bg); }
+    .ph-card-img { height:60px; background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:18px; }
+    .ph-card-info { padding:6px 8px; }
+    .ph-card-cat { font-size:6px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-dim); margin-bottom:2px; }
+    .ph-card-name { font-family:var(--font-display,var(--font-body)); font-size:12px; font-weight:400; color:var(--text); line-height:1.2; }
+    .ph-card-worn { font-size:7px; color:var(--text-dim); margin-top:2px; }
+    .phone-bnav { height:58px; flex-shrink:0; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-around; padding:0 4px 8px; background:var(--bg); }
+    .pbn { display:flex; flex-direction:column; align-items:center; gap:3px; }
+    .pbn-ico { font-size:15px; line-height:1; opacity:0.25; }
+    .pbn-lbl { font-family:var(--font-body); font-size:6px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; color:var(--text-dim); }
+    .pbn.active .pbn-ico { opacity:1; }
+    .pbn.active .pbn-lbl { color:var(--accent); }
+    .ph-det-img { height:148px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:52px; background:var(--surface); }
+    .ph-det-content { flex:1; overflow:hidden; padding:14px 16px 0; }
+    .ph-tag-badge { display:inline-block; font-family:var(--font-body); font-size:7px; font-weight:500; letter-spacing:0.12em; text-transform:uppercase; background:var(--accent-lo); color:var(--accent-dk); padding:3px 8px; border-radius:var(--radius-sm); margin-bottom:8px; }
+    .ph-det-name { font-family:var(--font-display,var(--font-body)); font-size:20px; font-weight:400; line-height:1.1; color:var(--text); margin-bottom:4px; }
+    .ph-det-sub { font-size:9px; color:var(--text-mid); margin-bottom:12px; }
+    .ph-stats-row { display:flex; border:1px solid var(--border); border-radius:var(--radius); overflow:hidden; margin-bottom:12px; }
+    .ph-stat-cell { flex:1; text-align:center; padding:8px 0; border-right:1px solid var(--border); }
+    .ph-stat-cell:last-child { border-right:none; }
+    .ph-stat-val { font-family:var(--font-display,var(--font-body)); font-size:16px; font-weight:400; color:var(--text); line-height:1; }
+    .ph-stat-lbl { font-size:6px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); margin-top:2px; }
+    .ph-log-btn { width:100%; font-family:var(--font-body); font-size:9px; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; background:var(--text); color:var(--bg); border:none; padding:12px; border-radius:var(--radius); cursor:pointer; }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- HERO -->
+  <div class="hero">
+    <div class="hero-number">Ropero · Direction 03 of 05</div>
+    <h1 class="hero-title">Cap<em>sule</em></h1>
+    <div class="hero-split">
+      <p class="hero-desc">Quiet, precise, timeless. Nothing decorative. Nothing extra. The warm blush accent appears on exactly one element per view — the rest is restraint.</p>
+      <div class="hero-refs-block">
+        <div class="hero-refs-label">Reference</div>
+        <span class="hero-ref primary">The Row</span>
+        <span class="hero-ref">A.P.C.</span>
+        <span class="hero-ref">Bottega Veneta</span>
+      </div>
+    </div>
+    <div class="hero-tags">
+      <span class="hero-tag">Quiet</span>
+      <span class="hero-tag">Precise</span>
+      <span class="hero-tag">Timeless</span>
+    </div>
+  </div>
+
+  <!-- COLORS -->
+  <div class="section">
+    <div class="section-label">Color Palette</div>
+    <div class="colors">
+      <div class="swatch">
+        <div class="swatch-block" style="background:#FFFFFF;"></div>
+        <div class="swatch-info"><div class="swatch-role">Background</div><div class="swatch-hex">#FFFFFF</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#F5F2EE;"></div>
+        <div class="swatch-info"><div class="swatch-role">Surface</div><div class="swatch-hex">#F5F2EE</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#0F0D0C;"></div>
+        <div class="swatch-info"><div class="swatch-role">Foreground</div><div class="swatch-hex">#0F0D0C</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#C8917F;"></div>
+        <div class="swatch-info"><div class="swatch-role">Accent / Blush</div><div class="swatch-hex">#C8917F</div></div>
+      </div>
+      <div class="swatch">
+        <div class="swatch-block" style="background:#F5E4DF;"></div>
+        <div class="swatch-info"><div class="swatch-role">Accent Low</div><div class="swatch-hex">#F5E4DF</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TYPOGRAPHY -->
+  <div class="section">
+    <div class="section-label">Typography — EB Garamond + Inter</div>
+    <div class="type-rows">
+      <div class="type-row">
+        <span class="type-lbl">Display</span>
+        <span class="t-display">Wardrobe</span>
+        <span class="type-meta">Garamond 400 · 72px</span>
+      </div>
+      <div class="type-row">
+        <span class="type-lbl">H1</span>
+        <span class="t-h1">My Collection</span>
+        <span class="type-meta">Garamond 400 · 44px</span>
+      </div>
+      <div class="type-row">
+        <span class="type-lbl">H1 italic</span>
+        <span class="t-h1i">Curated for you</span>
+        <span class="type-meta">Garamond 400i · 44px</span>
+      </div>
+      <div class="type-row">
+        <span class="type-lbl">H2</span>
+        <span class="t-h2">Outfits for Spring</span>
+        <span class="type-meta">Garamond 400 · 28px</span>
+      </div>
+      <div class="type-row">
+        <span class="type-lbl">H3</span>
+        <span class="t-h3">Navy Wool Blazer</span>
+        <span class="type-meta">Inter 500 · 15px</span>
+      </div>
+      <div class="type-row">
+        <span class="type-lbl">Body</span>
+        <span class="t-body">A carefully curated wardrobe tells the story of who you are. Each piece earns its place through considered use.</span>
+        <span class="type-meta">Inter 400 · 14px</span>
+      </div>
+      <div class="type-row">
+        <span class="type-lbl">Small</span>
+        <span class="t-small">Last worn 3 days ago · 12 total wears</span>
+        <span class="type-meta">Inter 400 · 12px</span>
+      </div>
+      <div class="type-row">
+        <span class="type-lbl">Label</span>
+        <span class="t-label">Outerwear</span>
+        <span class="type-meta">Inter 500 · 9px · tracked</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMPONENTS -->
+  <div class="section">
+    <div class="section-label">Component Kit</div>
+
+    <div class="comp-group">
+      <div class="comp-group-label">Buttons</div>
+      <div class="comp-row">
+        <button class="btn btn-primary">Add Item</button>
+        <button class="btn btn-accent">Build Outfit</button>
+        <button class="btn btn-outline">View All</button>
+        <button class="btn btn-ghost">Cancel</button>
+        <button class="btn btn-sm btn-outline">Edit</button>
+      </div>
+    </div>
+
+    <div class="comp-group">
+      <div class="comp-group-label">Form Input</div>
+      <label class="input-label">Item Name</label>
+      <input class="input" type="text" placeholder="e.g. Navy Wool Blazer">
+    </div>
+
+    <div class="comp-group">
+      <div class="comp-group-label">Tags</div>
+      <div class="comp-row">
+        <span class="tag tag-neutral">Outerwear</span>
+        <span class="tag tag-accent">Favourite</span>
+        <span class="tag tag-outline">Formal</span>
+        <span class="tag tag-neutral">Spring</span>
+      </div>
+    </div>
+
+    <div class="comp-group">
+      <div class="comp-group-label">Item Cards</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;max-width:560px;">
+        <div class="card">
+          <div class="card-img">🧥</div>
+          <div class="card-body">
+            <div class="card-category">Outerwear</div>
+            <div class="card-title">Navy Blazer</div>
+            <div class="card-meta">Wool blend · M</div>
+          </div>
+          <div class="card-footer">
+            <span class="card-worn">Worn 14×</span>
+            <span class="card-accent-dot"></span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-img" style="background:#F0EEEB;">👔</div>
+          <div class="card-body">
+            <div class="card-category">Tops</div>
+            <div class="card-title">White Linen</div>
+            <div class="card-meta">Linen · M</div>
+          </div>
+          <div class="card-footer">
+            <span class="card-worn">Worn 22×</span>
+            <span class="card-accent-dot"></span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-img" style="background:#ECEAE6;">👖</div>
+          <div class="card-body">
+            <div class="card-category">Bottoms</div>
+            <div class="card-title">Slim Chinos</div>
+            <div class="card-meta">Cotton · 32</div>
+          </div>
+          <div class="card-footer">
+            <span class="card-worn">Worn 8×</span>
+            <span class="card-accent-dot" style="background:var(--text-dim);"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- APP PREVIEW -->
+  <div class="section">
+    <div class="section-label">App Preview</div>
+    <div class="app-frame">
+      <div class="app-nav">
+        <div class="app-wordmark">Ropero</div>
+        <div class="app-nav-links">
+          <a class="app-nav-link active" href="#">Wardrobe</a>
+          <a class="app-nav-link" href="#">Outfits</a>
+          <a class="app-nav-link" href="#">Packing</a>
+          <a class="app-nav-link" href="#">Profile</a>
+        </div>
+        <button class="app-action">Add</button>
+      </div>
+      <div class="app-body">
+        <div class="app-heading-row">
+          <div>
+            <div class="app-heading">My Ward<em>robe</em></div>
+            <div class="app-sub">48 pieces · Updated today</div>
+          </div>
+        </div>
+        <div class="app-filter-row">
+          <span class="tag tag-accent">All</span>
+          <span class="tag tag-outline">Tops</span>
+          <span class="tag tag-outline">Outerwear</span>
+          <span class="tag tag-outline">Bottoms</span>
+          <span class="tag tag-outline">Footwear</span>
+        </div>
+        <div class="app-items">
+          <div class="app-item">
+            <div class="app-item-img">🧥</div>
+            <div class="app-item-body">
+              <div class="app-item-cat">Outerwear</div>
+              <div class="app-item-name">Navy Wool Blazer</div>
+              <div class="app-item-worn">3 days ago</div>
+            </div>
+          </div>
+          <div class="app-item">
+            <div class="app-item-img" style="background:#F0EEEB;">👔</div>
+            <div class="app-item-body">
+              <div class="app-item-cat">Tops</div>
+              <div class="app-item-name">White Linen Shirt</div>
+              <div class="app-item-worn">Yesterday</div>
+            </div>
+          </div>
+          <div class="app-item">
+            <div class="app-item-img" style="background:#ECEAE6;">👖</div>
+            <div class="app-item-body">
+              <div class="app-item-cat">Bottoms</div>
+              <div class="app-item-name">Slim Chinos</div>
+              <div class="app-item-worn">Last week</div>
+            </div>
+          </div>
+          <div class="app-item">
+            <div class="app-item-img" style="background:#E8E4DF;">👟</div>
+            <div class="app-item-body">
+              <div class="app-item-cat">Footwear</div>
+              <div class="app-item-name">White Sneakers</div>
+              <div class="app-item-worn">2 weeks ago</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MOBILE PREVIEW -->
+  <div class="section">
+    <div class="section-label">Mobile Preview</div>
+    <div class="phones-row">
+
+      <!-- Phone 1: Wardrobe -->
+      <div class="phone-wrap">
+        <div class="phone-device">
+          <div class="phone-island"></div>
+          <div class="phone-screen">
+            <div class="phone-status"><span>9:41</span><span>●●●</span></div>
+            <div class="phone-content">
+              <div class="ph-header">
+                <div class="ph-title">Wardrobe</div>
+                <div class="ph-count-label">48 pieces</div>
+              </div>
+              <div class="ph-search">🔍&nbsp; Search items…</div>
+              <div class="ph-filters">
+                <span class="ph-tag ph-tag-on">All</span>
+                <span class="ph-tag ph-tag-off">Tops</span>
+                <span class="ph-tag ph-tag-off">Outer</span>
+              </div>
+              <div class="ph-grid">
+                <div class="ph-card">
+                  <div class="ph-card-img">🧥</div>
+                  <div class="ph-card-info">
+                    <div class="ph-card-cat">Outer</div>
+                    <div class="ph-card-name">Navy Blazer</div>
+                    <div class="ph-card-worn">3d ago</div>
+                  </div>
+                </div>
+                <div class="ph-card">
+                  <div class="ph-card-img" style="background:#F0EEEB;">👔</div>
+                  <div class="ph-card-info">
+                    <div class="ph-card-cat">Tops</div>
+                    <div class="ph-card-name">White Linen</div>
+                    <div class="ph-card-worn">1d ago</div>
+                  </div>
+                </div>
+                <div class="ph-card">
+                  <div class="ph-card-img" style="background:#ECEAE6;">👖</div>
+                  <div class="ph-card-info">
+                    <div class="ph-card-cat">Bottoms</div>
+                    <div class="ph-card-name">Slim Chinos</div>
+                    <div class="ph-card-worn">1w ago</div>
+                  </div>
+                </div>
+                <div class="ph-card">
+                  <div class="ph-card-img" style="background:#E8E4DF;">👟</div>
+                  <div class="ph-card-info">
+                    <div class="ph-card-cat">Shoes</div>
+                    <div class="ph-card-name">Sneakers</div>
+                    <div class="ph-card-worn">2w ago</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="phone-bnav">
+              <div class="pbn active"><div class="pbn-ico">👕</div><div class="pbn-lbl">Wardrobe</div></div>
+              <div class="pbn"><div class="pbn-ico">✨</div><div class="pbn-lbl">Outfits</div></div>
+              <div class="pbn"><div class="pbn-ico">🧳</div><div class="pbn-lbl">Packing</div></div>
+              <div class="pbn"><div class="pbn-ico">👤</div><div class="pbn-lbl">Profile</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">Home · Wardrobe</div>
+      </div>
+
+      <!-- Phone 2: Item detail -->
+      <div class="phone-wrap">
+        <div class="phone-device">
+          <div class="phone-island"></div>
+          <div class="phone-screen">
+            <div class="phone-status"><span>9:41</span><span>●●●</span></div>
+            <div class="ph-det-img">🧥</div>
+            <div class="ph-det-content">
+              <span class="ph-tag-badge">Outerwear</span>
+              <div class="ph-det-name">Navy Wool Blazer</div>
+              <div class="ph-det-sub">Wool blend · Size M · Oct 2024</div>
+              <div class="ph-stats-row">
+                <div class="ph-stat-cell">
+                  <div class="ph-stat-val">14</div>
+                  <div class="ph-stat-lbl">Wears</div>
+                </div>
+                <div class="ph-stat-cell">
+                  <div class="ph-stat-val">$8</div>
+                  <div class="ph-stat-lbl">/ Wear</div>
+                </div>
+                <div class="ph-stat-cell">
+                  <div class="ph-stat-val">★</div>
+                  <div class="ph-stat-lbl">Fav</div>
+                </div>
+              </div>
+              <button class="ph-log-btn">Log Wear Today</button>
+            </div>
+            <div class="phone-bnav">
+              <div class="pbn active"><div class="pbn-ico">👕</div><div class="pbn-lbl">Wardrobe</div></div>
+              <div class="pbn"><div class="pbn-ico">✨</div><div class="pbn-lbl">Outfits</div></div>
+              <div class="pbn"><div class="pbn-ico">🧳</div><div class="pbn-lbl">Packing</div></div>
+              <div class="pbn"><div class="pbn-ico">👤</div><div class="pbn-lbl">Profile</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">Item Detail</div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DARK PANEL -->
+  <div class="section">
+    <div class="section-label">Dark Mode</div>
+    <div class="dark-panel">
+      <div class="dark-inner">
+        <div>
+          <div class="dark-eyebrow">Dark Mode · Capsule</div>
+          <div class="dark-heading">Every piece,<br><em>considered.</em></div>
+          <p class="dark-body-text">The dark mode in Capsule uses warm near-blacks — never cold — with the single blush accent preserved at full vibrancy.</p>
+          <button class="dark-cta">Open Wardrobe</button>
+        </div>
+        <div class="dark-swatches">
+          <div class="dark-swatch" style="background:#181614;border:1px solid rgba(255,255,255,0.06);">
+            <div class="dark-swatch-role" style="color:#F2EDE6;">Background</div>
+            <div class="dark-swatch-hex" style="color:#F2EDE6;">#181614</div>
+          </div>
+          <div class="dark-swatch" style="background:#211E1B;border:1px solid rgba(255,255,255,0.06);">
+            <div class="dark-swatch-role" style="color:#F2EDE6;">Surface</div>
+            <div class="dark-swatch-hex" style="color:#F2EDE6;">#211E1B</div>
+          </div>
+          <div class="dark-swatch" style="background:#C8917F;">
+            <div class="dark-swatch-role" style="color:rgba(255,255,255,0.7);">Accent</div>
+            <div class="dark-swatch-hex" style="color:#FFF;">#C8917F</div>
+          </div>
+          <div class="dark-swatch" style="background:#F2EDE6;">
+            <div class="dark-swatch-role" style="color:#181614;">Foreground</div>
+            <div class="dark-swatch-hex" style="color:#181614;">#F2EDE6</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- PRINCIPLES -->
+  <div class="section">
+    <div class="section-label">Design Principles</div>
+    <div class="principles">
+      <div class="principle">
+        <div class="principle-num">I</div>
+        <div class="principle-title">One accent per view</div>
+        <p class="principle-body">The blush appears on the primary CTA, active filter, or selected state — never more than once per screen.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">II</div>
+        <div class="principle-title">Garamond for feeling</div>
+        <p class="principle-body">The serif is reserved for headings and display text only. Body is Inter. This creates a quiet tension.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">III</div>
+        <div class="principle-title">Generous space</div>
+        <p class="principle-body">Whitespace is the dominant design element. More space signals quality, never emptiness.</p>
+      </div>
+      <div class="principle">
+        <div class="principle-num">IV</div>
+        <div class="principle-title">Warm whites only</div>
+        <p class="principle-body">Pure white for cards and inputs. Off-white for backgrounds. Never clinical blue-white tones.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <div class="footer-brand">Ropero · Capsule</div>
+    <div class="footer-nav">
+      <a class="footer-dot" href="atelier.html" title="01: Atelier"></a>
+      <a class="footer-dot" href="studio.html" title="02: Studio"></a>
+      <a class="footer-dot active" href="capsule.html" title="03: Capsule"></a>
+      <a class="footer-dot" href="archive.html" title="04: Archive"></a>
+      <a class="footer-dot" href="sable.html" title="05: Sable"></a>
+      <a class="footer-dot" href="cote.html" title="06: Côte"></a>
+      <a class="footer-dot" href="mineral.html" title="07: Mineral"></a>
+      <a class="footer-dot" href="verdure.html" title="08: Verdure"></a>
+      <a class="footer-dot" href="mist.html" title="09: Mist"></a>
+      <a class="footer-dot" href="sage.html" title="10: Sage"></a>
+      <a class="footer-dot" href="linden.html" title="11: Linden"></a>
+      <a class="footer-dot" href="gilt.html" title="12: Gilt"></a>
+      <a class="footer-dot" href="ciel.html" title="13: Ciel"></a>
+      <a class="footer-dot" href="toile.html" title="14: Toile"></a>
+      <a class="footer-dot" href="celadon.html" title="15: Celadon"></a>
+      <a class="footer-dot" href="quartz.html" title="16: Quartz"></a>
+      <a class="footer-dot" href="cobalt.html" title="17: Cobalt"></a>
+      <a class="footer-dot" href="chalk.html" title="18: Chalk"></a>
+      <a class="footer-dot" href="dusk.html" title="19: Dusk"></a>
+      <a class="footer-dot" href="matcha.html" title="20: Matcha"></a>
+    </div>
+    <div class="footer-arrows">
+      <a class="footer-prev" href="studio.html">← Studio</a>
+      <a class="footer-next" href="archive.html">Archive →</a>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowRight') window.location.href = 'archive.html';
+      if (e.key === 'ArrowLeft')  window.location.href = 'studio.html';
+    });
+  </script>
+</div>
+
+<!-- PAGE FOOTER — 24 dots -->
+<footer class="page-footer">
+  <span class="footer-brand">Ropero</span>
+  <nav class="footer-nav">
+    <a href="atelier.html" class="footer-dot" title="Atelier"></a>
+    <a href="studio.html" class="footer-dot" title="Studio"></a>
+    <a href="capsule.html" class="footer-dot active" title="Capsule"></a>
+    <a href="archive.html" class="footer-dot" title="Archive"></a>
+    <a href="sable.html" class="footer-dot" title="Sable"></a>
+    <a href="cote.html" class="footer-dot" title="Côte"></a>
+    <a href="mineral.html" class="footer-dot" title="Mineral"></a>
+    <a href="verdure.html" class="footer-dot" title="Verdure"></a>
+    <a href="mist.html" class="footer-dot" title="Mist"></a>
+    <a href="sage.html" class="footer-dot" title="Sage"></a>
+    <a href="linden.html" class="footer-dot" title="Linden"></a>
+    <a href="gilt.html" class="footer-dot" title="Gilt"></a>
+    <a href="ciel.html" class="footer-dot" title="Ciel"></a>
+    <a href="toile.html" class="footer-dot" title="Toile"></a>
+    <a href="celadon.html" class="footer-dot" title="Celadon"></a>
+    <a href="quartz.html" class="footer-dot" title="Quartz"></a>
+    <a href="cobalt.html" class="footer-dot" title="Cobalt"></a>
+    <a href="chalk.html" class="footer-dot" title="Chalk"></a>
+    <a href="dusk.html" class="footer-dot" title="Dusk"></a>
+    <a href="matcha.html" class="footer-dot" title="Matcha"></a>
+    <a href="verdant.html" class="footer-dot" title="Verdant"></a>
+    <a href="terroir.html" class="footer-dot" title="Terroir"></a>
+    <a href="maison.html" class="footer-dot" title="Maison"></a>
+    <a href="basalt.html" class="footer-dot" title="Basalt"></a>
+  </nav>
+  <div class="footer-arrows">
+    <a href="studio.html" class="footer-prev">← Studio</a>
+    <a href="archive.html" class="footer-next">Archive →</a>
+  </div>
+</footer>
+<script>
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight') window.location.href = 'archive.html';
+    if (e.key === 'ArrowLeft')  window.location.href = 'studio.html';
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ropero — Direction 09: Mist</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:        #F0F2F7;
+      --bg-dark:   #0C0E17;
+      --surface:   #E3E7F2;
+      --surface-2: #D8DCF0;
+      --border:    #C8CEDF;
+      --text:      #1A1E2E;
+      --text-mid:  #5A6080;
+      --text-dim:  #96A0BC;
+      --accent:    #7B92C8;
+      --accent-dk: #5470B0;
+      --accent-lo: #DDE4F0;
+      --white:     #FAFBFF;
+
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-body:    'Inter', system-ui, sans-serif;
+      --radius:       10px;
+      --radius-sm:    7px;
+      --radius-lg:    14px;
+    }
+
+    html { background: var(--bg); color: var(--text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .page { max-width: 960px; margin: 0 auto; padding: 0 44px 120px; }
+
+    /* ── HERO ── */
+    .hero { padding: 80px 0 64px; border-bottom: 1px solid var(--border); animation: fadeUp 0.9s ease both; }
+    .hero-eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 36px; }
+    .hero-title { font-family: var(--font-display); font-size: 96px; font-weight: 300; line-height: 0.9; letter-spacing: -0.02em; color: var(--text); margin-bottom: 32px; }
+    .hero-title em { font-style: italic; color: var(--accent); }
+    .hero-split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: end; }
+    .hero-desc { font-size: 15px; font-weight: 400; line-height: 1.75; color: var(--text-mid); }
+    .hero-refs-label { font-size: 9px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
+    .hero-ref { font-family: var(--font-display); font-size: 19px; font-weight: 400; color: var(--text-mid); line-height: 1.9; display: block; }
+    .hero-ref.primary { color: var(--text); }
+    .hero-tags { display: flex; gap: 8px; margin-top: 20px; }
+    .hero-tag { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; color: var(--accent); background: var(--accent-lo); padding: 5px 12px; border-radius: 100px; }
+
+    /* ── SECTION ── */
+    .section { padding: 60px 0 0; }
+    .section + .section { border-top: 1px solid var(--border); margin-top: 60px; }
+    .section-label { font-size: 9px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 36px; display: flex; align-items: center; gap: 14px; }
+    .section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    /* ── COLORS ── */
+    .colors { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+    .swatch { border-radius: var(--radius); overflow: hidden; border: 1px solid var(--border); }
+    .swatch-block { height: 80px; }
+    .swatch-info { padding: 10px 12px; background: var(--white); }
+    .swatch-role { font-size: 9px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 3px; }
+    .swatch-hex { font-size: 11px; color: var(--text-mid); }
+
+    /* ── TYPOGRAPHY ── */
+    .type-rows { display: flex; flex-direction: column; }
+    .type-row { display: grid; grid-template-columns: 72px 1fr 160px; align-items: baseline; padding: 18px 0; border-bottom: 1px solid var(--border); gap: 24px; }
+    .type-lbl { font-size: 9px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); }
+    .type-meta { font-size: 10px; color: var(--text-dim); text-align: right; }
+    .t-display { font-family: var(--font-display); font-size: 68px; font-weight: 300; line-height: 1; letter-spacing: -0.02em; color: var(--text); }
+    .t-h1 { font-family: var(--font-display); font-size: 44px; font-weight: 300; color: var(--text); }
+    .t-h1i { font-family: var(--font-display); font-size: 44px; font-weight: 300; font-style: italic; color: var(--accent); }
+    .t-h2 { font-family: var(--font-display); font-size: 30px; font-weight: 400; color: var(--text); }
+    .t-h3 { font-size: 15px; font-weight: 500; letter-spacing: 0.01em; color: var(--text); }
+    .t-body { font-size: 14px; font-weight: 400; line-height: 1.75; color: var(--text-mid); }
+    .t-small { font-size: 12px; font-weight: 400; color: var(--text-dim); }
+    .t-label { font-size: 9px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); }
+
+    /* ── BUTTONS ── */
+    .btn { font-family: var(--font-body); font-size: 12px; font-weight: 500; letter-spacing: 0.04em; border: none; cursor: pointer; padding: 12px 24px; border-radius: var(--radius); transition: all 0.2s; display: inline-block; }
+    .btn-primary { background: var(--text); color: var(--white); }
+    .btn-primary:hover { background: var(--accent-dk); }
+    .btn-blue { background: var(--accent); color: var(--white); }
+    .btn-blue:hover { background: var(--accent-dk); }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-lo); }
+    .btn-ghost { background: transparent; color: var(--text-mid); }
+    .btn-ghost:hover { color: var(--text); }
+    .btn-sm { font-size: 10px; padding: 8px 16px; }
+
+    /* ── INPUT ── */
+    .input-label { font-size: 10px; font-weight: 500; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; display: block; }
+    .input { font-family: var(--font-body); font-size: 14px; color: var(--text); background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); padding: 12px 16px; outline: none; width: 100%; max-width: 340px; transition: border-color 0.15s, box-shadow 0.15s; }
+    .input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-lo); }
+    .input::placeholder { color: var(--text-dim); }
+
+    /* ── TAGS ── */
+    .tag { display: inline-flex; align-items: center; font-size: 10px; font-weight: 500; border-radius: 100px; padding: 5px 12px; }
+    .tag-neutral { background: var(--surface); color: var(--text-mid); }
+    .tag-blue { background: var(--accent-lo); color: var(--accent-dk); }
+    .tag-dark { background: var(--text); color: var(--white); }
+
+    /* ── CARDS ── */
+    .card { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; transition: border-color 0.2s, box-shadow 0.2s; }
+    .card:hover { border-color: var(--accent); box-shadow: 0 6px 28px rgba(123,146,200,0.14); }
+    .card-img { height: 160px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 30px; }
+    .card-body { padding: 16px; }
+    .card-category { font-size: 9px; font-weight: 500; letter-spacing: 0.16em; text-transform: uppercase; color: var(--accent); margin-bottom: 5px; }
+    .card-title { font-family: var(--font-display); font-size: 19px; font-weight: 400; color: var(--text); margin-bottom: 4px; }
+    .card-meta { font-size: 12px; color: var(--text-dim); }
+    .card-footer { padding: 12px 16px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .card-worn { font-size: 10px; color: var(--text-dim); }
+    .card-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+
+    /* ── APP PREVIEW ── */
+    .app-frame { border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; background: var(--bg); box-shadow: 0 4px 32px rgba(26,30,46,0.08); }
+    .app-nav { background: var(--white); border-bottom: 1px solid var(--border); padding: 0 28px; height: 54px; display: flex; align-items: center; justify-content: space-between; }
+    .app-wordmark { font-family: var(--font-display); font-size: 24px; font-weight: 400; color: var(--text); letter-spacing: 0.01em; }
+    .app-wordmark em { font-style: italic; color: var(--accent); }
+    .app-nav-links { display: flex; gap: 28px; }
+    .app-nav-link { font-size: 11px; font-weight: 500; color: var(--text-dim); text-decoration: none; letter-spacing: 0.04em; }
+    .app-nav-link.active { color: var(--text); }
+    .app-nav-link.active::after { content: ''; display: block; height: 2px; background: var(--accent); border-radius: 1px; margin-top: 2px; }
+    .app-body { padding: 36px 28px; }
+    .app-heading { font-family: var(--font-display); font-size: 40px; font-weight: 300; color: var(--text); margin-bottom: 6px; }
+    .app-heading em { font-style: italic; color: var(--accent); }
+    .app-sub { font-size: 12px; color: var(--text-dim); margin-bottom: 24px; letter-spacing: 0.06em; }
+    .app-filters { display: flex; gap: 8px; margin-bottom: 20px; }
+    .app-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .app-item { background: var(--white); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s; }
+    .app-item:hover { border-color: var(--accent); box-shadow: 0 4px 16px rgba(123,146,200,0.10); }
+    .app-item-img { height: 110px; background: var(--surface); display: flex; align-items: center; justify-content: center; font-size: 26px; }
+    .app-item-body { padding: 10px 12px; }
+    .app-item-cat { font-size: 8px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 3px; }
+    .app-item-name { font-family: var(--font-display); font-size: 15px; font-weight: 400; color: var(--text); }
+    .app-item-worn { font-size: 10px; color: var(--text-dim); margin-top: 3px; }
+
+    /* ── MOBILE PREVIEW ── */
+    .phones-row { display:flex; gap:32px; justify-content:center; align-items:flex-start; flex-wrap:wrap; padding:8px 0; }
+    .phone-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; }
+    .phone-caption { font-family:var(--font-body); font-size:9px; font-weight:500; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-dim); }
+    .phone-device { width:188px; height:408px; background:#1A1E2E; border-radius:40px; padding:5px; box-shadow:0 28px 64px rgba(26,30,46,0.40); position:relative; flex-shrink:0; }
+    .phone-island { position:absolute; top:10px; left:50%; transform:translateX(-50%); width:70px; height:16px; border-radius:8px; background:#1A1E2E; z-index:10; }
+    .phone-screen { width:100%; height:100%; background:var(--bg); border-radius:35px; overflow:hidden; display:flex; flex-direction:column; }
+    .phone-status { height:36px; flex-shrink:0; display:flex; align-items:flex-end; justify-content:space-between; padding:0 18px 6px 22px; font-family:var(--font-body); font-size:8px; font-weight:500; color:var(--text-mid); }
+    .phone-content { flex:1; overflow:hidden; padding:10px 14px 0; }
+    .ph-header { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:10px; }
+    .ph-title { font-family:var(--font-display); font-size:24px; font-weight:300; color:var(--text); line-height:1; }
+    .ph-count-label { font-size:8px; color:var(--text-dim); letter-spacing:0.1em; }
+    .ph-search { display:flex; align-items:center; gap:5px; font-size:9px; color:var(--text-dim); background:var(--surface); border:1px solid var(--border); border-radius:var(--radius-sm); padding:7px 10px; margin-bottom:8px; }
+    .ph-filters { display:flex; gap:4px; margin-bottom:10px; overflow:hidden; }
+    .ph-tag { font-family:var(--font-body); font-size:7px; font-weight:500; letter-spacing:0.1em; text-transform:uppercase; padding:4px 9px; border-radius:100px; white-space:nowrap; }
+    .ph-tag-on { background:var(--accent-lo); color:var(--accent-dk); }
+    .ph-tag-off { border:1px solid var(--border); color:var(--text-dim); }
+    .ph-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; }
+    .ph-card { border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; background:var(--white); }
+    .ph-card-img { height:60px; background:var(--surface); display:flex; align-items:center; justify-content:center; font-size:18px; }
+    .ph-card-info { padding:5px 7px 6px; }
+    .ph-card-cat { font-size:6px; letter-spacing:0.18em; text-transform:uppercase; color:var(--accent); margin-bottom:2px; }
+    .ph-card-name { font-family:var(--font-display); font-size:12px; font-weight:400; color:var(--text); line-height:1.2; }
+    .ph-card-worn { font-size:7px; color:var(--text-dim); margin-top:2px; }
+    .phone-bnav { height:58px; flex-shrink:0; border-top:1px solid var(--border); display:flex; align-items:center; justify-content:space-around; padding:0 4px 8px; background:var(--white); }
+    .pbn { display:flex; flex-direction:column; align-items:center; gap:3px; }
+    .pbn-ico { font-size:15px; line-height:1; opacity:0.3; }
+    .pbn-lbl { font-family:var(--font-body); font-size:6px; font-weight:500; letter-spacing:0.08em; text-transform:uppercase; color:var(--text-dim); }
+    .pbn.active .pbn-ico { opacity:1; }
+    .pbn.active .pbn-lbl { color:var(--accent); }
+    .ph-det-img { height:148px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:52px; background:var(--surface); }
+    .ph-det-content { flex:1; overflow:hidden; padding:12px 14px 0; }
+    .ph-tag-badge { display:inline-block; font-family:var(--font-body); font-size:7px; font-weight:500; letter-spacing:0.12em; text-transform:uppercase; background:var(--accent-lo); color:var(--accent-dk); padding:3px 8px; border-radius:100px; margin-bottom:6px; }
+    .ph-det-name { font-family:var(--font-display); font-size:20px; font-weight:300; line-height:1.1; color:var(--text); margin-bottom:3px; }
+    .ph-det-sub { font-size:9px; color:var(--text-mid); margin-bottom:10px; }
+    .ph-stats-row { display:flex; border:1px solid var(--border); border-radius:var(--radius-sm); overflow:hidden; margin-bottom:10px; }
+    .ph-stat-cell { flex:1; text-align:center; padding:8px 0; border-right:1px solid var(--border); }
+    .ph-stat-cell:last-child { border-right:none; }
+    .ph-stat-val { font-family:var(--font-display); font-size:17px; font-weight:400; color:var(--text); line-height:1; }
+    .ph-stat-lbl { font-size:6px; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-dim); margin-top:2px; }
+    .ph-log-btn { width:100%; font-family:var(--font-body); font-size:9px; font-weight:500; letter-spacing:0.14em; text-transform:uppercase; background:var(--accent); color:var(--white); border:none; padding:12px; border-radius:var(--radius-sm); cursor:pointer; }
+
+    /* ── DARK BAND ── */
+    .dark-band { background: var(--bg-dark); border-radius: var(--radius-lg); padding: 48px; display: grid; grid-template-columns: 1fr 1fr; gap: 48px; align-items: center; }
+    .dark-heading { font-family: var(--font-display); font-size: 52px; font-weight: 300; color: #C8D4EC; line-height: 1; margin-bottom: 16px; }
+    .dark-heading em { font-style: italic; color: #7B92C8; }
+    .dark-body { font-size: 13px; font-weight: 300; color: #3A4060; line-height: 1.7; margin-bottom: 24px; }
+    .dark-btn { font-family: var(--font-body); font-size: 11px; font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase; color: #7B92C8; border: 1px solid rgba(123,146,200,0.4); background: transparent; padding: 11px 22px; border-radius: var(--radius); cursor: pointer; transition: all 0.2s; }
+    .dark-btn:hover { background: #7B92C8; color: var(--bg-dark); }
+    .dark-palette { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+    .dark-swatch { padding: 14px 16px; border-radius: var(--radius-sm); border: 1px solid rgba(255,255,255,0.06); }
+    .dark-role { font-size: 8px; letter-spacing: 0.16em; text-transform: uppercase; opacity: 0.4; margin-bottom: 4px; font-family: var(--font-body); }
+    .dark-hex { font-size: 11px; }
+
+    /* ── PRINCIPLES ── */
+    .principles { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .principle { padding: 28px 32px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .principle:nth-child(even) { border-right: none; }
+    .principle:nth-last-child(-n+2) { border-bottom: none; }
+    .principle-num { font-family: var(--font-display); font-size: 13px; font-style: italic; color: var(--accent); margin-bottom: 10px; }
+    .principle-title { font-size: 14px; font-weight: 500; color: var(--text); margin-bottom: 8px; }
+    .principle-body { font-size: 12px; color: var(--text-mid); line-height: 1.65; }
+
+    /* ── COMP GROUPS ── */
+    .comp-group { margin-bottom: 32px; }
+    .comp-group-label { font-size: 9px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 14px; }
+    .comp-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+
+    /* ── FOOTER ── */
+    .page-footer { margin-top: 72px; padding-top: 24px; border-top: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
+    .footer-brand { font-family: var(--font-display); font-size: 15px; font-style: italic; color: var(--text-dim); }
+    .footer-dots { display: flex; gap: 6px; }
+    .footer-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--border); }
+    .footer-dot.active { background: var(--accent); }
+    .footer-next { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; color: var(--text-dim); text-decoration: none; }
+    .footer-next:hover { color: var(--accent); }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <div class="hero">
+    <div class="hero-eyebrow">Ropero · Brand Direction 09 of 10</div>
+    <h1 class="hero-title"><em>Mist</em></h1>
+    <div class="hero-split">
+      <p class="hero-desc">Pale periwinkle and deep indigo. The wardrobe as quiet confidence — ethereal but precise, like cashmere in a morning fog.</p>
+      <div>
+        <div class="hero-refs-label">Reference</div>
+        <span class="hero-ref primary">Loro Piana</span>
+        <span class="hero-ref">Toteme</span>
+        <span class="hero-ref">Jil Sander</span>
+      </div>
+    </div>
+    <div class="hero-tags">
+      <span class="hero-tag">Ethereal</span>
+      <span class="hero-tag">Precise</span>
+      <span class="hero-tag">Elevated</span>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Color Palette</div>
+    <div class="colors">
+      <div class="swatch"><div class="swatch-block" style="background:#F0F2F7;border:1px solid #C8CEDF;"></div><div class="swatch-info"><div class="swatch-role">Background</div><div class="swatch-hex">#F0F2F7</div></div></div>
+      <div class="swatch"><div class="swatch-block" style="background:#E3E7F2;"></div><div class="swatch-info"><div class="swatch-role">Surface</div><div class="swatch-hex">#E3E7F2</div></div></div>
+      <div class="swatch"><div class="swatch-block" style="background:#1A1E2E;"></div><div class="swatch-info"><div class="swatch-role">Foreground</div><div class="swatch-hex">#1A1E2E</div></div></div>
+      <div class="swatch"><div class="swatch-block" style="background:#7B92C8;"></div><div class="swatch-info"><div class="swatch-role">Accent / Blue</div><div class="swatch-hex">#7B92C8</div></div></div>
+      <div class="swatch"><div class="swatch-block" style="background:#DDE4F0;"></div><div class="swatch-info"><div class="swatch-role">Accent Low</div><div class="swatch-hex">#DDE4F0</div></div></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Typography — Cormorant Garamond + Inter</div>
+    <div class="type-rows">
+      <div class="type-row"><span class="type-lbl">Display</span><span class="t-display">Wardrobe</span><span class="type-meta">Cormorant 300 · 68px</span></div>
+      <div class="type-row"><span class="type-lbl">H1</span><span class="t-h1">My Collection</span><span class="type-meta">Cormorant 300 · 44px</span></div>
+      <div class="type-row"><span class="type-lbl">H1 italic</span><span class="t-h1i">Curated for you</span><span class="type-meta">Cormorant 300i · 44px</span></div>
+      <div class="type-row"><span class="type-lbl">H2</span><span class="t-h2">Outfits for Spring</span><span class="type-meta">Cormorant 400 · 30px</span></div>
+      <div class="type-row"><span class="type-lbl">Body</span><span class="t-body">A carefully curated wardrobe tells the story of who you are. Each piece earns its place.</span><span class="type-meta">Inter 400 · 14px</span></div>
+      <div class="type-row"><span class="type-lbl">Small</span><span class="t-small">Last worn 3 days ago · 12 total wears</span><span class="type-meta">Inter 400 · 12px</span></div>
+      <div class="type-row"><span class="type-lbl">Label</span><span class="t-label">Outerwear</span><span class="type-meta">Inter 500 · 9px · tracked</span></div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Component Kit</div>
+    <div class="comp-group">
+      <div class="comp-group-label">Buttons</div>
+      <div class="comp-row">
+        <button class="btn btn-primary">Add Item</button>
+        <button class="btn btn-blue">Build Outfit</button>
+        <button class="btn btn-outline">View All</button>
+        <button class="btn btn-ghost">Cancel</button>
+        <button class="btn btn-sm btn-outline">Edit</button>
+      </div>
+    </div>
+    <div class="comp-group">
+      <div class="comp-group-label">Tags</div>
+      <div class="comp-row">
+        <span class="tag tag-neutral">All Items</span>
+        <span class="tag tag-blue">Outerwear</span>
+        <span class="tag tag-dark">Favourites</span>
+        <span class="tag tag-neutral">Knitwear</span>
+        <span class="tag tag-blue">Spring</span>
+      </div>
+    </div>
+    <div class="comp-group">
+      <div class="comp-group-label">Input</div>
+      <div class="comp-row" style="flex-direction:column;align-items:flex-start;">
+        <label class="input-label">Item name</label>
+        <input class="input" type="text" placeholder="e.g. Cashmere turtleneck">
+      </div>
+    </div>
+    <div class="comp-group">
+      <div class="comp-group-label">Garment cards</div>
+      <div class="comp-row">
+        <div class="card" style="width:180px">
+          <div class="card-img">🧥</div>
+          <div class="card-body">
+            <div class="card-category">Outerwear</div>
+            <div class="card-title">Wool Overcoat</div>
+            <div class="card-meta">Dove grey · Size M</div>
+          </div>
+          <div class="card-footer">
+            <span class="card-worn">Worn 11×</span>
+            <span class="card-dot"></span>
+          </div>
+        </div>
+        <div class="card" style="width:180px">
+          <div class="card-img">🧶</div>
+          <div class="card-body">
+            <div class="card-category">Knitwear</div>
+            <div class="card-title">Cashmere Turtleneck</div>
+            <div class="card-meta">Oat · Size S</div>
+          </div>
+          <div class="card-footer">
+            <span class="card-worn">Worn 18×</span>
+            <span class="card-dot"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">App Preview — Desktop</div>
+    <div class="app-frame">
+      <div class="app-nav">
+        <div class="app-wordmark">rop<em>ero</em></div>
+        <div class="app-nav-links">
+          <a class="app-nav-link active" href="#">Wardrobe</a>
+          <a class="app-nav-link" href="#">Outfits</a>
+          <a class="app-nav-link" href="#">Log</a>
+          <a class="app-nav-link" href="#">Pack</a>
+        </div>
+      </div>
+      <div class="app-body">
+        <div class="app-heading">My <em>Wardrobe</em></div>
+        <div class="app-sub">84 pieces · Spring edit</div>
+        <div class="app-filters">
+          <span class="tag tag-dark">All</span>
+          <span class="tag tag-neutral">Tops</span>
+          <span class="tag tag-blue">Knitwear</span>
+          <span class="tag tag-neutral">Trousers</span>
+        </div>
+        <div class="app-grid">
+          <div class="app-item"><div class="app-item-img">🧥</div><div class="app-item-body"><div class="app-item-cat">Outerwear</div><div class="app-item-name">Wool Overcoat</div><div class="app-item-worn">Worn 11×</div></div></div>
+          <div class="app-item"><div class="app-item-img">🧶</div><div class="app-item-body"><div class="app-item-cat">Knitwear</div><div class="app-item-name">Cashmere Turtleneck</div><div class="app-item-worn">Worn 18×</div></div></div>
+          <div class="app-item"><div class="app-item-img">👖</div><div class="app-item-body"><div class="app-item-cat">Trousers</div><div class="app-item-name">Wide Leg Trousers</div><div class="app-item-worn">Worn 9×</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Mobile Preview</div>
+    <div class="phones-row">
+
+      <div class="phone-wrap">
+        <div class="phone-device">
+          <div class="phone-island"></div>
+          <div class="phone-screen">
+            <div class="phone-status"><span>9:41</span><span>●●●</span></div>
+            <div class="phone-content">
+              <div class="ph-header">
+                <span class="ph-title">Wardrobe</span>
+                <span class="ph-count-label">84 pieces</span>
+              </div>
+              <div class="ph-search">🔍 Search items…</div>
+              <div class="ph-filters">
+                <span class="ph-tag ph-tag-on">All</span>
+                <span class="ph-tag ph-tag-off">Tops</span>
+                <span class="ph-tag ph-tag-off">Knitwear</span>
+                <span class="ph-tag ph-tag-off">Trousers</span>
+              </div>
+              <div class="ph-grid">
+                <div class="ph-card"><div class="ph-card-img">🧥</div><div class="ph-card-info"><div class="ph-card-cat">Outerwear</div><div class="ph-card-name">Wool Overcoat</div><div class="ph-card-worn">Worn 11×</div></div></div>
+                <div class="ph-card"><div class="ph-card-img">🧶</div><div class="ph-card-info"><div class="ph-card-cat">Knitwear</div><div class="ph-card-name">Cashmere Turtleneck</div><div class="ph-card-worn">Worn 18×</div></div></div>
+                <div class="ph-card"><div class="ph-card-img">👖</div><div class="ph-card-info"><div class="ph-card-cat">Trousers</div><div class="ph-card-name">Wide Leg Trousers</div><div class="ph-card-worn">Worn 9×</div></div></div>
+                <div class="ph-card"><div class="ph-card-img">👟</div><div class="ph-card-info"><div class="ph-card-cat">Footwear</div><div class="ph-card-name">Ballet Flats</div><div class="ph-card-worn">Worn 6×</div></div></div>
+              </div>
+            </div>
+            <div class="phone-bnav">
+              <div class="pbn active"><div class="pbn-ico">👔</div><div class="pbn-lbl">Wardrobe</div></div>
+              <div class="pbn"><div class="pbn-ico">✨</div><div class="pbn-lbl">Outfits</div></div>
+              <div class="pbn"><div class="pbn-ico">📅</div><div class="pbn-lbl">Log</div></div>
+              <div class="pbn"><div class="pbn-ico">🧳</div><div class="pbn-lbl">Pack</div></div>
+              <div class="pbn"><div class="pbn-ico">👤</div><div class="pbn-lbl">Profile</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">Wardrobe</div>
+      </div>
+
+      <div class="phone-wrap">
+        <div class="phone-device">
+          <div class="phone-island"></div>
+          <div class="phone-screen">
+            <div class="phone-status"><span>9:41</span><span>●●●</span></div>
+            <div class="ph-det-img">🧶</div>
+            <div class="ph-det-content">
+              <div class="ph-tag-badge">Knitwear</div>
+              <div class="ph-det-name">Cashmere Turtleneck</div>
+              <div class="ph-det-sub">Oat · Size S · Loro Piana</div>
+              <div class="ph-stats-row">
+                <div class="ph-stat-cell"><div class="ph-stat-val">18</div><div class="ph-stat-lbl">Wears</div></div>
+                <div class="ph-stat-cell"><div class="ph-stat-val">6</div><div class="ph-stat-lbl">Outfits</div></div>
+                <div class="ph-stat-cell"><div class="ph-stat-val">32</div><div class="ph-stat-lbl">CPW £</div></div>
+              </div>
+              <button class="ph-log-btn">Log a wear</button>
+            </div>
+            <div class="phone-bnav">
+              <div class="pbn active"><div class="pbn-ico">👔</div><div class="pbn-lbl">Wardrobe</div></div>
+              <div class="pbn"><div class="pbn-ico">✨</div><div class="pbn-lbl">Outfits</div></div>
+              <div class="pbn"><div class="pbn-ico">📅</div><div class="pbn-lbl">Log</div></div>
+              <div class="pbn"><div class="pbn-ico">🧳</div><div class="pbn-lbl">Pack</div></div>
+              <div class="pbn"><div class="pbn-ico">👤</div><div class="pbn-lbl">Profile</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-caption">Item Detail</div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Dark Mode Accent</div>
+    <div class="dark-band">
+      <div>
+        <div class="dark-heading">Dressed<br><em>with intent.</em></div>
+        <div class="dark-body">Mist is the colour of clarity. A wardrobe stripped to its essence — only what is worn, loved, and returned to.</div>
+        <button class="dark-btn">Explore your wardrobe</button>
+      </div>
+      <div class="dark-palette">
+        <div class="dark-swatch" style="background:#1A1F38;color:#7B92C8;"><div class="dark-role">Surface</div><div class="dark-hex">#1A1F38</div></div>
+        <div class="dark-swatch" style="background:#7B92C8;color:#0C0E17;"><div class="dark-role">Accent</div><div class="dark-hex">#7B92C8</div></div>
+        <div class="dark-swatch" style="background:#A8BCDF;color:#0C0E17;"><div class="dark-role">Accent Light</div><div class="dark-hex">#A8BCDF</div></div>
+        <div class="dark-swatch" style="background:#DDE4F0;color:#0C0E17;"><div class="dark-role">Accent Lo</div><div class="dark-hex">#DDE4F0</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">Brand Principles</div>
+    <div class="principles">
+      <div class="principle"><div class="principle-num">01.</div><div class="principle-title">Cool precision</div><div class="principle-body">Periwinkle is neither blue nor grey — it lives in the space between. Mist occupies that same considered middle ground.</div></div>
+      <div class="principle"><div class="principle-num">02.</div><div class="principle-title">Editorial lightness</div><div class="principle-body">Cormorant's light weight brings an airy, magazine quality. Text is not heavy on screen — it floats.</div></div>
+      <div class="principle"><div class="principle-num">03.</div><div class="principle-title">Soft geometry</div><div class="principle-body">Generous corner radii (10px) soften every surface without becoming playful. Structure with warmth.</div></div>
+      <div class="principle"><div class="principle-num">04.</div><div class="principle-title">Understated luxury</div><div class="principle-body">No loud colours. No high contrast. Mist whispers. The luxury is in the restraint — like Loro Piana's palette.</div></div>
+    </div>
+  </div>
+
+  <div class="page-footer">
+    <span class="footer-brand">Ropero — Mist</span>
+    <div class="footer-dots">
+      <div class="footer-dot"></div><div class="footer-dot"></div><div class="footer-dot"></div>
+      <div class="footer-dot"></div><div class="footer-dot"></div><div class="footer-dot"></div>
+      <div class="footer-dot"></div><div class="footer-dot"></div>
+      <div class="footer-dot active"></div><div class="footer-dot"></div>
+    </div>
+    <a class="footer-next" href="sage.html">Direction 10 — Sage →</a>
+  </div>
+
+
+  <!-- FOOTER -->
+  <div class="page-footer">
+    <div class="footer-brand">Ropero · Mist</div>
+    <div class="footer-nav">
+      <a class="footer-dot" href="atelier.html" title="01: Atelier"></a>
+      <a class="footer-dot" href="studio.html" title="02: Studio"></a>
+      <a class="footer-dot" href="capsule.html" title="03: Capsule"></a>
+      <a class="footer-dot" href="archive.html" title="04: Archive"></a>
+      <a class="footer-dot" href="sable.html" title="05: Sable"></a>
+      <a class="footer-dot" href="cote.html" title="06: Côte"></a>
+      <a class="footer-dot" href="mineral.html" title="07: Mineral"></a>
+      <a class="footer-dot" href="verdure.html" title="08: Verdure"></a>
+      <a class="footer-dot active" href="mist.html" title="09: Mist"></a>
+      <a class="footer-dot" href="sage.html" title="10: Sage"></a>
+      <a class="footer-dot" href="linden.html" title="11: Linden"></a>
+      <a class="footer-dot" href="gilt.html" title="12: Gilt"></a>
+      <a class="footer-dot" href="ciel.html" title="13: Ciel"></a>
+      <a class="footer-dot" href="toile.html" title="14: Toile"></a>
+      <a class="footer-dot" href="celadon.html" title="15: Celadon"></a>
+      <a class="footer-dot" href="quartz.html" title="16: Quartz"></a>
+      <a class="footer-dot" href="cobalt.html" title="17: Cobalt"></a>
+      <a class="footer-dot" href="chalk.html" title="18: Chalk"></a>
+      <a class="footer-dot" href="dusk.html" title="19: Dusk"></a>
+      <a class="footer-dot" href="matcha.html" title="20: Matcha"></a>
+    </div>
+    <div class="footer-arrows">
+      <a class="footer-prev" href="verdure.html">← Verdure</a>
+      <a class="footer-next" href="sage.html">Sage →</a>
+    </div>
+  </div>
+  <script>
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowRight') window.location.href = 'sage.html';
+      if (e.key === 'ArrowLeft')  window.location.href = 'verdure.html';
+    });
+  </script>
+
+</div>
+
+<!-- PAGE FOOTER — 24 dots -->
+<footer class="page-footer">
+  <span class="footer-brand">Ropero</span>
+  <nav class="footer-nav">
+    <a href="atelier.html" class="footer-dot" title="Atelier"></a>
+    <a href="studio.html" class="footer-dot" title="Studio"></a>
+    <a href="capsule.html" class="footer-dot" title="Capsule"></a>
+    <a href="archive.html" class="footer-dot" title="Archive"></a>
+    <a href="sable.html" class="footer-dot" title="Sable"></a>
+    <a href="cote.html" class="footer-dot" title="Côte"></a>
+    <a href="mineral.html" class="footer-dot" title="Mineral"></a>
+    <a href="verdure.html" class="footer-dot" title="Verdure"></a>
+    <a href="mist.html" class="footer-dot active" title="Mist"></a>
+    <a href="sage.html" class="footer-dot" title="Sage"></a>
+    <a href="linden.html" class="footer-dot" title="Linden"></a>
+    <a href="gilt.html" class="footer-dot" title="Gilt"></a>
+    <a href="ciel.html" class="footer-dot" title="Ciel"></a>
+    <a href="toile.html" class="footer-dot" title="Toile"></a>
+    <a href="celadon.html" class="footer-dot" title="Celadon"></a>
+    <a href="quartz.html" class="footer-dot" title="Quartz"></a>
+    <a href="cobalt.html" class="footer-dot" title="Cobalt"></a>
+    <a href="chalk.html" class="footer-dot" title="Chalk"></a>
+    <a href="dusk.html" class="footer-dot" title="Dusk"></a>
+    <a href="matcha.html" class="footer-dot" title="Matcha"></a>
+    <a href="verdant.html" class="footer-dot" title="Verdant"></a>
+    <a href="terroir.html" class="footer-dot" title="Terroir"></a>
+    <a href="maison.html" class="footer-dot" title="Maison"></a>
+    <a href="basalt.html" class="footer-dot" title="Basalt"></a>
+  </nav>
+  <div class="footer-arrows">
+    <a href="verdure.html" class="footer-prev">← Verdure</a>
+    <a href="sage.html" class="footer-next">Sage →</a>
+  </div>
+</footer>
+<script>
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight') window.location.href = 'sage.html';
+    if (e.key === 'ArrowLeft')  window.location.href = 'verdure.html';
+  });
+</script>
+</body>
+</html>

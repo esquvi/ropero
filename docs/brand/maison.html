@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ropero — Direction 23: Maison</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;1,6..96,400&family=Karla:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Toile palette + Bodoni Moda/Karla typography ── */
+    :root {
+      --bg:        #F8F7F2;
+      --bg-dark:   #080C1A;
+      --surface:   #EEEBD8;
+      --surface-2: #E4E0C8;
+      --border:    #D0CAAA;
+      --text:      #0F1A36;
+      --text-mid:  #465070;
+      --text-dim:  #8090B0;
+      --accent:    #1E4FA0;
+      --accent-dk: #142E6E;
+      --accent-lo: #C8D4EE;
+      --white:     #FEFEF8;
+
+      --font-display: 'Bodoni Moda', Georgia, serif;
+      --font-body:    'Karla', system-ui, sans-serif;
+      --radius:       1px;
+      --radius-sm:    1px;
+      --radius-lg:    2px;
+    }
+
+    html { background: var(--bg); color: var(--text); font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
+    @keyframes fadeUp { from { opacity:0; transform:translateY(16px); } to { opacity:1; transform:translateY(0); } }
+    .page { max-width: 960px; margin: 0 auto; padding: 0 44px 120px; }
+
+    /* ── HERO ── */
+    .hero { padding: 80px 0 64px; border-bottom: 1px solid var(--border); animation: fadeUp 0.9s ease both; }
+    .hero-eyebrow { font-size: 10px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 36px; }
+    .hero-title { font-family: var(--font-display); font-size: 108px; font-weight: 400; line-height: 0.86; color: var(--accent); margin-bottom: 8px; }
+    .hero-title em { font-style: italic; color: var(--text); }
+    .hero-hybrid-note { font-size: 11px; font-weight: 400; letter-spacing: 0.1em; color: var(--text-dim); margin-bottom: 28px; font-family: var(--font-display); font-style: italic; }
+    .hero-split { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; align-items: end; }
+    .hero-desc { font-size: 15px; font-weight: 400; line-height: 1.75; color: var(--text-mid); }
+    .hero-refs-label { font-size: 9px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 10px; }
+    .hero-ref { font-family: var(--font-display); font-size: 20px; font-weight: 400; color: var(--text-mid); line-height: 1.7; display: block; }
+    .hero-ref.primary { color: var(--accent); font-style: italic; }
+    .hero-tags { display: flex; gap: 8px; margin-top: 20px; flex-wrap: wrap; }
+    .hero-tag { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; color: var(--accent); background: var(--accent-lo); padding: 5px 14px; border-radius: 0; }
+
+    .section { padding: 60px 0 0; }
+    .section-label { font-size: 9px; font-weight: 500; letter-spacing: 0.22em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 28px; }
+
+    /* ── HYBRID CALLOUT ── */
+    .hybrid-row { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-bottom: 40px; }
+    .hybrid-source { padding: 20px 24px; border: 1px solid var(--border); background: var(--white); }
+    .hybrid-source-label { font-size: 9px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+    .hybrid-source-name { font-family: var(--font-display); font-size: 24px; font-weight: 400; color: var(--accent); }
+    .hybrid-source-name.italic { font-style: italic; }
+
+    /* ── PALETTE ── */
+    .palette { display: flex; gap: 0; overflow: hidden; height: 88px; }
+    .swatch { flex: 1; display: flex; align-items: flex-end; padding: 8px 10px; }
+    .swatch-label { font-size: 9px; font-weight: 500; letter-spacing: 0.08em; color: rgba(255,255,255,0.7); }
+    .swatch-label.dark { color: rgba(0,0,0,0.35); }
+
+    /* ── TYPE SPECIMEN ── */
+    .type-specimen { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+    .type-block { padding: 36px; background: var(--white); border: 1px solid var(--border); }
+    .type-block-label { font-size: 9px; font-weight: 500; letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 16px; }
+    .type-display { font-family: var(--font-display); font-size: 60px; font-weight: 400; line-height: 0.9; color: var(--accent); margin-bottom: 4px; }
+    .type-display em { font-style: italic; }
+    .type-body-sample { font-size: 14px; font-weight: 400; line-height: 1.7; color: var(--text-mid); }
+    .type-detail { font-size: 10px; font-weight: 500; letter-spacing: 0.16em; color: var(--text-dim); margin-top: 12px; text-transform: uppercase; }
+
+    /* ── COMPONENTS ── */
+    .component-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1px; background: var(--border); }
+    .card { background: var(--white); overflow: hidden; }
+    .card-img { height: 140px; background: var(--surface); display: flex; align-items: center; justify-content: center; position: relative; }
+    .card-img-label { font-family: var(--font-display); font-size: 48px; font-style: italic; color: var(--accent-lo); }
+    .card-badge { position: absolute; top: 10px; right: 10px; background: var(--accent); color: var(--white); font-size: 8px; font-weight: 600; letter-spacing: 0.12em; padding: 3px 8px; font-family: var(--font-body); text-transform: uppercase; }
+    .card-body { padding: 18px; }
+    .card-label { font-size: 9px; font-weight: 500; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 6px; }
+    .card-title { font-family: var(--font-display); font-size: 20px; font-weight: 400; color: var(--accent); line-height: 1.2; margin-bottom: 6px; }
+    .card-title em { font-style: italic; }
+    .card-meta { font-size: 12px; color: var(--text-dim); font-weight: 400; }
+
+    /* ── BUTTONS ── */
+    .button-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+    .btn { font-family: var(--font-body); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; padding: 13px 28px; border-radius: var(--radius); cursor: pointer; border: none; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary { background: var(--accent); color: var(--white); }
+    .btn-secondary { background: transparent; color: var(--accent); border: 1.5px solid var(--accent); }
+    .btn-ghost { background: transparent; color: var(--text-mid); }
+
+    /* ── INPUTS ── */
+    .input-row { display: flex; gap: 16px; align-items: flex-start; }
+    .field { flex: 1; }
+    .field label { display: block; font-size: 10px; font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-dim); margin-bottom: 8px; }
+    .field input { width: 100%; background: var(--white); border: 1.5px solid var(--border); border-radius: var(--radius); font-family: var(--font-body); font-size: 14px; color: var(--text); padding: 11px 16px; outline: none; }
+    .field input:focus { border-color: var(--accent); }
+    .field input::placeholder { color: var(--text-dim); }
+
+    /* ── TAGS ── */
+    .tag-row { display: flex; gap: 10px; flex-wrap: wrap; }
+    .tag { font-size: 10px; font-weight: 500; letter-spacing: 0.1em; padding: 6px 14px; border-radius: var(--radius); }
+    .tag-filled { background: var(--accent); color: var(--white); }
+    .tag-outline { border: 1.5px solid var(--accent); color: var(--accent); }
+    .tag-lo { background: var(--accent-lo); color: var(--accent-dk); }
+    .tag-neutral { background: var(--surface); color: var(--text-mid); }
+
+    /* ── DARK BAND ── */
+    .dark-band { background: var(--bg-dark); margin: 60px -44px 0; padding: 60px 44px; }
+    .dark-band .section-label { color: #2A3860; }
+    .dark-band .component-row { background: #141C3A; }
+    .dark-band .card { background: #0C1228; }
+    .dark-band .card-title { color: #7A9AE0; }
+    .dark-band .card-label { color: #2A3860; }
+    .dark-band .card-meta { color: #2A3860; }
+    .dark-band .card-img { background: #080E20; }
+    .dark-band .card-img-label { color: #141C3A; }
+    .dark-band .btn-primary { background: #3A6AC8; }
+    .dark-band .btn-secondary { border-color: #3A6AC8; color: #3A6AC8; }
+    .dark-band-accent { font-family: var(--font-display); font-size: 88px; font-weight: 400; color: #5A80D8; margin-bottom: 32px; line-height: 0.88; }
+    .dark-band-accent em { font-style: italic; color: #8AAAF8; }
+
+    /* ── PHONE ── */
+    .phone-row { display: flex; gap: 32px; justify-content: center; flex-wrap: wrap; }
+    .phone { width: 220px; height: 440px; background: var(--white); border-radius: 36px; border: 2px solid var(--border); overflow: hidden; position: relative; flex-shrink: 0; box-shadow: 0 24px 64px rgba(30,79,160,0.12); }
+    .phone-notch { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); width: 80px; height: 22px; background: var(--bg); border-radius: 100px; z-index: 10; }
+    .phone-screen { width: 100%; height: 100%; display: flex; flex-direction: column; }
+    .phone-nav { padding: 44px 16px 10px; background: var(--white); border-bottom: 2px solid var(--text); }
+    .phone-nav-title { font-family: var(--font-display); font-size: 24px; font-weight: 400; color: var(--accent); }
+    .phone-nav-sub { font-size: 10px; color: var(--text-dim); font-weight: 400; margin-top: 2px; }
+    .phone-body { flex: 1; padding: 14px; overflow: hidden; display: flex; flex-direction: column; gap: 10px; }
+    .phone-card { background: var(--surface); padding: 12px; border-left: 2px solid var(--accent); }
+    .phone-card-tag { font-size: 8px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; color: var(--accent); margin-bottom: 4px; }
+    .phone-card-name { font-family: var(--font-display); font-size: 15px; font-weight: 400; color: var(--accent); }
+    .phone-card-meta { font-size: 9px; color: var(--text-dim); font-weight: 400; margin-top: 3px; }
+    .phone-tab-bar { display: flex; justify-content: space-around; padding: 10px 0 16px; border-top: 1px solid var(--border); background: var(--white); }
+    .phone-tab { display: flex; flex-direction: column; align-items: center; gap: 3px; }
+    .phone-tab-dot { width: 16px; height: 1px; background: var(--surface-2); }
+    .phone-tab-dot.active { background: var(--accent); }
+    .phone-tab-label { font-size: 8px; font-weight: 500; color: var(--text-dim); letter-spacing: 0.08em; }
+    .phone-tab-label.active { color: var(--accent); }
+    .phone-detail-img { height: 160px; background: linear-gradient(160deg, var(--surface) 0%, var(--accent-lo) 100%); display: flex; align-items: center; justify-content: center; }
+    .phone-detail-icon { font-family: var(--font-display); font-size: 60px; font-style: italic; color: var(--accent); opacity: 0.4; }
+    .phone-detail-info { padding: 14px; flex: 1; }
+    .phone-detail-category { font-size: 8px; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 6px; }
+    .phone-detail-title { font-family: var(--font-display); font-size: 22px; font-weight: 400; color: var(--accent); line-height: 1.1; margin-bottom: 8px; }
+    .phone-detail-row { display: flex; justify-content: space-between; font-size: 10px; color: var(--text-dim); font-weight: 400; padding: 5px 0; border-bottom: 1px solid var(--surface-2); }
+    .phone-detail-action { margin: 10px 0 0; background: var(--accent); color: var(--white); font-size: 10px; font-weight: 500; letter-spacing: 0.08em; text-align: center; padding: 10px; }
+
+    /* ── PAGE FOOTER ── */
+    .page-footer { position: fixed; bottom: 0; left: 0; right: 0; height: 52px; background: var(--white, var(--bg)); border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; z-index: 100; }
+    .footer-brand { font-size: 10px; font-weight: 400; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-dim); min-width: 120px; font-family: var(--font-display); font-style: italic; }
+    .footer-nav { display: flex; gap: 5px; align-items: center; }
+    .footer-dot { display: block; width: 7px; height: 7px; border-radius: 50%; background: var(--border); cursor: pointer; transition: background 0.15s, width 0.15s; text-decoration: none; flex-shrink: 0; }
+    .footer-dot:hover { background: var(--text-dim); }
+    .footer-dot.active { background: var(--accent); width: 18px; border-radius: 4px; }
+    .footer-arrows { display: flex; gap: 20px; align-items: center; min-width: 120px; justify-content: flex-end; }
+    .footer-prev, .footer-next { font-size: 9px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); text-decoration: none; white-space: nowrap; }
+    .footer-prev:hover, .footer-next:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <section class="hero">
+    <p class="hero-eyebrow">Ropero · Direction 23 · Hybrid</p>
+    <h1 class="hero-title">Mai<em>son</em></h1>
+    <p class="hero-hybrid-note">Toile palette · Bodoni Moda + Karla typography</p>
+    <div class="hero-split">
+      <div>
+        <p class="hero-desc">Toile's deep French blue on ivory was already one of the most refined palettes in the set. Bodoni Moda's extreme stroke contrast — thick verticals, hairline horizontals — leans fully into the Parisian fashion house feeling that Libre Caslon was only suggesting. This is Ropero as <em style="font-family: var(--font-display);">maison</em>.</p>
+        <div class="hero-tags">
+          <span class="hero-tag">French Blue</span>
+          <span class="hero-tag">Bodoni Moda</span>
+          <span class="hero-tag">Parisian</span>
+          <span class="hero-tag">Editorial</span>
+        </div>
+      </div>
+      <div>
+        <p class="hero-refs-label">References</p>
+        <span class="hero-ref primary">A.P.C.</span>
+        <span class="hero-ref">Maison Kitsuné</span>
+        <span class="hero-ref">Rouje</span>
+        <span class="hero-ref">Jacquemus</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <p class="section-label">Hybrid Sources</p>
+    <div class="hybrid-row">
+      <div class="hybrid-source">
+        <p class="hybrid-source-label">Colors from → Direction 14</p>
+        <p class="hybrid-source-name">Toile</p>
+        <p style="font-size:12px; color: var(--text-dim); margin-top:6px;">French blue #1E4FA0 · Warm ivory #F8F7F2</p>
+      </div>
+      <div class="hybrid-source">
+        <p class="hybrid-source-label">Typography from → Direction 11</p>
+        <p class="hybrid-source-name italic">Linden</p>
+        <p style="font-size:12px; color: var(--text-dim); margin-top:6px;">Bodoni Moda display · Karla body</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <p class="section-label">Color Palette</p>
+    <div class="palette">
+      <div class="swatch" style="background:#F8F7F2"><span class="swatch-label dark">BG</span></div>
+      <div class="swatch" style="background:#EEEBD8"><span class="swatch-label dark">Surface</span></div>
+      <div class="swatch" style="background:#E4E0C8"><span class="swatch-label dark">Surface 2</span></div>
+      <div class="swatch" style="background:#D0CAAA"><span class="swatch-label dark">Border</span></div>
+      <div class="swatch" style="background:#8090B0"><span class="swatch-label">Dim</span></div>
+      <div class="swatch" style="background:#1E4FA0"><span class="swatch-label">Accent</span></div>
+      <div class="swatch" style="background:#142E6E"><span class="swatch-label">Dark</span></div>
+      <div class="swatch" style="background:#0F1A36"><span class="swatch-label">Text</span></div>
+    </div>
+  </section>
+
+  <section class="section">
+    <p class="section-label">Typography</p>
+    <div class="type-specimen">
+      <div class="type-block">
+        <p class="type-block-label">Display — Bodoni Moda</p>
+        <p class="type-display">Mai<em>son</em></p>
+        <p style="font-family:var(--font-display); font-size:14px; color:var(--text-dim); margin-top:8px; font-style:italic;">400 · 700 · italic</p>
+      </div>
+      <div class="type-block">
+        <p class="type-block-label">Body — Karla</p>
+        <p class="type-body-sample">A well-curated wardrobe is less about quantity and more about intention. Each piece carries its own weight — texture, memory, occasion.</p>
+        <p class="type-detail" style="font-family: var(--font-body);">Labels · 300 · 600</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <p class="section-label">Wardrobe Cards</p>
+    <div class="component-row">
+      <div class="card">
+        <div class="card-img"><span class="card-img-label">R</span><span class="card-badge">New</span></div>
+        <div class="card-body">
+          <p class="card-label">Outerwear</p>
+          <p class="card-title">Trench <em>Coat</em></p>
+          <p class="card-meta">Worn 4 times · Last Thu</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-img" style="background:var(--accent-lo);"><span class="card-img-label" style="color:var(--accent-lo);filter:brightness(0.85);">P</span></div>
+        <div class="card-body">
+          <p class="card-label">Tops</p>
+          <p class="card-title"><em>Marinière</em></p>
+          <p class="card-meta">Worn 11 times · Yesterday</p>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-img" style="background:var(--surface-2);"><span class="card-img-label" style="color:var(--surface-2);filter:brightness(0.85);">O</span></div>
+        <div class="card-body">
+          <p class="card-label">Bottoms</p>
+          <p class="card-title">Wide <em>Trousers</em></p>
+          <p class="card-meta">Worn 7 times · Last Fri</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <p class="section-label">Actions & Forms</p>
+    <div class="button-row" style="margin-bottom:28px;">
+      <button class="btn btn-primary">Add to Wardrobe</button>
+      <button class="btn btn-secondary">Log Outfit</button>
+      <button class="btn btn-ghost">Browse</button>
+    </div>
+    <div class="input-row">
+      <div class="field"><label>Item Name</label><input type="text" placeholder="e.g. Trench Coat"></div>
+      <div class="field"><label>Category</label><input type="text" placeholder="Outerwear"></div>
+    </div>
+    <div class="tag-row" style="margin-top:20px;">
+      <span class="tag tag-filled">Classique</span>
+      <span class="tag tag-outline">Marine</span>
+      <span class="tag tag-lo">Cotton</span>
+      <span class="tag tag-neutral">Parisian</span>
+    </div>
+  </section>
+
+  <section class="section">
+    <p class="section-label">Mobile Preview</p>
+    <div class="phone-row">
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-nav"><div class="phone-nav-title">Wardrobe</div><div class="phone-nav-sub">42 pieces</div></div>
+          <div class="phone-body">
+            <div class="phone-card"><div class="phone-card-tag">Outerwear</div><div class="phone-card-name">Trench Coat</div><div class="phone-card-meta">Worn 4 × · Last Thu</div></div>
+            <div class="phone-card"><div class="phone-card-tag">Tops</div><div class="phone-card-name">Marinière</div><div class="phone-card-meta">Worn 11 × · Yesterday</div></div>
+            <div class="phone-card"><div class="phone-card-tag">Bottoms</div><div class="phone-card-name">Wide Trousers</div><div class="phone-card-meta">Worn 7 × · Last Fri</div></div>
+            <div class="phone-card"><div class="phone-card-tag">Footwear</div><div class="phone-card-name">Ballerines</div><div class="phone-card-meta">Worn 8 × · Today</div></div>
+          </div>
+          <div class="phone-tab-bar">
+            <div class="phone-tab"><div class="phone-tab-dot active"></div><div class="phone-tab-label active">Wardrobe</div></div>
+            <div class="phone-tab"><div class="phone-tab-dot"></div><div class="phone-tab-label">Outfits</div></div>
+            <div class="phone-tab"><div class="phone-tab-dot"></div><div class="phone-tab-label">Log</div></div>
+            <div class="phone-tab"><div class="phone-tab-dot"></div><div class="phone-tab-label">Pack</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="phone">
+        <div class="phone-notch"></div>
+        <div class="phone-screen">
+          <div class="phone-detail-img"><span class="phone-detail-icon">R</span></div>
+          <div class="phone-detail-info">
+            <div class="phone-detail-category">Outerwear</div>
+            <div class="phone-detail-title">Trench Coat</div>
+            <div class="phone-detail-row"><span>Brand</span><span>A.P.C.</span></div>
+            <div class="phone-detail-row"><span>Color</span><span>Camel</span></div>
+            <div class="phone-detail-row"><span>Worn</span><span>4 times</span></div>
+            <div class="phone-detail-row"><span>Last worn</span><span>Thursday</span></div>
+            <div class="phone-detail-action">Log Wear Today</div>
+          </div>
+          <div class="phone-tab-bar">
+            <div class="phone-tab"><div class="phone-tab-dot active"></div><div class="phone-tab-label active">Wardrobe</div></div>
+            <div class="phone-tab"><div class="phone-tab-dot"></div><div class="phone-tab-label">Outfits</div></div>
+            <div class="phone-tab"><div class="phone-tab-dot"></div><div class="phone-tab-label">Log</div></div>
+            <div class="phone-tab"><div class="phone-tab-dot"></div><div class="phone-tab-label">Pack</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="dark-band">
+    <p class="section-label">Dark Mode</p>
+    <p class="dark-band-accent">Mai<em>son</em></p>
+    <div class="button-row" style="margin-bottom:28px;">
+      <button class="btn btn-primary">Add Piece</button>
+      <button class="btn btn-secondary">Log Outfit</button>
+      <button class="btn btn-ghost" style="color:#5A80D8;">Browse</button>
+    </div>
+    <div class="component-row">
+      <div class="card dark-band"><div class="card-img"><span class="card-img-label">R</span></div><div class="card-body"><p class="card-label">Outerwear</p><p class="card-title">Trench Coat</p><p class="card-meta">4 wears</p></div></div>
+      <div class="card dark-band"><div class="card-img"><span class="card-img-label">P</span></div><div class="card-body"><p class="card-label">Tops</p><p class="card-title"><em>Marinière</em></p><p class="card-meta">11 wears</p></div></div>
+      <div class="card dark-band"><div class="card-img"><span class="card-img-label">O</span></div><div class="card-body"><p class="card-label">Bottoms</p><p class="card-title">Wide Trousers</p><p class="card-meta">7 wears</p></div></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- PAGE FOOTER — 24 dots -->
+<footer class="page-footer">
+  <span class="footer-brand">Ropero</span>
+  <nav class="footer-nav">
+    <a href="atelier.html" class="footer-dot" title="Atelier"></a>
+    <a href="studio.html" class="footer-dot" title="Studio"></a>
+    <a href="capsule.html" class="footer-dot" title="Capsule"></a>
+    <a href="archive.html" class="footer-dot" title="Archive"></a>
+    <a href="sable.html" class="footer-dot" title="Sable"></a>
+    <a href="cote.html" class="footer-dot" title="Côte"></a>
+    <a href="mineral.html" class="footer-dot" title="Mineral"></a>
+    <a href="verdure.html" class="footer-dot" title="Verdure"></a>
+    <a href="mist.html" class="footer-dot" title="Mist"></a>
+    <a href="sage.html" class="footer-dot" title="Sage"></a>
+    <a href="linden.html" class="footer-dot" title="Linden"></a>
+    <a href="gilt.html" class="footer-dot" title="Gilt"></a>
+    <a href="ciel.html" class="footer-dot" title="Ciel"></a>
+    <a href="toile.html" class="footer-dot" title="Toile"></a>
+    <a href="celadon.html" class="footer-dot" title="Celadon"></a>
+    <a href="quartz.html" class="footer-dot" title="Quartz"></a>
+    <a href="cobalt.html" class="footer-dot" title="Cobalt"></a>
+    <a href="chalk.html" class="footer-dot" title="Chalk"></a>
+    <a href="dusk.html" class="footer-dot" title="Dusk"></a>
+    <a href="matcha.html" class="footer-dot" title="Matcha"></a>
+    <a href="verdant.html" class="footer-dot" title="Verdant"></a>
+    <a href="terroir.html" class="footer-dot" title="Terroir"></a>
+    <a href="maison.html" class="footer-dot active" title="Maison"></a>
+    <a href="basalt.html" class="footer-dot" title="Basalt"></a>
+  </nav>
+  <div class="footer-arrows">
+    <a href="terroir.html" class="footer-prev">← Terroir</a>
+    <a href="basalt.html" class="footer-next">Basalt →</a>
+  </div>
+</footer>
+<script>
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'ArrowRight') window.location.href = 'basalt.html';
+    if (e.key === 'ArrowLeft')  window.location.href = 'terroir.html';
+  });
+</script>
+</body>
+</html>
