@@ -75,6 +75,27 @@ Classic branch protection is enabled on `main`: PR required, required status che
 - Dark mode via `next-themes` — ThemeProvider at root layout, uses `class` attribute + CSS vars in globals.css
 - Triggers on `auth.users` must use `public.` schema prefix for table/function references (auth schema context)
 
+## Exploratory / scratch work
+
+If you're sketching something that isn't ready to commit (design explorations, research code, one-off scripts, test fixtures you're iterating on), put it in one of two places:
+
+- `scratch/` at the repo root. Gitignored. Use this for anything truly throwaway or that you want to keep locally without it landing on `main`.
+- A `spike/<topic>` branch. Use this when the exploration is substantial enough to want version history but isn't converging on a PR. Example: `spike/new-outfit-score-algorithm`.
+
+**Never leave untracked files under `apps/`, `packages/`, `supabase/`, or `docs/plans/`.** Those paths imply "intentional and committed"; untracked content there signals drift and tends to sit for weeks before anyone notices. If an exploration outgrows `scratch/` or a spike branch, convert it into a real feature branch with a proper plan doc in `docs/plans/`.
+
+## End-of-session checklist
+
+Before closing out a session, verify and address each item. Append notes to the session file if any remain deliberately unresolved.
+
+- [ ] `git status` is clean on `main`, or everything remaining is explicitly logged in the session file with a stated reason
+- [ ] Every local branch whose PR has merged has been deleted (`git branch -vv` shows no `[gone]` entries)
+- [ ] Any new findings worth tracking are filed in `KNOWN-ISSUES.md` with a dated tag (`[TAG-YYYY-MM-DD]`)
+- [ ] The session entry is appended to `docs/sessions/YYYY-MM-DD-slug.md` and indexed in `SESSION-LOG.md`
+- [ ] Memory index (`~/.claude/projects/.../MEMORY.md`) reviewed for stale facts (framework versions, file paths, migration counts, numeric claims)
+
+Exception for doc-only sessions with nothing shipped: the checklist still applies but can be a single line in the session log noting "no code changes; checklist trivially satisfied."
+
 ## Invite System
 - Signup is gated — requires a valid invite code
 - Founder code: `ROPERO01` (9999 uses) for bootstrapping

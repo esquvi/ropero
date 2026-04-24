@@ -33,6 +33,10 @@ Thumbs.db
 # Worktrees
 .worktrees
 
+# Scratchpad for exploratory / one-off work that shouldn't land on main.
+# See CLAUDE.md for the scratchpad convention.
+scratch/
+
 # Claude Code local state
 .claude/worktrees/
 .claude/settings.local.json
