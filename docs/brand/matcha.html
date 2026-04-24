@@ -46,6 +46,21 @@
           One rule, recitable. Generalizes — any agent generating a new Ropero screen
           knows: if it's a count, date, or value, it goes gold.
 
+        STATE COLORS: tinted toward brand, never stock saturated web-default.
+          --state-error:    #A85040   (muted terracotta, warm, earthy)
+          --state-success:  var(--accent)    (a confirmed action is confirmed in brand color)
+          --state-warning:  var(--gold-dk)   (extends "gold = attention" into warnings)
+          Dark-mode variants in --d-state-* block. All pass WCAG AA.
+
+        COLOR SYSTEM POSTURE (documented for future token migration):
+          - OKLCH is canonical in the app's globals.css (shadcn ecosystem default).
+            Hex values in PRODUCT.md and this file are the human-readable reference.
+            The two always agree on actual colors; only representation differs.
+          - Ramp stays at 3 steps per family (dk / base / lo). State variants like
+            hover / focus / disabled are handled via opacity modifiers (Tailwind
+            /90 /50) or color-mix(), NOT additional ramp tokens. Keeps the token
+            count small and the rules memorable.
+
         RADIUS: 2-token scale (2026-04-24).
           --radius-structural: 0px   (cards, dividers, markers, surfaces)
           --radius-interactive: 2px  (buttons, inputs, chips, badges, tags)
@@ -98,6 +113,17 @@
       --d-text:      #E4E8DC;   /* primary text (~13:1 on card, reserved but defined) */
       --d-text-mid:  #8A9C80;   /* warm neutral body (~4.9:1 on card, passes AA) */
       --d-text-dim:  #7A8870;   /* warm neutral dim label (~3.8:1, large-caps-tracked ONLY) */
+
+      /* State colors — tinted toward brand, never stock web-default saturated red/yellow.
+         Success reuses --accent (a confirmed action is confirmed IN the brand color).
+         Warning reuses --gold-dk (extends the gold-as-attention rule to warnings).
+         Error is a new muted terracotta — warm, earthy, echoes matcha's register. */
+      --state-error:    #A85040;   /* muted terracotta, ~4.9:1 on warm off-white */
+      --state-success:  #5A7852;   /* = var(--accent), just aliased semantically */
+      --state-warning:  #7C6428;   /* = var(--gold-dk), semantic alias */
+      --d-state-error:  #D08070;   /* brighter terracotta for dark-register legibility, ~5.3:1 on #141A0E */
+      --d-state-success: #9EBF94;  /* = var(--d-accent), semantic alias */
+      --d-state-warning: #DCBB6A;  /* = var(--d-gold), semantic alias */
 
       /* Jost unified (Bauhaus geometric, Muji/Uniqlo register). Chosen 2026-04-24
          from 5-way shootout. Cabinet Grotesk is the documented runner-up for
@@ -230,6 +256,12 @@
     .tag-outline-green { border: 1.5px solid var(--accent); color: var(--accent); }
     .tag-outline-gold { border: 1.5px solid var(--gold); color: var(--gold-dk); }
     .tag-neutral { background: var(--surface); color: var(--text-mid); }
+
+    /* State chips — tinted-toward-brand feedback. Same shape as .tag for consistency. */
+    .state-chip { font-size: 9px; font-weight: 700; letter-spacing: var(--track-caps-sm); padding: 6px 14px; border-radius: var(--radius-interactive); text-transform: uppercase; font-family: var(--font-display); color: var(--white); }
+    .state-error   { background: var(--state-error); }
+    .state-success { background: var(--state-success); }
+    .state-warning { background: var(--state-warning); }
 
     /* ─────────────────── Dark section ───────────────────
        "Own register" — NOT a light-mode inversion. Brighter matcha green for legibility,
@@ -521,6 +553,13 @@
       <span class="tag tag-outline-gold">Silk</span>
       <span class="tag tag-neutral">Neutral</span>
     </div>
+    <p class="section-label" style="margin-top: 40px; margin-bottom: 16px;">State Feedback — Tinted, Not Stock</p>
+    <div class="tag-row">
+      <span class="state-chip state-error">Error</span>
+      <span class="state-chip state-success">Success</span>
+      <span class="state-chip state-warning">Warning</span>
+    </div>
+    <p style="margin-top: 12px; font-size: 12px; font-weight: 300; line-height: 1.6; color: var(--text-mid); max-width: 65ch;">State colors echo the matcha register instead of defaulting to stock web red / yellow / green. Success reuses the matcha accent (a confirmed action is confirmed IN the brand color). Warning reuses ochre gold. Error is a muted terracotta, warm enough to belong.</p>
   </section>
 
   <!-- Mobile Phones -->
