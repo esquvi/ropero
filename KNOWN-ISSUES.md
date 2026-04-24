@@ -94,6 +94,16 @@ Deferred until a polish pass on the mobile UX layer.
 
 **Fix direction:** delete. Low-risk cleanup.
 
+### `ExternalLink.tsx` fails local typecheck against expo-router typed routes [HYGIENE-2026-04-24]
+
+**Severity:** minor. Local-only; CI is green.
+
+**Surface:** `apps/mobile/components/ExternalLink.tsx:13`.
+
+**What happens:** the component passes `props.href` (typed `string`) to `<Link href=...>` from expo-router. With the locally-generated `apps/mobile/.expo/types/router.d.ts` in place, expo-router's `Href` type is a strict union of known routes, so `string` is rejected. CI passes because `.expo/` is gitignored and the file is regenerated from scratch (with a looser fallback) on each fresh clone. Fresh clones (new laptops, first-time contributors) will also not hit this.
+
+**Fix direction:** cast the prop at the boundary: `href={props.href as Href}` (import `Href` from `expo-router`), or use `href={props.href as any}` if the strictness is not worth the friction.
+
 ## Web
 
 ### Recent activity `formatDate` has the same timezone bug [QA-2026-04-18]
@@ -170,6 +180,14 @@ Same shape (user_id, item_id, optional outfit_id, worn_at, occasion, notes).
 - `apps/web/components/dashboard/recent-activity.tsx:39-82`
 
 **Fix direction:** lift into `@ropero/core`. Also a good opportunity to add unit tests (neither copy is tested).
+
+### Next.js 16 deprecates `middleware.ts` in favor of `proxy.ts` [HYGIENE-2026-04-24]
+
+**Severity:** tech debt. Next.js 16 logs a deprecation warning on every dev-server start: `The "middleware" file convention is deprecated. Please use "proxy" instead.` Still functional today; will be removed in a future major.
+
+**Surface:** `apps/web/middleware.ts`.
+
+**Fix direction:** rename `middleware.ts` to `proxy.ts` and update any documentation references. Logic stays the same. Do this before upgrading to Next.js 17.
 
 ## UX and copy
 
