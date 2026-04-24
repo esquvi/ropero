@@ -6,7 +6,7 @@
   <title>Ropero — Direction 20: Matcha</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Josefin+Sans:wght@300;400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
     /*
       Matcha — Direction 20
@@ -45,6 +45,19 @@
           Labels, titles, categories, and UI chrome stay neutral/green.
           One rule, recitable. Generalizes — any agent generating a new Ropero screen
           knows: if it's a count, date, or value, it goes gold.
+
+        TYPOGRAPHY: Jost (Google Fonts, single committed family).
+          Chosen 2026-04-24 from a 5-way shootout (Jost, Josefin Sans + DM Sans,
+          Satoshi, Cabinet Grotesk, Switzer). Matrix scores: Cabinet 30/30,
+          Jost 25/30, Satoshi 23/30, Josefin 20/30, Switzer 19/30.
+          Jost chosen as the Japanese-architectural lane (Bauhaus / Futura /
+          Muji / Uniqlo / Issey Miyake lineage). Weight contrast 300 / 400 /
+          500 / 700 carries display-vs-body hierarchy as a single family.
+          RUNNER-UP (worth revisiting in future redesigns): Cabinet Grotesk
+          (Fontshare, free, editorial grotesque). Scored highest overall for
+          Italian-editorial alignment (Totême / Auralee / Lemaire neighborhood).
+          If Ropero's voice pulls more editorial-Milanese than Japanese-
+          architectural in a future redesign, this is the documented alternative.
     */
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -79,8 +92,11 @@
       --d-text-mid:  #8A9C80;   /* warm neutral body (~4.9:1 on card, passes AA) */
       --d-text-dim:  #7A8870;   /* warm neutral dim label (~3.8:1, large-caps-tracked ONLY) */
 
-      --font-display: 'Josefin Sans', Arial, sans-serif;
-      --font-body:    'DM Sans', system-ui, sans-serif;
+      /* Jost unified (Bauhaus geometric, Muji/Uniqlo register). Chosen 2026-04-24
+         from 5-way shootout. Cabinet Grotesk is the documented runner-up for
+         future editorial-Milanese redesigns. See PRODUCT.md for full context. */
+      --font-display: 'Jost', system-ui, sans-serif;
+      --font-body:    'Jost', system-ui, sans-serif;
       --radius:       0px;
       --radius-sm:    0px;
       --radius-lg:    0px;
@@ -320,11 +336,11 @@
     <div class="hero-split">
       <div>
         <h1 class="hero-title">MAT<br><em>CHA</em></h1>
-        <p class="hero-desc">Two accents, one harmony. Matcha green anchors the structure while ochre gold catches the light. Josefin Sans — geometric, spare, with long ascenders — makes every label feel designed. Japanese minimalism meets Milanese detail.</p>
+        <p class="hero-desc">Two accents, one harmony. Matcha green anchors the structure while ochre gold catches the light. Jost, Bauhaus-derived and architecturally precise, carries the whole page as a single committed voice. Japanese minimalism meets Milanese detail.</p>
         <div class="hero-tags">
           <span class="hero-tag">Minimal</span>
           <span class="hero-tag">Dual Accent</span>
-          <span class="hero-tag">Josefin Sans</span>
+          <span class="hero-tag">Jost</span>
           <span class="hero-tag">Green + Gold</span>
         </div>
       </div>
@@ -382,13 +398,13 @@
     <p class="section-label">Typography</p>
     <div class="type-specimen">
       <div class="type-block">
-        <p class="type-block-label">Display — Josefin Sans</p>
+        <p class="type-block-label">Display — Jost 300 / 700</p>
         <p class="type-display">WARD</p>
         <p class="type-display-bold">ROBE</p>
         <p class="type-detail">ABCDEFG · 300 · 700</p>
       </div>
       <div class="type-block">
-        <p class="type-block-label">Body — DM Sans</p>
+        <p class="type-block-label">Body — Jost 300 / 500</p>
         <p class="type-body-sample">A well-curated wardrobe is less about quantity and more about intention. Each piece carries its own weight — texture, memory, occasion.</p>
         <p class="type-detail" style="font-family: var(--font-body);">Labels · 300 · 500</p>
       </div>
