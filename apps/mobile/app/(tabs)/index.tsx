@@ -303,26 +303,29 @@ export default function HomeScreen() {
         </View>
         {outfits.length > 0 ? (
           outfits.map((outfit) => (
-            <TouchableOpacity
-              key={outfit.id}
-              style={styles.outfitRow}
-              onPress={() => router.push(`/outfits/${outfit.id}`)}
-              activeOpacity={0.7}
-            >
-              <Ionicons name="layers-outline" size={18} color="#6b7280" />
-              <Text style={styles.outfitName}>{outfit.name}</Text>
-              {outfit.occasion && (
-                <Text style={styles.outfitOccasion}>{outfit.occasion}</Text>
-              )}
+            <View key={outfit.id} style={styles.outfitRow}>
+              <TouchableOpacity
+                style={styles.outfitRowBody}
+                onPress={() => router.push(`/outfits/${outfit.id}`)}
+                activeOpacity={0.7}
+              >
+                <Ionicons name="layers-outline" size={18} color="#6b7280" />
+                <Text style={styles.outfitName}>{outfit.name}</Text>
+                {outfit.occasion && (
+                  <Text style={styles.outfitOccasion}>{outfit.occasion}</Text>
+                )}
+              </TouchableOpacity>
               <TouchableOpacity
                 style={styles.wearButton}
                 onPress={() => setWearingOutfit(outfit)}
                 hitSlop={6}
+                accessibilityRole="button"
+                accessibilityLabel={`Log wearing ${outfit.name}`}
               >
                 <Ionicons name="checkmark-circle-outline" size={14} color="#fff" />
                 <Text style={styles.wearButtonText}>Wear</Text>
               </TouchableOpacity>
-            </TouchableOpacity>
+            </View>
           ))
         ) : (
           <TouchableOpacity
@@ -417,6 +420,12 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#f3f4f6',
+  },
+  outfitRowBody: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
   },
   outfitName: { flex: 1, fontSize: 14, color: '#111' },
   outfitOccasion: {
