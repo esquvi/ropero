@@ -18,7 +18,7 @@
     "@ropero/supabase": "*",
     "@ropero/ui": "*",
     "@supabase/supabase-js": "^2.98.0",
-    "expo": "^54",
+    "expo": "^55",
     "expo-camera": "~17.0.10",
     "expo-clipboard": "~8.0.8",
     "expo-constants": "~18.0.13",
