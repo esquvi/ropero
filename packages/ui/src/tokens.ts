@@ -5,10 +5,12 @@
  *
  * Gold rule (systemic): every numeric value, price, date, wear count,
  * and quantity rendered to the user uses the gold token with tabular
- * numerals. Labels, headings, item names, brand names, body copy,
- * button text, and navigation stay neutral. Apply on every surface
- * (web AND mobile), not per-screen. See CLAUDE.md "Design system
- * rules" and PRODUCT.md for the data-vs-not-data checklist.
+ * numerals. The unit travels with the number — `8 pieces`, `24×`,
+ * `$3,815` are each one gold expression, never gold the digit and
+ * leave the unit in neutral. Labels, headings, item names, brand
+ * names, body copy, button text, and navigation stay neutral. Apply
+ * on every surface (web AND mobile), not per-screen. See CLAUDE.md
+ * "Design system rules" and PRODUCT.md for the full checklist.
  */
 
 export const colors = {

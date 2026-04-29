@@ -118,9 +118,8 @@ export default async function WardrobePage({ searchParams }: WardrobePageProps) 
           >
             Wardrobe
           </h1>
-          <p className="mt-2 text-xs text-foreground/55">
-            <span className="text-gold tabular-nums">{total}</span>{' '}
-            {total === 1 ? 'piece' : 'pieces'}
+          <p className="mt-2 text-xs text-gold tabular-nums">
+            {total} {total === 1 ? 'piece' : 'pieces'}
           </p>
         </div>
         <Link href="/wardrobe/add">

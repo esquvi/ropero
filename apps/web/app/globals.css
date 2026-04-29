@@ -60,9 +60,11 @@
   /* Ropero semantic tokens (non-shadcn).
      Gold rule (systemic): every numeric value, price, date, wear count,
      and quantity rendered to the user uses `text-gold` with
-     `tabular-nums`. Labels and chrome stay neutral. Apply on every
-     surface, not per-screen. See CLAUDE.md "Design system rules" and
-     PRODUCT.md for the data-vs-not-data checklist. */
+     `tabular-nums`. The unit travels with the number — `8 pieces`,
+     `24×`, `$3,815` are each one gold expression, never gold the
+     digit and leave the unit in neutral. Labels and chrome stay
+     neutral. Apply on every surface, not per-screen. See CLAUDE.md
+     "Design system rules" and PRODUCT.md for the full checklist. */
   --color-gold: var(--gold);
   --color-gold-dk: var(--gold-dk);
   --color-gold-lo: var(--gold-lo);
