@@ -119,8 +119,8 @@ export function ItemFilters() {
     <div className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
         <Select value={sort} onValueChange={(v) => setParam('sort', v)}>
-          <SelectTrigger className="h-9 w-auto min-w-[160px] gap-2 border-border bg-card uppercase text-[10px] font-medium tracking-[0.18em]">
-            <span className="text-text-dim">Sort</span>
+          <SelectTrigger className="h-9 w-auto min-w-[160px] gap-2 border-border bg-card uppercase text-[10px] font-medium tracking-[0.18em] text-foreground/55 hover:text-foreground transition-colors">
+            <span>Sort</span>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -138,9 +138,9 @@ export function ItemFilters() {
           aria-expanded={filtersOpen}
           className={cn(
             'inline-flex h-9 items-center gap-2 border border-border bg-card px-3',
-            'uppercase text-[10px] font-medium tracking-[0.18em] text-foreground',
-            'transition-colors hover:border-primary',
-            filtersOpen && 'border-primary',
+            'uppercase text-[10px] font-medium tracking-[0.18em]',
+            'transition-colors hover:border-primary hover:text-foreground',
+            filtersOpen ? 'border-primary text-foreground' : 'text-foreground/55',
           )}
         >
           Filters
