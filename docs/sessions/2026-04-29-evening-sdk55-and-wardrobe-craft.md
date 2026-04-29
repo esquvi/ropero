@@ -76,3 +76,51 @@ Two chapters, same day:
 - Working tree on `feat/wardrobe-craft` is clean.
 - KNOWN-ISSUES entries opened this session: 0. Pending close on #68 merge: `[DESIGN-SYSTEM-2026-04-24]`.
 - Memory files added: 1 (`project_no_apple_developer_account.md`); MEMORY.md index updated.
+
+---
+
+## Amendment: PR #68 verification iteration (same evening)
+
+After the initial commits landed and CI went green, ran a full visual iteration on PR #68 against the Vercel preview deployment using the Chrome MCP browser session. The original commits passed code-level checks but several design and behavior issues only surfaced when actually clicking through the UI with realistic data. Captured below for the next-session-pickup view of what changed and why.
+
+### Pre-iteration unblocking
+
+- **Vercel preview env vars.** Initial preview deploy 500'd because `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` were scoped to Production only, and `NEXT_PUBLIC_*` is inlined at build time so a preview build had `undefined` baked into the middleware bundle. User added the vars to the Preview scope in the Vercel dashboard, redeployed `feat/wardrobe-craft` with cache cleared, preview came up.
+- **Supabase migration 00011 pushed to production.** Selecting the new `is_signature` column failed the entire wardrobe query before the migration was deployed — the page rendered the error block path on every load. Pushed migration via `npx supabase db push --linked --include-all`. Same migration is in the PR; running again post-merge is a no-op.
+- **Test data inserted.** User's account had 0 items, so 7 of 10 test plan checklist items were unverifiable. Inserted 10 realistic sample items (Toteme turtleneck, Auralee linen, Jil Sander trousers, Lemaire loafers, COS tee, The Row blazer, A.P.C. jeans, Margaret Howell field jacket, Begg & Co. scarf, Khaite dress) via Supabase Management API SQL — varied categories, seasons, brands, wear counts, prices, signatures, archive statuses. Spread `created_at` timestamps across past 6 months so default sort had real variation. Replaced initial Picsum placeholder photos (random non-clothing images) with real Unsplash fashion photos sourced via `WebFetch` of Unsplash search pages. User chose to keep all 10 as starter wardrobe data after testing.
+
+### Issues found during iteration and shipped on the same branch
+
+Each one is a separate commit on `feat/wardrobe-craft`:
+
+- **Brand text on item-card was cool-green-tinted.** `text-text-dim` (oklch 0.642 0.055 120) clashed with the gold wear count below it on every card, reading as Italian-flag tension. Swapped to `text-foreground/55` (warm fade picking up foreground hue at half opacity). Black name → warm-fade brand → gold wear count flows cleanly.
+- **Dashboard had zero gold while wardrobe was gold-rich.** The brief scoped wardrobe-only, but the gold rule is supposed to be systemic. Inconsistent application across surfaces undercuts the rule itself. Hand-applied `text-gold tabular-nums` to the StatCard value, the category sub-stats (`3 / 2 / 2 / 1`), and the Most Worn / Least Worn wear counts. Now: dashboard reads as a coherently gold-marked data surface alongside the wardrobe.
+- **Gold rule documentation strengthened.** Codified the cross-surface universality and the data-vs-not-data checklist in PRODUCT.md, mirrored in `.github/copilot-instructions.md`, added a new "Design system rules" section to CLAUDE.md, and dropped pointers in `apps/web/app/globals.css` and `packages/ui/src/tokens.ts` so a future surface craft pass will encounter the rule no matter where they read first.
+- **Random-reorder bug on signature toggle.** SQL `INSERT` of the 10 items used `now()` for every row, so all `created_at` timestamps were identical. Default sort `ORDER BY created_at DESC` returned them in arbitrary physical-row order. Each `revalidatePath` from a server action re-shuffled the grid, which read as the toggled item moving. Fix: append `.order('id', { ascending: true })` as a stable tiebreaker to every sort branch. Plus `useOptimistic` on the signature toggle so the gold flips instantly on click, eliminating the 300ms+ pending lag that drew the eye to the reshuffle. Also spread the test-data `created_at` timestamps so default sort has meaningful variation regardless.
+- **Active/Archive segmented control button widths were unequal** because "Archive" is one character longer than "Active". Switched the parent from `flex` to `inline-grid grid-cols-2` so both buttons share the wider column width.
+- **Compact density was indistinguishable from regular.** Original implementation only hid the brand line — same column count, same photo size, barely visible difference. Rebuilt: compact bumps to 3 / 4 / 6 / 7 / 8 columns across breakpoints (vs 2 / 3 / 4 / 5 for regular), tightens gap, shrinks card padding and text. Then per user feedback, brand and wear count collapse to one inline row beneath the name (brand left in warm fade, wear count right in gold) instead of brand line being hidden — preserves all signal, two metadata lines instead of three, gold rule still alive in dense view.
+- **Search input rendered double clear button.** WebKit's native `input[type="search"]` cancel button rendered alongside the brand custom X. Suppressed the native pseudo-element globally in `globals.css` `@layer base`.
+- **Masthead `8 pieces` two-color split.** Originally rendered as gold `8` + neutral `pieces`. User pushed back: "pieces" is the unit (same role as `×` in `24×` or `$` in `$3,815`), it should travel with the number. Rule refined: **the unit travels with the number — the whole data expression is one gold phrase, never split**. Applied to the masthead. Documented in PRODUCT.md / CLAUDE.md / copilot-instructions.md / globals.css / tokens.ts. Named exception: label + badge patterns (e.g., `Filters 2`) keep label neutral and badge gold because they're conceptually separate elements.
+- **Sort/Filters control row too loud.** Both rendered their copy in `text-foreground` (near-black), competing with photos for visual attention. Per Principle 2 ("let the wardrobe be the hero"), chrome should recede. Switched to `text-foreground/55` (warm fade) at rest, popping to `text-foreground` on hover so click affordance stays discoverable. Filters open-state cue is now carried solely by `border-primary` (matcha), not by darkening the text.
+
+### Process notes picked up
+
+- **Realistic test data is a prerequisite for visual iteration.** Empty wardrobes hide design problems (only empty-state visible), Picsum placeholders ship random non-clothing images that make cards look broken, and a single mock item doesn't exercise sort/filter/search. The ~20 minutes spent on populating 10 varied items + sourcing real Unsplash fashion photos paid off across every iteration that followed; the 8 issues above were only visible because the wardrobe had real-feeling data behind it. Codified as feedback memory at [feedback_realistic_test_data_first.md](../../../.claude/projects/-Users-marcomartellini-Projects-Ropero/memory/feedback_realistic_test_data_first.md).
+- **Live CSS overrides via Chrome MCP `javascript_tool`** let me preview a token change against the user's live preview without a Vercel rebuild round-trip. Used for the brand-text warm-fade iteration before committing. Cuts ~30-45s off each iteration for token-level changes that don't need a code change to verify.
+- **Vercel preview gotcha**: redeploying the wrong branch is a real failure mode. Vercel's "Redeploy" button on production main isn't the same as redeploying the PR's preview deployment. With NEXT_PUBLIC_* env vars baked in at build time, redeploying the preview branch (with cache cleared) is the only way to pick up new env settings on a preview.
+- **Gold rule's universality has teeth.** Treating "the wardrobe surface only" as the scope of this PR was too narrow — leaving the dashboard gold-empty meant the user landing first on the dashboard wouldn't see the rule at all, weakening the rule across both surfaces. Future surface-scoped PRs should hand-apply systemic rules to adjacent surfaces too, even if those surfaces aren't being redesigned.
+
+### Memory updates from this iteration
+
+- New feedback memory: `feedback_realistic_test_data_first.md` — populate realistic test data via SQL before iterating on any UI surface; SQL pattern + Unsplash sourcing recipe; ask user about cleanup at end.
+- Existing `project_no_apple_developer_account.md` (from morning) confirmed correct and applied — never proposed paid Apple Developer enrollment during the iteration even though SDK 55 work briefly resurfaced as adjacent context.
+- MEMORY.md index updated with the new feedback memory.
+
+### Final final state (post-iteration)
+
+- PR #68 has 13 commits as of this writing: 4 original (token migration, ExternalLink fix, is_signature migration, wardrobe craft) + 9 iteration (brand color, dashboard gold + docs, sort tiebreaker + optimistic toggle, segmented buttons, compact density bump, compact inline row, search clear button, masthead unit-travels-with-number + docs, chrome quiet, filters-button quiet-when-open).
+- All 13 commits squash-merge into one commit on `main` per the project's squash-merge convention. PR description (already updated) becomes the squash-merge message.
+- Migration 00011 is already on Supabase Cloud (pushed during iteration). Post-merge `npx supabase db push` is a no-op.
+- Test data: user kept all 10 sample items as starter wardrobe data.
+- KNOWN-ISSUES `[DESIGN-SYSTEM-2026-04-24]` ready to mark resolved on merge.
+- User's verdict on the final wardrobe + dashboard: ready to merge.
