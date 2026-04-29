@@ -120,13 +120,9 @@ See the mobile entry above; same file-level shape in `apps/web/components/dashbo
 
 ## Tech debt and consistency
 
-### `packages/ui/src/tokens.ts` is the legacy blue palette, not matcha [DESIGN-SYSTEM-2026-04-24]
+### ~~`packages/ui/src/tokens.ts` is the legacy blue palette, not matcha~~ [DESIGN-SYSTEM-2026-04-24] — RESOLVED 2026-04-29
 
-**Severity:** tech debt. Latent — not visibly wrong because no web-rendered code currently consumes the tokens that would conflict. Will bite the moment someone wires `@ropero/ui` tokens into `apps/web`.
-
-**Surface:** `packages/ui/src/tokens.ts` exports `primary: { 500: '#0c7ee8' }` (a blue) and neutral grayscale. This predates the 2026-04-24 matcha direction locked in PRODUCT.md. Mobile consumes these tokens; web currently uses its own `app/globals.css` variables and does not import `@ropero/ui` colors, so light and mobile disagree on "primary" until this is reconciled.
-
-**Fix direction:** rewrite `packages/ui/src/tokens.ts` to the matcha palette (primary = matcha green `#5A7852`, add ochre gold as `accent` or `secondary`, warm off-white bg, etc.) as part of the globals.css migration in the step-6 craft pass. See `docs/sessions/2026-04-24-evening-design-system.md` for the full color decision.
+**Resolved** when PR #68 (wardrobe craft) merged 2026-04-29. `packages/ui/src/tokens.ts` was rewritten to the matcha palette (light + dark register, state colors, radii tokens, tracking tokens, Jost font family) as part of the step-6 craft pass alongside `apps/web/app/globals.css` getting the OKLCH equivalents. Web and mobile now agree on "primary".
 
 ### Zod major version skew across workspaces [QA-2026-04-18]
 
