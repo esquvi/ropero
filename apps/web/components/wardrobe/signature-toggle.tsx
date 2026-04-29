@@ -1,6 +1,6 @@
 'use client';
 
-import { useTransition } from 'react';
+import { useOptimistic, useTransition } from 'react';
 import { Star } from 'lucide-react';
 import { toggleSignature } from '@/app/(app)/wardrobe/actions';
 import { cn } from '@/lib/utils';
@@ -11,25 +11,28 @@ interface SignatureToggleProps {
 }
 
 export function SignatureToggle({ itemId, active }: SignatureToggleProps) {
-  const [pending, start] = useTransition();
+  const [, startTransition] = useTransition();
+  const [optimisticActive, setOptimisticActive] = useOptimistic(
+    active,
+    (_state, next: boolean) => next,
+  );
 
   return (
     <button
       type="button"
-      aria-label={active ? 'Unmark as signature' : 'Mark as signature'}
-      aria-pressed={active}
-      disabled={pending}
+      aria-label={optimisticActive ? 'Unmark as signature' : 'Mark as signature'}
+      aria-pressed={optimisticActive}
       onClick={(e) => {
         e.preventDefault();
         e.stopPropagation();
-        start(() => {
-          void toggleSignature(itemId, active);
+        startTransition(async () => {
+          setOptimisticActive(!active);
+          await toggleSignature(itemId, active);
         });
       }}
       className={cn(
-        'absolute right-2 top-2 grid size-8 place-items-center transition-opacity',
+        'absolute right-2 top-2 grid size-8 place-items-center',
         'hover:opacity-80 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1',
-        pending && 'opacity-40',
       )}
     >
       <Star
@@ -37,7 +40,7 @@ export function SignatureToggle({ itemId, active }: SignatureToggleProps) {
         strokeWidth={1.5}
         className={cn(
           'size-4 transition-colors',
-          active
+          optimisticActive
             ? 'fill-gold stroke-gold'
             : 'fill-transparent stroke-foreground/85',
         )}

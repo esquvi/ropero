@@ -84,6 +84,13 @@ export default async function WardrobePage({ searchParams }: WardrobePageProps) 
       break;
   }
 
+  // Stable tiebreaker so ties on the primary sort key (multiple pieces
+  // with identical times_worn or created_at, or every piece sharing a
+  // bulk-import timestamp) resolve to the same order on every
+  // revalidation. Without this the grid visually shuffles on server
+  // actions like toggleSignature, which reads as a bug.
+  q = q.order('id', { ascending: true });
+
   const { data, error } = await q;
   let items = (data ?? []) as WardrobeRow[];
 
