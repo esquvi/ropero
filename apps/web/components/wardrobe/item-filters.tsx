@@ -139,8 +139,8 @@ export function ItemFilters() {
           className={cn(
             'inline-flex h-9 items-center gap-2 border border-border bg-card px-3',
             'uppercase text-[10px] font-medium tracking-[0.18em]',
-            'transition-colors hover:border-primary hover:text-foreground',
-            filtersOpen ? 'border-primary text-foreground' : 'text-foreground/55',
+            'text-foreground/55 transition-colors hover:border-primary hover:text-foreground',
+            filtersOpen && 'border-primary',
           )}
         >
           Filters
