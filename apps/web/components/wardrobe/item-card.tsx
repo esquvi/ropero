@@ -78,7 +78,7 @@ export function ItemCard({ item, compact = false }: ItemCardProps) {
             {item.name}
           </h3>
           {item.brand && !compact && (
-            <p className="mt-0.5 truncate text-[11px] text-text-dim">
+            <p className="mt-0.5 truncate text-[11px] text-foreground/55">
               {item.brand}
             </p>
           )}
