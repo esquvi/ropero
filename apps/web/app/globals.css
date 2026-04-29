@@ -224,4 +224,14 @@
     @apply bg-background text-foreground;
     font-family: var(--font-jost), system-ui, sans-serif;
   }
+
+  /* Suppress the native WebKit clear button on type="search" inputs.
+     Ropero uses its own brand-styled X button (see item-filters search
+     bar). Without this rule, both buttons render side-by-side as the
+     user types — the native one in the browser's default blue. */
+  input[type='search']::-webkit-search-cancel-button,
+  input[type='search']::-webkit-search-decoration {
+    -webkit-appearance: none;
+    appearance: none;
+  }
 }
