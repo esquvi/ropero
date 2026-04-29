@@ -247,7 +247,7 @@ export function ItemFilters() {
         <div
           role="group"
           aria-label="Active or archive"
-          className="ml-auto flex border border-border bg-card"
+          className="ml-auto inline-grid grid-cols-2 border border-border bg-card"
         >
           <button
             type="button"
