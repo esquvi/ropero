@@ -29,7 +29,11 @@ Four equally-weighted personas. None dominates; designs that don't serve all of 
 - **Theme**: Japanese minimalism meets Milanese detail. Restrained, architectural, quietly confident. Editorial rather than promotional.
 - **Palette**: Matcha (see [docs/brand/matcha.html](docs/brand/matcha.html)).
   - Primary accent: matcha green `#5A7852` — structure, navigation, primary actions.
-  - Secondary accent: ochre gold `#A88840` — highlights, favorites, special-item flag, AND (systemic rule) "gold marks the data": numbers, dates, and values across the product render in gold. Labels and UI chrome stay neutral. Magazine-folio convention. One recitable rule.
+  - Secondary accent: ochre gold `#A88840` — highlights, favorites, special-item flag, AND (systemic rule) **"gold marks the data"**: numbers, dates, and values across the product render in gold. Labels and UI chrome stay neutral. Magazine-folio convention. One recitable rule.
+    - **Universality**: this is a *system* rule, not a per-screen choice. Every surface that renders data renders it in gold. A page with zero gold means a page with zero data, which should be vanishingly rare in this app — if you find one, the rule is being skipped, not opted out of. Rolled out 2026-04-29 across the wardrobe grid + dashboard simultaneously to anchor the convention before adjacent surfaces (detail, add, outfits, trips) get crafted.
+    - **What is "data"** (apply gold + `tabular-nums`): numeric counts (`8 pieces`, `42×`), prices (`$3,815`), wear counts and frequencies, dates and durations on the primary stat axis, scores, percentages, IDs surfaced to the user. Use Tailwind class `text-gold` (or `text-gold/55` for the muted "0×" case where the value is technically zero).
+    - **What is not data** (stay neutral, use foreground / muted-foreground / text-mid): labels (`Total Items`, `Wardrobe`), section headings, body copy, button text, navigation, breadcrumbs, item names, brand names, descriptions, occasion names, all-caps eyebrows.
+    - **Reviewer hint**: when reviewing a new surface PR, scan for any `<p|span|div>` containing a digit that isn't `text-gold`. Each one is either a violation or a deliberate exception that should carry an inline comment explaining why.
   - Warm off-white background `#EEEFE8` (not neutral white — has a subtle green undertone).
   - Near-black dark `#0C0F0A` (with green undertone matching).
   - **State colors** (tinted toward brand, never stock web-default):

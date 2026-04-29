@@ -57,7 +57,12 @@
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-ring: var(--sidebar-ring);
 
-  /* Ropero semantic tokens (non-shadcn). */
+  /* Ropero semantic tokens (non-shadcn).
+     Gold rule (systemic): every numeric value, price, date, wear count,
+     and quantity rendered to the user uses `text-gold` with
+     `tabular-nums`. Labels and chrome stay neutral. Apply on every
+     surface, not per-screen. See CLAUDE.md "Design system rules" and
+     PRODUCT.md for the data-vs-not-data checklist. */
   --color-gold: var(--gold);
   --color-gold-dk: var(--gold-dk);
   --color-gold-lo: var(--gold-lo);

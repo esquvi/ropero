@@ -100,7 +100,7 @@ export default async function DashboardPage() {
               key={category}
               className="rounded-lg border p-3 text-center"
             >
-              <p className="text-lg font-bold">{count}</p>
+              <p className="text-lg font-bold tabular-nums text-gold">{count}</p>
               <p className="text-xs text-muted-foreground capitalize">{category}</p>
             </div>
           ))}
@@ -123,7 +123,7 @@ export default async function DashboardPage() {
                 {(mostWorn ?? []).map((item: { id: string; name: string; times_worn: number }) => (
                   <Link key={item.id} href={`/wardrobe/${item.id}`} className="flex items-center justify-between rounded p-2 hover:bg-muted/50 transition-colors">
                     <span className="text-sm truncate">{item.name}</span>
-                    <span className="text-xs text-muted-foreground">{item.times_worn}x</span>
+                    <span className="text-xs tabular-nums text-gold">{item.times_worn}&times;</span>
                   </Link>
                 ))}
               </div>
@@ -136,7 +136,7 @@ export default async function DashboardPage() {
                 {(leastWorn ?? []).map((item: { id: string; name: string; times_worn: number }) => (
                   <Link key={item.id} href={`/wardrobe/${item.id}`} className="flex items-center justify-between rounded p-2 hover:bg-muted/50 transition-colors">
                     <span className="text-sm truncate">{item.name}</span>
-                    <span className="text-xs text-muted-foreground">{item.times_worn}x</span>
+                    <span className="text-xs tabular-nums text-gold">{item.times_worn}&times;</span>
                   </Link>
                 ))}
               </div>
