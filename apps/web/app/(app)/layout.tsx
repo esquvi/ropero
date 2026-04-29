@@ -27,7 +27,7 @@ export default async function AppLayout({
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
         <Header user={userData} />
-        <main className="flex-1 overflow-auto bg-zinc-50 p-4 dark:bg-zinc-950 lg:p-6">
+        <main className="flex-1 overflow-auto bg-background p-4 lg:p-6">
           {children}
         </main>
       </div>
