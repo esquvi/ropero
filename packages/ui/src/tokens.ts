@@ -2,6 +2,13 @@
  * Ropero — Matcha design tokens.
  * Source of truth: docs/brand/matcha.html. Hex here is the human-readable
  * reference; apps/web/app/globals.css holds the OKLCH equivalents.
+ *
+ * Gold rule (systemic): every numeric value, price, date, wear count,
+ * and quantity rendered to the user uses the gold token with tabular
+ * numerals. Labels, headings, item names, brand names, body copy,
+ * button text, and navigation stay neutral. Apply on every surface
+ * (web AND mobile), not per-screen. See CLAUDE.md "Design system
+ * rules" and PRODUCT.md for the data-vs-not-data checklist.
  */
 
 export const colors = {
