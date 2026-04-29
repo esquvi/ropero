@@ -85,20 +85,40 @@ export function ItemCard({ item, compact = false }: ItemCardProps) {
           >
             {item.name}
           </h3>
-          {item.brand && !compact && (
-            <p className="mt-0.5 truncate text-[11px] text-foreground/55">
-              {item.brand}
-            </p>
+
+          {compact ? (
+            <div className="mt-1 flex items-baseline gap-2">
+              {item.brand && (
+                <span className="truncate text-[10px] text-foreground/55">
+                  {item.brand}
+                </span>
+              )}
+              <span
+                className={cn(
+                  'ml-auto shrink-0 tabular-nums text-[10px] text-gold',
+                  item.times_worn === 0 && 'text-gold/55',
+                )}
+              >
+                {item.times_worn}×
+              </span>
+            </div>
+          ) : (
+            <>
+              {item.brand && (
+                <p className="mt-0.5 truncate text-[11px] text-foreground/55">
+                  {item.brand}
+                </p>
+              )}
+              <p
+                className={cn(
+                  'mt-1.5 text-[11px] tabular-nums text-gold',
+                  item.times_worn === 0 && 'text-gold/55',
+                )}
+              >
+                {item.times_worn}×
+              </p>
+            </>
           )}
-          <p
-            className={cn(
-              'tabular-nums text-gold',
-              compact ? 'mt-0.5 text-[10px]' : 'mt-1.5 text-[11px]',
-              item.times_worn === 0 && 'text-gold/55',
-            )}
-          >
-            {item.times_worn}×
-          </p>
         </div>
       </Link>
 
