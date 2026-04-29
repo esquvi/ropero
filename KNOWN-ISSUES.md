@@ -215,6 +215,18 @@ Same shape (user_id, item_id, optional outfit_id, worn_at, occasion, notes).
 
 **Fix direction:** add a minimal loading placeholder where it matters.
 
+### Wardrobe card hover: deferred richer treatments [SHAPE-WARDROBE-2026-04-29]
+
+**Severity:** future enhancement, not a bug.
+
+**Context:** The 2026-04-29 wardrobe shape pass picked **light hover** (subtle border or background shift, no extra UI) as the v1 treatment to honor Principle 2 (chrome recedes, the wardrobe is the hero). Two richer treatments were considered and explicitly deferred for later evaluation.
+
+**Deferred treatment 1: metadata peek.** On hover, reveal a quote of detail not on the card by default. Last-worn date, cost-per-wear, total wears in the past 12 months, brand if hidden. Useful for the curator persona who lives in the wardrobe; costs additional motion and risks information overload at high density.
+
+**Deferred treatment 2: quick actions.** On hover, reveal small action buttons on the card (mark worn, add to outfit, archive). Productive for power users; risks pulling Ropero toward a task-app feel and away from the editorial register. Conflicts with the "intention over engagement" principle if it makes wear-logging feel transactional rather than reflective.
+
+**Re-evaluate when:** post-launch usage data shows users repeatedly clicking into detail just to log a wear or check last-worn date; OR a power-user request emerges from the four core personas; OR the curator persona is identified as the dominant user and the design pivots toward density-and-information.
+
 ## Security (non-critical)
 
 ### Storage bucket `item-photos` is public [QA-2026-04-18]
