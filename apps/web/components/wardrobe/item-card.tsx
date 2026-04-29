@@ -1,28 +1,46 @@
 import Link from 'next/link';
 import { Shirt } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Card, CardContent } from '@/components/ui/card';
+import { SignatureToggle } from './signature-toggle';
+import { cn } from '@/lib/utils';
 
-interface ItemCardProps {
-  item: {
-    id: string;
-    name: string;
-    brand: string | null;
-    category: string;
-    color_primary: string;
-    season: string[];
-    photo_urls: string[];
-    times_worn: number;
-  };
+export interface WardrobeCardItem {
+  id: string;
+  name: string;
+  brand: string | null;
+  color_primary: string;
+  photo_urls: string[];
+  times_worn: number;
+  is_signature: boolean;
+  status: string;
 }
 
-export function ItemCard({ item }: ItemCardProps) {
+interface ItemCardProps {
+  item: WardrobeCardItem;
+  compact?: boolean;
+}
+
+const ARCHIVE_STATUS_LABEL: Record<string, string> = {
+  archived: 'Archived',
+  donated: 'Donated',
+  sold: 'Sold',
+};
+
+export function ItemCard({ item, compact = false }: ItemCardProps) {
   const hasPhoto = item.photo_urls.length > 0;
+  const archiveLabel =
+    item.status !== 'active' ? ARCHIVE_STATUS_LABEL[item.status] : null;
 
   return (
-    <Link href={`/wardrobe/${item.id}`}>
-      <Card className="overflow-hidden transition-shadow hover:shadow-md">
-        <div className="aspect-square relative bg-muted">
+    <article className="group relative">
+      <Link
+        href={`/wardrobe/${item.id}`}
+        className={cn(
+          'block border-[1.5px] border-border bg-card transition-colors',
+          'group-hover:border-primary focus-visible:outline-none focus-visible:border-primary',
+          archiveLabel && 'border-border/60',
+        )}
+      >
+        <div className="relative aspect-square overflow-hidden bg-muted">
           {hasPhoto ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
@@ -31,36 +49,80 @@ export function ItemCard({ item }: ItemCardProps) {
               className="h-full w-full object-cover"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center">
-              <Shirt className="h-12 w-12 text-muted-foreground" />
+            <div className="grid h-full w-full place-items-center">
+              <Shirt className="size-10 text-text-dim" strokeWidth={1.25} />
             </div>
           )}
-          <div
-            className="absolute bottom-2 right-2 h-4 w-4 rounded-full border-2 border-white shadow"
+
+          <span
+            aria-hidden
+            className={cn(
+              'absolute bottom-2 left-2 ring-1 ring-card/95',
+              compact ? 'size-2' : 'size-3',
+            )}
             style={{ backgroundColor: item.color_primary }}
-            title={item.color_primary}
           />
-        </div>
-        <CardContent className="p-3">
-          <h3 className="font-medium truncate">{item.name}</h3>
-          {item.brand && (
-            <p className="text-sm text-muted-foreground truncate">{item.brand}</p>
+
+          {archiveLabel && (
+            <span
+              className={cn(
+                'absolute bottom-2 right-2 px-1.5 py-0.5 text-[9px] font-medium uppercase',
+                'bg-card/90 text-text-mid',
+              )}
+              style={{ letterSpacing: 'var(--tracking-caps-sm)' }}
+            >
+              {archiveLabel}
+            </span>
           )}
-          <div className="mt-2 flex flex-wrap gap-1">
-            <Badge variant="secondary" className="text-xs">
-              {item.category}
-            </Badge>
-            {item.season.slice(0, 2).map((s) => (
-              <Badge key={s} variant="outline" className="text-xs">
-                {s}
-              </Badge>
-            ))}
-          </div>
-          <p className="mt-2 text-xs text-muted-foreground">
-            Worn {item.times_worn} {item.times_worn === 1 ? 'time' : 'times'}
-          </p>
-        </CardContent>
-      </Card>
-    </Link>
+        </div>
+
+        <div className={cn('px-3 pb-3 pt-2.5', compact && 'px-2 pb-1.5 pt-1.5')}>
+          <h3
+            className={cn(
+              'truncate font-medium leading-tight',
+              compact ? 'text-[11px]' : 'text-[13px]',
+            )}
+          >
+            {item.name}
+          </h3>
+
+          {compact ? (
+            <div className="mt-1 flex items-baseline gap-2">
+              {item.brand && (
+                <span className="truncate text-[10px] text-foreground/55">
+                  {item.brand}
+                </span>
+              )}
+              <span
+                className={cn(
+                  'ml-auto shrink-0 tabular-nums text-[10px] text-gold',
+                  item.times_worn === 0 && 'text-gold/55',
+                )}
+              >
+                {item.times_worn}×
+              </span>
+            </div>
+          ) : (
+            <>
+              {item.brand && (
+                <p className="mt-0.5 truncate text-[11px] text-foreground/55">
+                  {item.brand}
+                </p>
+              )}
+              <p
+                className={cn(
+                  'mt-1.5 text-[11px] tabular-nums text-gold',
+                  item.times_worn === 0 && 'text-gold/55',
+                )}
+              >
+                {item.times_worn}×
+              </p>
+            </>
+          )}
+        </div>
+      </Link>
+
+      <SignatureToggle itemId={item.id} active={item.is_signature} />
+    </article>
   );
 }

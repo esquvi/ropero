@@ -45,6 +45,16 @@ Past session summaries live under `docs/sessions/` with an index at `SESSION-LOG
 - Use the `cn()` helper from `@/lib/utils` for conditional Tailwind classes
 - shadcn/ui is web-only — mobile app uses React Native primitives with shared tokens
 
+## Design system rules (enforce on every surface)
+
+These are systemic. They apply to every page, not per-screen. See [PRODUCT.md](PRODUCT.md) for full context and [docs/brand/matcha.html](docs/brand/matcha.html) for visual reference.
+
+- **Gold marks the data.** Every numeric value, price, wear count, date, duration, score, or quantity rendered to the user goes in `text-gold` with `tabular-nums`. Labels, headings, item names, brand names, body copy, button text, and navigation stay neutral (`text-foreground`, `text-muted-foreground`, `text-text-mid`, `text-text-dim`, or `text-foreground/55` for whisper-fade). The unit travels with the number: `8 pieces`, `24×`, `$3,815`, `In 3 days` are each *one* gold expression — never gold the digit and leave the unit suffix in neutral, that fragments a single data point into a two-color phrase. Exception: label + badge patterns (a `Filters` button with a small `2` count badge) keep the label neutral and the badge gold because they're separate elements. When crafting a new surface, scan every digit-containing element: each one without `text-gold` is either a violation or a deliberate exception that needs an inline comment.
+- **2-token radius scale.** Cards, dividers, surfaces use `rounded-none` or `--radius-structural` (0px). Buttons, inputs, chips, badges, tags use `--radius-interactive` (2px). Tailwind named radii are remapped in `globals.css` `@theme inline` so `rounded-md` is 2px and `rounded-xl` is 0px — existing shadcn primitives pick up the system without hand-overrides. Never large pillow corners.
+- **Borders are 1.5px** for precision (`border-[1.5px]`), neutral border color, shifts to `border-primary` (matcha) on hover for interactive surfaces. No shadow, no scale, no movement on hover unless explicitly designed.
+- **Single font family** (Jost via `next/font/google`, weights 300/400/500/700). Do NOT introduce additional fonts. Hierarchy comes from weight contrast, not multiple families.
+- **State colors are tinted to brand.** Error = muted terracotta (`--destructive`). Success = matcha (`--success`). Warning = gold-dk (`--warning`). Never raw web `red-500`/`yellow-500`/`green-500` Tailwind palette colors.
+
 ## Git Workflow
 - Code, migrations, dependencies, and deploy config changes must go through feature branches and PRs. Doc-only edits (CLAUDE.md, READMEs, KNOWN-ISSUES, session logs, code comments) may be committed directly to `main`
 - Branch naming: `feature/description`, `fix/description`, `chore/description`
