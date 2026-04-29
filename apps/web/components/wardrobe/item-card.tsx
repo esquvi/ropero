@@ -56,7 +56,10 @@ export function ItemCard({ item, compact = false }: ItemCardProps) {
 
           <span
             aria-hidden
-            className="absolute bottom-2 left-2 size-3 ring-1 ring-card/95"
+            className={cn(
+              'absolute bottom-2 left-2 ring-1 ring-card/95',
+              compact ? 'size-2' : 'size-3',
+            )}
             style={{ backgroundColor: item.color_primary }}
           />
 
@@ -73,8 +76,13 @@ export function ItemCard({ item, compact = false }: ItemCardProps) {
           )}
         </div>
 
-        <div className={cn('px-3 pb-3 pt-2.5', compact && 'pb-2 pt-2')}>
-          <h3 className="truncate text-[13px] font-medium leading-tight">
+        <div className={cn('px-3 pb-3 pt-2.5', compact && 'px-2 pb-1.5 pt-1.5')}>
+          <h3
+            className={cn(
+              'truncate font-medium leading-tight',
+              compact ? 'text-[11px]' : 'text-[13px]',
+            )}
+          >
             {item.name}
           </h3>
           {item.brand && !compact && (
@@ -84,7 +92,8 @@ export function ItemCard({ item, compact = false }: ItemCardProps) {
           )}
           <p
             className={cn(
-              'mt-1.5 text-[11px] tabular-nums text-gold',
+              'tabular-nums text-gold',
+              compact ? 'mt-0.5 text-[10px]' : 'mt-1.5 text-[11px]',
               item.times_worn === 0 && 'text-gold/55',
             )}
           >

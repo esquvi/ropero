@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { ItemCard, type WardrobeCardItem } from '@/components/wardrobe/item-card';
 import { ItemFilters } from '@/components/wardrobe/item-filters';
 import { RetryButton } from '@/components/wardrobe/retry-button';
+import { cn } from '@/lib/utils';
 
 interface WardrobePageProps {
   searchParams: Promise<{
@@ -143,7 +144,14 @@ export default async function WardrobePage({ searchParams }: WardrobePageProps) 
       )}
 
       {!error && items.length > 0 && (
-        <div className="grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 lg:gap-8">
+        <div
+          className={cn(
+            'grid',
+            compact
+              ? 'grid-cols-3 gap-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-7 xl:grid-cols-8'
+              : 'grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 lg:gap-8',
+          )}
+        >
           {items.map((item) => (
             <ItemCard key={item.id} item={item} compact={compact} />
           ))}
