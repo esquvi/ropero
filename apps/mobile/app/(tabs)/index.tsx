@@ -16,6 +16,12 @@ import {
   LogWearSheet,
   LogWearValues,
 } from '../../components/log-wear-sheet';
+import {
+  formatRelativeWearDate,
+  groupWearLogs,
+  type ActivityEntry,
+  type WearLogRow,
+} from '@ropero/core';
 
 interface Stats {
   totalItems: number;
@@ -23,84 +29,13 @@ interface Stats {
   upcomingTrips: number;
 }
 
-interface WearLogRow {
-  id: string;
-  worn_at: string;
-  occasion: string | null;
-  outfit_id: string | null;
-  items: { name: string };
-  outfits: { name: string } | null;
-}
-
-// An activity entry is either a single item wear or a group of items worn
-// together as an outfit on the same day.
-type ActivityEntry =
-  | {
-      kind: 'item';
-      key: string;
-      worn_at: string;
-      occasion: string | null;
-      item_name: string;
-    }
-  | {
-      kind: 'outfit';
-      key: string;
-      worn_at: string;
-      occasion: string | null;
-      outfit_name: string;
-      item_count: number;
-    };
-
 interface Outfit {
   id: string;
   name: string;
   occasion: string | null;
 }
 
-// Collapse wear_logs that share the same outfit_id + worn_at into a single
-// outfit entry. Standalone item wears pass through untouched. Preserves the
-// server-side order (worn_at desc, then created_at desc) and returns at most
-// MAX_ACTIVITY_ENTRIES groups.
 const MAX_ACTIVITY_ENTRIES = 5;
-
-function groupWearLogs(rows: WearLogRow[]): ActivityEntry[] {
-  const out: ActivityEntry[] = [];
-  const outfitGroupByKey = new Map<string, Extract<ActivityEntry, { kind: 'outfit' }>>();
-
-  for (const row of rows) {
-    if (row.outfit_id) {
-      const key = `${row.outfit_id}:${row.worn_at}`;
-      const existing = outfitGroupByKey.get(key);
-      if (existing) {
-        existing.item_count += 1;
-        continue;
-      }
-      // Only start a new group if we still have a display slot.
-      if (out.length >= MAX_ACTIVITY_ENTRIES) continue;
-      const entry: Extract<ActivityEntry, { kind: 'outfit' }> = {
-        kind: 'outfit',
-        key,
-        worn_at: row.worn_at,
-        occasion: row.occasion,
-        outfit_name: row.outfits?.name ?? 'Outfit',
-        item_count: 1,
-      };
-      outfitGroupByKey.set(key, entry);
-      out.push(entry);
-    } else {
-      if (out.length >= MAX_ACTIVITY_ENTRIES) continue;
-      out.push({
-        kind: 'item',
-        key: `item:${row.id}`,
-        worn_at: row.worn_at,
-        occasion: row.occasion,
-        item_name: row.items.name,
-      });
-    }
-  }
-
-  return out;
-}
 
 export default function HomeScreen() {
   const { user } = useAuth();
@@ -143,7 +78,11 @@ export default function HomeScreen() {
       upcomingTrips: tripsRes.count ?? 0,
     });
     if (logsRes.data) {
-      setActivity(groupWearLogs(logsRes.data as unknown as WearLogRow[]));
+      setActivity(
+        groupWearLogs(logsRes.data as unknown as WearLogRow[], {
+          maxEntries: MAX_ACTIVITY_ENTRIES,
+        }),
+      );
     }
     if (outfitListRes.data) setOutfits(outfitListRes.data as unknown as Outfit[]);
   }, []);
@@ -212,16 +151,6 @@ export default function HomeScreen() {
     }
   };
 
-  const formatDate = (dateStr: string) => {
-    const date = new Date(dateStr);
-    const now = new Date();
-    const diffDays = Math.floor((now.getTime() - date.getTime()) / (1000 * 60 * 60 * 24));
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Yesterday';
-    if (diffDays < 7) return `${diffDays}d ago`;
-    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  };
-
   return (
     <ScrollView
       style={styles.container}
@@ -281,7 +210,7 @@ export default function HomeScreen() {
                   )}
                 </View>
               </View>
-              <Text style={styles.logDate}>{formatDate(entry.worn_at)}</Text>
+              <Text style={styles.logDate}>{formatRelativeWearDate(entry.worn_at, { style: 'short' })}</Text>
             </View>
           ))
         ) : (

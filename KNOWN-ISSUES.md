@@ -46,17 +46,9 @@ Deferred until a polish pass on the mobile UX layer.
 
 **Fix direction:** destructure `error` everywhere, surface it inline (small banner component), and for the add-item case abort the insert on upload failure instead of silently dropping the photo.
 
-### `formatDate` has a timezone off-by-one for negative UTC offsets [QA-2026-04-18]
+### ~~`formatDate` has a timezone off-by-one for negative UTC offsets~~ [QA-2026-04-18] — RESOLVED 2026-05-10
 
-**Severity:** minor. Can show "Yesterday" when the user expects "Today", or similar.
-
-**Surfaces:**
-- `apps/mobile/app/(tabs)/index.tsx` `formatDate` helper.
-- `apps/web/components/dashboard/recent-activity.tsx` same shape.
-
-**What happens:** parses a bare ISO date `YYYY-MM-DD` with `new Date(str)`, which JS interprets as UTC midnight. In US timezones that's "yesterday local," so `diffDays` is off by one.
-
-**Fix direction:** append `T00:00:00` as `log-wear-sheet.tsx:44` already does, or normalize to date-only string comparison.
+**Resolved** by lifting the formatter into `@ropero/core/activity` as `formatRelativeWearDate` and parsing bare `YYYY-MM-DD` strings as local midnight via a shared `parseWearDate` helper. The calendar-day diff is now anchored to the local timezone's start-of-day instead of a millisecond delta, so US-offset users no longer see "Yesterday" for today's wear logs. Both web `recent-activity.tsx` and mobile `(tabs)/index.tsx` consume the shared helper (mobile passes `style: 'short'` for the `Nd ago` rendering). Coverage: `packages/core/src/activity/__tests__/activity.test.ts`.
 
 ### Outfit edit save is not transactional; partial failure leaves an empty outfit [QA-2026-04-18]
 
@@ -175,15 +167,9 @@ Same shape (user_id, item_id, optional outfit_id, worn_at, occasion, notes).
 
 **Fix direction:** extract into a helper; consider a `wear` RPC if atomicity across multiple wear_logs is ever wanted.
 
-### Duplicated `groupWearLogs` on web and mobile [QA-2026-04-18]
+### ~~Duplicated `groupWearLogs` on web and mobile~~ [QA-2026-04-18] — RESOLVED 2026-05-10
 
-**Severity:** tech debt.
-
-**Surfaces:**
-- `apps/mobile/app/(tabs)/index.tsx:64-103`
-- `apps/web/components/dashboard/recent-activity.tsx:39-82`
-
-**Fix direction:** lift into `@ropero/core`. Also a good opportunity to add unit tests (neither copy is tested).
+**Resolved** by lifting `groupWearLogs` (plus `WearLogRow` and `ActivityEntry` types) to `packages/core/src/activity/index.ts`. Both surfaces now import from `@ropero/core` and pass their own display cap via `{ maxEntries }` (web uses 10, mobile uses 5).
 
 ## UX and copy
 
@@ -269,13 +255,9 @@ Same shape (user_id, item_id, optional outfit_id, worn_at, occasion, notes).
 
 **Fix direction:** add one test file per missing validator.
 
-### `groupWearLogs` is untested [QA-2026-04-18]
+### ~~`groupWearLogs` is untested~~ [QA-2026-04-18] — RESOLVED 2026-05-10
 
-**Severity:** minor but easy.
-
-**Surface:** the copy-pasted helper is the most complex pure function in the recent batch.
-
-**Fix direction:** lift to core (see Tech debt) and add unit tests for the grouping invariants (cap behavior, incrementing existing groups after cap, outfit-less rows pass through, etc.).
+**Resolved** when the helper was lifted to `@ropero/core`. Coverage in `packages/core/src/activity/__tests__/activity.test.ts` exercises pass-through item wears, multi-row outfit collapse, same-outfit-different-day separation, the `maxEntries` cap, the documented "incrementing-existing-groups-after-cap" behavior, and input order preservation.
 
 ### RLS integration tests miss invite system [QA-2026-04-18]
 
