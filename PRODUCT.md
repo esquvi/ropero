@@ -4,6 +4,8 @@ This file is the single source of truth for Ropero's design intent. Anyone (huma
 
 Update it when the direction shifts, not every time a color does.
 
+For the implementation reference (token names, file paths, class strings, component patterns shipped in code), see [DESIGN.md](DESIGN.md). PRODUCT.md is the *why*; DESIGN.md is the *what*.
+
 ## Design Context
 
 ### Users
