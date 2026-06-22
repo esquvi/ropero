@@ -279,7 +279,7 @@ describe('Invite System RLS and RPC', () => {
 
       expect(error).toBeNull();
       expect(data).toBeTruthy();
-      expect(data.valid).toBe(false);
+      expect(data).toMatchObject({ valid: false, reason: 'not_found' });
       expect(data).not.toHaveProperty('id');
       expect(data).not.toHaveProperty('user_id');
       expect(data).not.toHaveProperty('code');

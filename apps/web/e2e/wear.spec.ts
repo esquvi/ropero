@@ -15,10 +15,13 @@ test.describe('Wear logging (authenticated)', () => {
     await expect(page.getByText('Record when you wore this item.')).toBeVisible();
 
     // The date defaults to today and occasion/notes are optional, so submitting
-    // straight away records a wear. After the trigger opens the popover there
-    // are two "Log Wear" buttons; the submit one is rendered last (in the
-    // Radix portal).
-    await page.getByRole('button', { name: 'Log Wear' }).last().click();
+    // straight away records a wear. Both the trigger and the submit button are
+    // named "Log Wear"; scope to the open Radix popover to hit the submit one
+    // unambiguously (rather than relying on DOM order).
+    await page
+      .locator('[data-radix-popper-content-wrapper]')
+      .getByRole('button', { name: 'Log Wear' })
+      .click();
 
     // On success the popover closes, so its description disappears, and no
     // error alert is shown.

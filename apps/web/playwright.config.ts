@@ -18,20 +18,20 @@ export default defineConfig({
     // first as a dependency of the authenticated project.
     {
       name: 'setup',
-      testMatch: /auth\.setup\.ts/,
+      testMatch: ['**/auth.setup.ts'],
       use: { ...devices['Desktop Chrome'] },
     },
     // Specs that must run logged out (login/signup pages, invite gate,
     // unauthenticated redirects).
     {
       name: 'unauthenticated',
-      testMatch: /(auth|signup)\.spec\.ts/,
+      testMatch: ['**/auth.spec.ts', '**/signup.spec.ts'],
       use: { ...devices['Desktop Chrome'] },
     },
     // Everything else runs with the captured authenticated session.
     {
       name: 'authenticated',
-      testIgnore: /(auth\.setup|auth\.spec|signup\.spec)\.ts/,
+      testIgnore: ['**/auth.setup.ts', '**/auth.spec.ts', '**/signup.spec.ts'],
       use: { ...devices['Desktop Chrome'], storageState: STORAGE_STATE },
       dependencies: ['setup'],
     },

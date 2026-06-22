@@ -3,8 +3,6 @@ import { groupWearLogs, type WearLogRow } from '@ropero/core';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
-export type { WearLogRow };
-
 interface RecentActivityProps {
   wearLogs: WearLogRow[];
 }

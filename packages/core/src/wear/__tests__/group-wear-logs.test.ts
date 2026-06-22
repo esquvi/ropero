@@ -19,16 +19,21 @@ function row(overrides: Partial<WearLogRow> & Pick<WearLogRow, 'id'>): WearLogRo
 }
 
 describe('groupWearLogs', () => {
-  it('passes standalone item rows through as item entries preserving order', () => {
+  it('passes standalone item rows through as item entries, preserving order and occasion', () => {
     const rows = [
-      row({ id: 'a', items: { name: 'Shirt', category: 'tops' } }),
+      row({ id: 'a', occasion: 'work', items: { name: 'Shirt', category: 'tops' } }),
       row({ id: 'b', items: { name: 'Trousers', category: 'bottoms' } }),
     ];
 
     const result = groupWearLogs(rows);
 
     expect(result).toHaveLength(2);
-    expect(result[0]).toMatchObject({ kind: 'item', key: 'item:a', item_name: 'Shirt' });
+    expect(result[0]).toMatchObject({
+      kind: 'item',
+      key: 'item:a',
+      item_name: 'Shirt',
+      occasion: 'work',
+    });
     expect(result[1]).toMatchObject({ kind: 'item', key: 'item:b', item_name: 'Trousers' });
   });
 
