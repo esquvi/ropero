@@ -6,6 +6,7 @@ Claude should read the most recent session at the start of every new session for
 
 ## 2026
 
+- [2026-06-22: Real test infrastructure via /lfg (PR #73) — E2E auth fixture, live CI Supabase, invite RLS gaps, groupWearLogs to core](docs/sessions/2026-06-22-real-test-infrastructure.md)
 - [2026-04-29 (evening): Expo SDK 55 attempt held + wardrobe grid craft](docs/sessions/2026-04-29-evening-sdk55-and-wardrobe-craft.md)
 - [2026-04-29: Wardrobe grid shape pass + stale-PR cleanup](docs/sessions/2026-04-29-wardrobe-shape.md)
 - [2026-04-24 (evening): Design system shaping via /impeccable — palette, type, radius, color posture](docs/sessions/2026-04-24-evening-design-system.md)

@@ -294,3 +294,13 @@ Same shape (user_id, item_id, optional outfit_id, worn_at, occasion, notes).
 **Surface:** `package.json:15`. Breaks if mobile is removed or renamed.
 
 **Fix direction:** either promote expo-router to a root devDep, or document the hack in CLAUDE.md. Not urgent.
+
+### CI Supabase jobs depend on legacy demo keys and a pinned CLI [CI-SUPABASE-KEYS-2026-06-22]
+
+**Severity:** important (latent CI breakage).
+
+**Surface:** `.github/workflows/ci.yml` (`rls-tests` + `e2e-tests` jobs), `packages/supabase/src/__tests__/rls.test.ts`, `packages/supabase/src/__tests__/invite-rls.test.ts`, `apps/web/e2e/fixtures/seed.ts`. All hardcode the legacy Supabase demo JWT anon/service keys (`iss: supabase-demo`).
+
+**What happened:** the first CI run in ~7.5 weeks (PR #73, 2026-06-22) failed because `supabase/setup-cli@v2` at `version: latest` now provisions a local stack that issues only the new `sb_publishable` / `sb_secret` keys and no longer accepts the legacy JWTs as `service_role` / `authenticated`. Every request hit "permission denied for table items" (rls-tests 42501; e2e seed aborted). Fixed by pinning both `setup-cli` steps to `2.76.15`, which still accepts the legacy keys.
+
+**Fix direction:** make the jobs derive the real keys from the running instance instead of hardcoding. After `supabase start`, export `SUPABASE_ANON_KEY` / `SUPABASE_SERVICE_ROLE_KEY` (and `NEXT_PUBLIC_SUPABASE_ANON_KEY`) from `supabase status -o env` into `$GITHUB_ENV`, and have the test files read those env vars (drop the demo-key fallbacks, or keep them only for local dev). Then unpin `setup-cli` back to `latest`. Until then, the pinned `2.76.15` is a deliberate band-aid documented inline in `ci.yml`.
