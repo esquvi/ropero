@@ -3,9 +3,10 @@ import { Shirt, Layers, Plane, TrendingUp, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/server';
 import { StatCard } from '@/components/dashboard/stat-card';
-import type { WearLogRow } from '@ropero/core';
+import { selectBackInSeason, type Season, type WearLogRow } from '@ropero/core';
 import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { UpcomingTrips } from '@/components/dashboard/upcoming-trips';
+import { BackInSeason } from '@/components/dashboard/back-in-season';
 
 export default async function DashboardPage() {
   const supabase = await createClient();
@@ -25,6 +26,7 @@ export default async function DashboardPage() {
     { data: categoryData },
     { data: mostWorn },
     { data: leastWorn },
+    { data: seasonCandidates },
   ] = await Promise.all([
     sb.from('items').select('*', { count: 'exact', head: true }),
     sb.from('items').select('*', { count: 'exact', head: true }).eq('status', 'active'),
@@ -38,6 +40,7 @@ export default async function DashboardPage() {
     sb.from('items').select('category').eq('status', 'active'),
     sb.from('items').select('id, name, times_worn, photo_urls').eq('status', 'active').order('times_worn', { ascending: false }).limit(3),
     sb.from('items').select('id, name, times_worn, photo_urls').eq('status', 'active').gt('times_worn', 0).order('times_worn', { ascending: true }).limit(3),
+    sb.from('items').select('id, name, season, last_worn_at').eq('status', 'active'),
   ]);
 
   // Calculate wardrobe value
@@ -54,6 +57,19 @@ export default async function DashboardPage() {
 
   const sortedCategories = Object.entries(categoryCounts).sort(
     ([, a], [, b]) => b - a
+  );
+
+  // Pieces back in season but not reached for yet this season (see @ropero/core).
+  type SeasonCandidate = {
+    id: string;
+    name: string;
+    season: Season[];
+    last_worn_at: string | null;
+  };
+  const backInSeason = selectBackInSeason(
+    (seasonCandidates ?? []) as SeasonCandidate[],
+    new Date(),
+    3,
   );
 
   return (
@@ -145,6 +161,9 @@ export default async function DashboardPage() {
           )}
         </div>
       )}
+
+      {/* Back in season */}
+      <BackInSeason pieces={backInSeason} />
 
       {/* Quick Actions */}
       <div className="flex flex-wrap gap-3">

@@ -110,6 +110,8 @@ Deferred until a polish pass on the mobile UX layer.
 
 See the mobile entry above; same file-level shape in `apps/web/components/dashboard/recent-activity.tsx`.
 
+**Related instance found 2026-06-22:** `apps/web/components/wardrobe/item-detail.tsx` (~line 361) renders `items.last_worn_at` via `new Date(value).toLocaleDateString()`. Because `last_worn_at` is a `timestamptz` stored at UTC midnight, this shows the prior calendar day in negative-offset (US) timezones. The rediscovery surface's `dormancyLabel` / `lastWornSince` in `packages/core/src/rediscovery/dormancy.ts` solved this correctly (date-portion parse, no `new Date(str)`); the detail page should adopt the same date-only treatment.
+
 ### `sb as any` on the dashboard instead of typed casts [QA-2026-04-18]
 
 **Severity:** tech debt.
