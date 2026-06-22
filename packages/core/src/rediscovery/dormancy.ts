@@ -6,11 +6,21 @@
 import type { Season } from '../types';
 
 // The minimal shape callers pass in. Real wardrobe rows carry far more; this is
-// all the dormancy logic reads.
+// all the dormancy logic reads. `last_worn_at` is the items.last_worn_at
+// timestamptz, which PostgREST serializes as an ISO string (e.g.
+// "2026-05-20T00:00:00+00:00"); the logic only ever reasons about its date
+// portion, so every read normalizes via dateOnly().
 export interface RediscoveryPiece {
   id: string;
   season: Season[];
   last_worn_at: string | null;
+}
+
+// The YYYY-MM-DD date portion of a serialized timestamptz (or null). Comparing
+// and parsing the date portion only keeps ordering, the season-window boundary,
+// and the month label correct regardless of the time/offset suffix.
+function dateOnly(value: string | null): string | null {
+  return value ? value.slice(0, 10) : null;
 }
 
 const MONTHS = [
@@ -48,8 +58,8 @@ export function isInSeason(seasons: Season[], current: Season): boolean {
 // infinitely dormant via the empty-string key, which sorts before any
 // YYYY-MM-DD), then oldest last-worn first, then a stable id tiebreaker.
 function dormancyCompare(a: RediscoveryPiece, b: RediscoveryPiece): number {
-  const ak = a.last_worn_at ?? '';
-  const bk = b.last_worn_at ?? '';
+  const ak = dateOnly(a.last_worn_at) ?? '';
+  const bk = dateOnly(b.last_worn_at) ?? '';
   if (ak !== bk) return ak < bk ? -1 : 1;
   return a.id < b.id ? -1 : a.id > b.id ? 1 : 0;
 }
@@ -98,11 +108,10 @@ export function selectBackInSeason<T extends RediscoveryPiece>(
   const current = currentSeason(now);
   const start = seasonStartISO(now);
   return pieces
-    .filter(
-      (p) =>
-        isInSeason(p.season, current) &&
-        (p.last_worn_at === null || p.last_worn_at < start),
-    )
+    .filter((p) => {
+      const worn = dateOnly(p.last_worn_at);
+      return isInSeason(p.season, current) && (worn === null || worn < start);
+    })
     .sort(dormancyCompare)
     .slice(0, limit);
 }
@@ -114,8 +123,9 @@ export function selectBackInSeason<T extends RediscoveryPiece>(
 // formatDate copies have. Callers render this in gold (it is the datum); the
 // "not worn since" lead-in stays neutral chrome.
 export function lastWornSince(lastWornAt: string | null, now: Date): string | null {
-  if (!lastWornAt) return null;
-  const [year, month] = lastWornAt.split('-').map(Number);
+  const datePart = dateOnly(lastWornAt);
+  if (!datePart) return null;
+  const [year, month] = datePart.split('-').map(Number);
   const monthName = MONTHS[month - 1];
   if (!Number.isFinite(year) || !monthName) return null;
   return year === now.getFullYear() ? monthName : `${monthName} ${year}`;

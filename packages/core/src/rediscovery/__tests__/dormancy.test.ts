@@ -212,3 +212,35 @@ describe('dormancyLabel', () => {
     expect(dormancyLabel('2026-03-01', june2026)).toBe('not worn since March');
   });
 });
+
+// last_worn_at is a timestamptz; PostgREST serializes it as a full ISO string,
+// not a bare YYYY-MM-DD. The logic must reason about the date portion only.
+describe('timestamptz-serialized last_worn_at', () => {
+  const june2026 = new Date(2026, 5, 15);
+  const october = new Date(2026, 9, 15);
+
+  it('lastWornSince reads the month from a full ISO timestamp', () => {
+    expect(lastWornSince('2026-02-09T00:00:00+00:00', june2026)).toBe('February');
+    expect(lastWornSince('2024-10-20T00:00:00+00:00', june2026)).toBe('October 2024');
+  });
+
+  it('selectBackInSeason compares the date portion against the season window', () => {
+    const rows = [
+      // Aug 31, before the Sep 1 fall window -> included.
+      piece({ id: 'before-window', season: ['fall'], last_worn_at: '2026-08-31T00:00:00+00:00' }),
+      // Sep 5, inside the window -> already worn this season, excluded.
+      piece({ id: 'in-window', season: ['fall'], last_worn_at: '2026-09-05T00:00:00+00:00' }),
+    ];
+
+    expect(selectBackInSeason(rows, october, 3).map((p) => p.id)).toEqual(['before-window']);
+  });
+
+  it('sortByDormancy orders by the date portion of full timestamps', () => {
+    const rows = [
+      piece({ id: 'recent', season: ['summer'], last_worn_at: '2026-05-20T00:00:00+00:00' }),
+      piece({ id: 'older', season: ['summer'], last_worn_at: '2026-01-10T00:00:00+00:00' }),
+    ];
+
+    expect(sortByDormancy(rows, june2026).map((p) => p.id)).toEqual(['older', 'recent']);
+  });
+});
