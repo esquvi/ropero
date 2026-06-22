@@ -42,7 +42,12 @@ jobs:
 
       - uses: supabase/setup-cli@v2
         with:
-          version: latest
+          # Pinned: a newer CLI (via `latest`) provisions a local stack that
+          # only issues the new sb_publishable/sb_secret keys, so the legacy
+          # demo JWT keys these jobs and tests use authenticate as a no-grant
+          # role ("permission denied for table items"). 2.76.15 still accepts
+          # the legacy keys. Revisit when the tests move to dynamic keys.
+          version: 2.76.15
 
       - name: Start Supabase
         run: supabase start -x storage-api,imgproxy,inbucket,edge-runtime,logflare,vector,supavisor
@@ -87,7 +92,12 @@ jobs:
 
       - uses: supabase/setup-cli@v2
         with:
-          version: latest
+          # Pinned: a newer CLI (via `latest`) provisions a local stack that
+          # only issues the new sb_publishable/sb_secret keys, so the legacy
+          # demo JWT keys these jobs and tests use authenticate as a no-grant
+          # role ("permission denied for table items"). 2.76.15 still accepts
+          # the legacy keys. Revisit when the tests move to dynamic keys.
+          version: 2.76.15
 
       - name: Start Supabase
         run: supabase start -x storage-api,imgproxy,inbucket,edge-runtime,logflare,vector,supavisor
