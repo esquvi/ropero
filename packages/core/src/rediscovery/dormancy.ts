@@ -107,15 +107,23 @@ export function selectBackInSeason<T extends RediscoveryPiece>(
     .slice(0, limit);
 }
 
-// Mirror-voice fact for a piece's dormancy. Parses the YYYY-MM-DD components
-// directly (never `new Date(str)`) so it can't shift a month in a negative-UTC
-// timezone -- the off-by-one the web/mobile formatDate copies have.
-export function dormancyLabel(lastWornAt: string | null, now: Date): string {
-  if (!lastWornAt) return 'not worn yet';
+// The date portion of a dormancy fact -- "October" for a date in the current
+// year, "October 2024" for a prior year, or null when the piece was never worn.
+// Parses the YYYY-MM-DD components directly (never `new Date(str)`) so it can't
+// shift a month in a negative-UTC timezone -- the off-by-one the web/mobile
+// formatDate copies have. Callers render this in gold (it is the datum); the
+// "not worn since" lead-in stays neutral chrome.
+export function lastWornSince(lastWornAt: string | null, now: Date): string | null {
+  if (!lastWornAt) return null;
   const [year, month] = lastWornAt.split('-').map(Number);
   const monthName = MONTHS[month - 1];
-  if (!Number.isFinite(year) || !monthName) return 'not worn yet';
-  return year === now.getFullYear()
-    ? `not worn since ${monthName}`
-    : `not worn since ${monthName} ${year}`;
+  if (!Number.isFinite(year) || !monthName) return null;
+  return year === now.getFullYear() ? monthName : `${monthName} ${year}`;
+}
+
+// Full mirror-voice fact as a single string (for accessible labels and the
+// non-split case): "not worn since October" / "not worn yet".
+export function dormancyLabel(lastWornAt: string | null, now: Date): string {
+  const since = lastWornSince(lastWornAt, now);
+  return since ? `not worn since ${since}` : 'not worn yet';
 }

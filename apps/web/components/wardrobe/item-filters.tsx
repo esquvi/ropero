@@ -19,6 +19,7 @@ import { cn } from '@/lib/utils';
 const SORT_OPTIONS = [
   { value: 'recently-added', label: 'Recently added' },
   { value: 'recently-worn', label: 'Recently worn' },
+  { value: 'dormant', label: 'Least recently worn' },
   { value: 'most-worn', label: 'Most worn' },
   { value: 'least-worn', label: 'Least worn' },
   { value: 'signature', label: 'Signature first' },

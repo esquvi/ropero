@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Shirt } from 'lucide-react';
+import { lastWornSince } from '@ropero/core';
 import { SignatureToggle } from './signature-toggle';
 import { cn } from '@/lib/utils';
 
@@ -17,6 +18,9 @@ export interface WardrobeCardItem {
 interface ItemCardProps {
   item: WardrobeCardItem;
   compact?: boolean;
+  // Present only in the wardrobe dormancy view: states the piece's last-worn
+  // fact in place of the wear count, and quiets out-of-season "resting" pieces.
+  dormancy?: { lastWornAt: string | null; outOfSeason: boolean };
 }
 
 const ARCHIVE_STATUS_LABEL: Record<string, string> = {
@@ -25,13 +29,29 @@ const ARCHIVE_STATUS_LABEL: Record<string, string> = {
   sold: 'Sold',
 };
 
-export function ItemCard({ item, compact = false }: ItemCardProps) {
+// The mirror-voice dormancy fact: "not worn since <Month>" with the date in
+// gold and the lead-in neutral, or a muted "not worn yet" for a never-worn
+// piece (mirroring the muted-gold treatment of a 0x wear count).
+function DormancyFact({ since, compact }: { since: string | null; compact: boolean }) {
+  const base = cn('truncate', compact ? 'text-[10px]' : 'mt-1.5 text-[11px]');
+  if (since === null) {
+    return <p className={cn(base, 'text-gold/55')}>not worn yet</p>;
+  }
+  return (
+    <p className={cn(base, 'text-foreground/55')}>
+      not worn since <span className="tabular-nums text-gold">{since}</span>
+    </p>
+  );
+}
+
+export function ItemCard({ item, compact = false, dormancy }: ItemCardProps) {
   const hasPhoto = item.photo_urls.length > 0;
   const archiveLabel =
     item.status !== 'active' ? ARCHIVE_STATUS_LABEL[item.status] : null;
+  const since = dormancy ? lastWornSince(dormancy.lastWornAt, new Date()) : null;
 
   return (
-    <article className="group relative">
+    <article className={cn('group relative', dormancy?.outOfSeason && 'opacity-45')}>
       <Link
         href={`/wardrobe/${item.id}`}
         className={cn(
@@ -87,21 +107,27 @@ export function ItemCard({ item, compact = false }: ItemCardProps) {
           </h3>
 
           {compact ? (
-            <div className="mt-1 flex items-baseline gap-2">
-              {item.brand && (
-                <span className="truncate text-[10px] text-foreground/55">
-                  {item.brand}
-                </span>
-              )}
-              <span
-                className={cn(
-                  'ml-auto shrink-0 tabular-nums text-[10px] text-gold',
-                  item.times_worn === 0 && 'text-gold/55',
+            dormancy ? (
+              <div className="mt-1">
+                <DormancyFact since={since} compact />
+              </div>
+            ) : (
+              <div className="mt-1 flex items-baseline gap-2">
+                {item.brand && (
+                  <span className="truncate text-[10px] text-foreground/55">
+                    {item.brand}
+                  </span>
                 )}
-              >
-                {item.times_worn}×
-              </span>
-            </div>
+                <span
+                  className={cn(
+                    'ml-auto shrink-0 tabular-nums text-[10px] text-gold',
+                    item.times_worn === 0 && 'text-gold/55',
+                  )}
+                >
+                  {item.times_worn}×
+                </span>
+              </div>
+            )
           ) : (
             <>
               {item.brand && (
@@ -109,14 +135,18 @@ export function ItemCard({ item, compact = false }: ItemCardProps) {
                   {item.brand}
                 </p>
               )}
-              <p
-                className={cn(
-                  'mt-1.5 text-[11px] tabular-nums text-gold',
-                  item.times_worn === 0 && 'text-gold/55',
-                )}
-              >
-                {item.times_worn}×
-              </p>
+              {dormancy ? (
+                <DormancyFact since={since} compact={false} />
+              ) : (
+                <p
+                  className={cn(
+                    'mt-1.5 text-[11px] tabular-nums text-gold',
+                    item.times_worn === 0 && 'text-gold/55',
+                  )}
+                >
+                  {item.times_worn}×
+                </p>
+              )}
             </>
           )}
         </div>

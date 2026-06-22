@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { Plus } from 'lucide-react';
+import { sortByDormancy, type Season } from '@ropero/core';
 import { createClient } from '@/lib/supabase/server';
 import { Button } from '@/components/ui/button';
 import { ItemCard, type WardrobeCardItem } from '@/components/wardrobe/item-card';
@@ -24,6 +25,7 @@ type WardrobeRow = WardrobeCardItem & {
   purchase_price: number | null;
   last_worn_at: string | null;
   created_at: string;
+  season: Season[];
 };
 
 export default async function WardrobePage({ searchParams }: WardrobePageProps) {
@@ -39,7 +41,7 @@ export default async function WardrobePage({ searchParams }: WardrobePageProps) 
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let q = (supabase.from('items') as any).select(
-    'id, name, brand, color_primary, photo_urls, times_worn, is_signature, status, purchase_price, created_at, last_worn_at',
+    'id, name, brand, color_primary, photo_urls, times_worn, is_signature, status, purchase_price, created_at, last_worn_at, season',
   );
 
   q = isArchive
@@ -78,9 +80,12 @@ export default async function WardrobePage({ searchParams }: WardrobePageProps) 
     case 'by-brand':
       q = q.order('brand', { ascending: true, nullsFirst: false });
       break;
+    case 'dormant':
     case 'cost-per-wear':
     case 'recently-added':
     default:
+      // dormant and cost-per-wear reorder post-fetch below; created_at is just
+      // a stable baseline before that.
       q = q.order('created_at', { ascending: false });
       break;
   }
@@ -103,6 +108,20 @@ export default async function WardrobePage({ searchParams }: WardrobePageProps) 
         b.times_worn > 0 && b.purchase_price ? b.purchase_price / b.times_worn : Infinity;
       return aCpw - bCpw;
     });
+  }
+
+  // Dormancy lens: season-aware ordering (in-season forgotten first, resting
+  // pieces quieted) computed post-fetch in @ropero/core. The per-item tag drives
+  // the card's last-worn fact and the out-of-season de-emphasis.
+  let dormancyByItem:
+    | Map<string, { lastWornAt: string | null; outOfSeason: boolean }>
+    | null = null;
+  if (sort === 'dormant') {
+    const ordered = sortByDormancy(items, new Date());
+    items = ordered;
+    dormancyByItem = new Map(
+      ordered.map((p) => [p.id, { lastWornAt: p.last_worn_at, outOfSeason: p.outOfSeason }]),
+    );
   }
 
   const total = items.length;
@@ -152,7 +171,12 @@ export default async function WardrobePage({ searchParams }: WardrobePageProps) 
           )}
         >
           {items.map((item) => (
-            <ItemCard key={item.id} item={item} compact={compact} />
+            <ItemCard
+              key={item.id}
+              item={item}
+              compact={compact}
+              dormancy={dormancyByItem?.get(item.id)}
+            />
           ))}
         </div>
       )}

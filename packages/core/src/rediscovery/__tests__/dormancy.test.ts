@@ -5,6 +5,7 @@ import {
   sortByDormancy,
   selectBackInSeason,
   dormancyLabel,
+  lastWornSince,
   type RediscoveryPiece,
 } from '../dormancy';
 
@@ -166,6 +167,26 @@ describe('selectBackInSeason', () => {
     const result = selectBackInSeason(rows, january, 3);
 
     expect(result.map((p) => p.id)).toEqual(['worn-last-winter']);
+  });
+});
+
+describe('lastWornSince', () => {
+  const june2026 = new Date(2026, 5, 15);
+
+  it('returns null for a never-worn piece', () => {
+    expect(lastWornSince(null, june2026)).toBeNull();
+  });
+
+  it('returns just the month for a current-year date', () => {
+    expect(lastWornSince('2026-02-09', june2026)).toBe('February');
+  });
+
+  it('appends the year for a prior-year date', () => {
+    expect(lastWornSince('2024-10-20', june2026)).toBe('October 2024');
+  });
+
+  it('does not shift the month at a boundary (timezone-safe)', () => {
+    expect(lastWornSince('2026-01-31', june2026)).toBe('January');
   });
 });
 
