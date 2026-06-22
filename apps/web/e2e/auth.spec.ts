@@ -1,6 +1,7 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Authentication', () => {
+// Runs under the `unauthenticated` project (no storageState).
+test.describe('Authentication (unauthenticated)', () => {
   test('login page loads', async ({ page }) => {
     await page.goto('/login');
     await expect(page.getByText('Welcome back')).toBeVisible();
@@ -11,34 +12,27 @@ test.describe('Authentication', () => {
 
   test('signup page loads', async ({ page }) => {
     await page.goto('/signup');
-    await expect(page.getByText('Create account')).toBeVisible();
+    await expect(page.getByText('Create an account')).toBeVisible();
+    await expect(page.getByLabel('Invite Code')).toBeVisible();
   });
 
-  test('login page has link to signup', async ({ page }) => {
+  test('login and signup pages cross-link', async ({ page }) => {
     await page.goto('/login');
-    const signupLink = page.getByRole('link', { name: 'Sign up' });
-    await expect(signupLink).toBeVisible();
-  });
-
-  test('signup page has link to login', async ({ page }) => {
+    await expect(page.getByRole('link', { name: 'Sign up' })).toBeVisible();
     await page.goto('/signup');
-    const loginLink = page.getByRole('link', { name: 'Sign in' });
-    await expect(loginLink).toBeVisible();
+    await expect(page.getByRole('link', { name: 'Sign in' })).toBeVisible();
   });
 
-  test('unauthenticated users are redirected from dashboard', async ({ page }) => {
-    await page.goto('/dashboard');
-    // Should redirect to login
-    await page.waitForURL(/\/(login|signup)/, { timeout: 5000 }).catch(() => {
-      // May stay on dashboard if auth middleware isn't strict — just verify the page loaded
-    });
-    // Either we're on login or dashboard loaded
-    const url = page.url();
-    expect(url).toBeTruthy();
-  });
-
-  test('Google OAuth button is present', async ({ page }) => {
+  test('Google OAuth button is present on login', async ({ page }) => {
     await page.goto('/login');
     await expect(page.getByRole('button', { name: /Google/i })).toBeVisible();
   });
+
+  for (const path of ['/dashboard', '/wardrobe', '/outfits', '/trips']) {
+    test(`unauthenticated ${path} redirects to login`, async ({ page }) => {
+      await page.goto(path);
+      await page.waitForURL('**/login**');
+      await expect(page.getByText('Welcome back')).toBeVisible();
+    });
+  }
 });

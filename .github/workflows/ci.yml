@@ -42,7 +42,12 @@ jobs:
 
       - uses: supabase/setup-cli@v2
         with:
-          version: latest
+          # Pinned: a newer CLI (via `latest`) provisions a local stack that
+          # only issues the new sb_publishable/sb_secret keys, so the legacy
+          # demo JWT keys these jobs and tests use authenticate as a no-grant
+          # role ("permission denied for table items"). 2.76.15 still accepts
+          # the legacy keys. Revisit when the tests move to dynamic keys.
+          version: 2.76.15
 
       - name: Start Supabase
         run: supabase start -x storage-api,imgproxy,inbucket,edge-runtime,logflare,vector,supavisor
@@ -69,6 +74,12 @@ jobs:
     env:
       NEXT_PUBLIC_SUPABASE_URL: http://127.0.0.1:54321
       NEXT_PUBLIC_SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+      # Non-public vars for the Playwright auth setup (admin seed + login). The
+      # service role key never reaches the browser bundle; it is used only by
+      # e2e/auth.setup.ts (the Playwright setup project) running in Node.
+      SUPABASE_URL: http://127.0.0.1:54321
+      SUPABASE_ANON_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0
+      SUPABASE_SERVICE_ROLE_KEY: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImV4cCI6MTk4MzgxMjk5Nn0.EGIM96RAZx35lJzdJsyH-qQwv8Hdp7fsn3W0YpN81IU
     steps:
       - uses: actions/checkout@v6
 
@@ -78,6 +89,27 @@ jobs:
           cache: npm
 
       - run: npm ci --ignore-scripts
+
+      - uses: supabase/setup-cli@v2
+        with:
+          # Pinned: a newer CLI (via `latest`) provisions a local stack that
+          # only issues the new sb_publishable/sb_secret keys, so the legacy
+          # demo JWT keys these jobs and tests use authenticate as a no-grant
+          # role ("permission denied for table items"). 2.76.15 still accepts
+          # the legacy keys. Revisit when the tests move to dynamic keys.
+          version: 2.76.15
+
+      - name: Start Supabase
+        run: supabase start -x storage-api,imgproxy,inbucket,edge-runtime,logflare,vector,supavisor
+
+      - name: Wait for Supabase
+        run: |
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:54321/rest/v1/ \
+              -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0" && break
+            echo "Waiting for Supabase API... ($i/30)"
+            sleep 2
+          done
 
       - name: Install Playwright browsers
         run: npx playwright install --with-deps chromium

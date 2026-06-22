@@ -3,7 +3,8 @@ import { Shirt, Layers, Plane, TrendingUp, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { createClient } from '@/lib/supabase/server';
 import { StatCard } from '@/components/dashboard/stat-card';
-import { RecentActivity, WearLogRow } from '@/components/dashboard/recent-activity';
+import type { WearLogRow } from '@ropero/core';
+import { RecentActivity } from '@/components/dashboard/recent-activity';
 import { UpcomingTrips } from '@/components/dashboard/upcoming-trips';
 
 export default async function DashboardPage() {

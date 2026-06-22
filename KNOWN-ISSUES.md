@@ -175,15 +175,15 @@ Same shape (user_id, item_id, optional outfit_id, worn_at, occasion, notes).
 
 **Fix direction:** extract into a helper; consider a `wear` RPC if atomicity across multiple wear_logs is ever wanted.
 
-### Duplicated `groupWearLogs` on web and mobile [QA-2026-04-18]
+### Duplicated `groupWearLogs` on web and mobile [QA-2026-04-18] — WEB HALF RESOLVED 2026-06-22
 
-**Severity:** tech debt.
+**Web half resolved** by the real-test-infrastructure work (see `docs/plans/2026-06-22-001-feat-real-test-infrastructure-plan.md`). `groupWearLogs` (plus its `WearLogRow` / `ActivityEntry` types) now lives in `packages/core/src/wear/group-wear-logs.ts` with unit tests, and the web dashboard imports it from `@ropero/core`. The cap is now a parameter (default 10) so mobile's different ratio can reuse the same helper.
 
-**Surfaces:**
+**Remaining:** the mobile copies (`apps/mobile/app/(tabs)/index.tsx`, `apps/mobile/app/outfits/[id].tsx`) still define their own version. Rewiring them to `@ropero/core` is a pure import swap (CI-typecheck-covered, not Expo-blocked) deferred to a mobile-touching PR to keep the test-infra change web-scoped.
+
+**Original surfaces:**
 - `apps/mobile/app/(tabs)/index.tsx:64-103`
 - `apps/web/components/dashboard/recent-activity.tsx:39-82`
-
-**Fix direction:** lift into `@ropero/core`. Also a good opportunity to add unit tests (neither copy is tested).
 
 ## UX and copy
 
@@ -245,13 +245,13 @@ Same shape (user_id, item_id, optional outfit_id, worn_at, occasion, notes).
 
 ## Testing
 
-### E2E tests are cosmetic [QA-2026-04-18]
+### ~~E2E tests are cosmetic~~ [QA-2026-04-18] — RESOLVED 2026-06-22
 
-**Severity:** important.
+**Resolved** by the real-test-infrastructure work (`docs/plans/2026-06-22-001-feat-real-test-infrastructure-plan.md`). The root cause was structural: the `e2e-tests` CI job set `NEXT_PUBLIC_SUPABASE_URL` but never started a database, so no authenticated flow could run. That job now starts a live local Supabase (mirroring `rls-tests`), a Playwright setup project seeds a confirmed user + items and captures an authenticated `storageState`, and the specs exercise real flows: wardrobe render, item detail, wear logging (full mutation), outfit create, the trips surface + plan dialog, the invite-gated signup, and genuine unauthenticated redirects. The `expect(true).toBe(true)` placeholder is gone.
 
-**Surface:** `apps/web/e2e/wardrobe.spec.ts`, `outfit.spec.ts`, `trip.spec.ts`. Each asserts "either login or the page loaded"; the wardrobe one contains `expect(true).toBe(true)` as of the cleanup in PR #12. None cover the 22 features shipped in the 2026-04-18 session (outfit detail, wear-outfit, delete, dashboard activity, etc.).
+**Remaining follow-ups (noted in-file):** outfit edit/delete coverage and the calendar-based full trip create.
 
-**Fix direction:** build a real auth fixture (seed a test user, sign in programmatically) and write end-to-end tests against the actual flows. Prioritize invite signup, wear logging, and outfit create/edit/delete.
+**Original detail:** `apps/web/e2e/wardrobe.spec.ts`, `outfit.spec.ts`, `trip.spec.ts` each asserted "either login or the page loaded"; the wardrobe one contained `expect(true).toBe(true)` as of PR #12.
 
 ### Mobile has zero automated tests [QA-2026-04-18]
 
@@ -269,21 +269,13 @@ Same shape (user_id, item_id, optional outfit_id, worn_at, occasion, notes).
 
 **Fix direction:** add one test file per missing validator.
 
-### `groupWearLogs` is untested [QA-2026-04-18]
+### ~~`groupWearLogs` is untested~~ [QA-2026-04-18] — RESOLVED 2026-06-22
 
-**Severity:** minor but easy.
+**Resolved.** Lifted to `packages/core/src/wear/group-wear-logs.ts` with 9 Vitest unit tests covering the grouping, the same-outfit-same-day collapse, the cap, and the cap-then-increment invariant (once the cap is hit no new entries are created but existing outfit groups keep counting). See `docs/plans/2026-06-22-001-feat-real-test-infrastructure-plan.md`.
 
-**Surface:** the copy-pasted helper is the most complex pure function in the recent batch.
+### ~~RLS integration tests miss invite system~~ [QA-2026-04-18] — RESOLVED 2026-06-22 (entry was stale)
 
-**Fix direction:** lift to core (see Tech debt) and add unit tests for the grouping invariants (cap behavior, incrementing existing groups after cap, outfit-less rows pass through, etc.).
-
-### RLS integration tests miss invite system [QA-2026-04-18]
-
-**Severity:** important given we just shipped two RLS fixes (#30, #31).
-
-**Surface:** `packages/supabase/src/__tests__/rls.test.ts` has no coverage of `invite_codes` policies or `redeem_invite_code` / `validate_invite_code`.
-
-**Fix direction:** add tests specifically for cross-user enumeration (must fail), unauthenticated redemption (must fail), and signup validation through the new RPC.
+**This entry was stale.** The gap was actually closed on 2026-04-24 by `packages/supabase/src/__tests__/invite-rls.test.ts` (shipped with the #30/#31 follow-up), which covers the `invite_codes` SELECT lockdown, `validate_invite_code` (no id leak), `redeem_invite_code` identity binding, and `invite_redemptions` cross-user isolation. The 2026-06-22 test-infra pass discovered the file and added the four remaining gaps to it rather than duplicating: `validate_invite_code` exhausted-reason, `redeem_invite_code` unauthenticated rejection, exhausted-code rejection, and race-safety under concurrent single-use redemption (proving the `FOR UPDATE` lock). Verified against a live local Supabase (13 invite tests pass).
 
 ## Infra
 

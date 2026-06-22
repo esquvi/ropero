@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { STORAGE_STATE } from './e2e/fixtures/seed';
 
 export default defineConfig({
   testDir: './e2e',
@@ -13,15 +14,32 @@ export default defineConfig({
     screenshot: 'only-on-failure',
   },
   projects: [
+    // Seeds a user + items and captures an authenticated storageState. Runs
+    // first as a dependency of the authenticated project.
     {
-      name: 'chromium',
+      name: 'setup',
+      testMatch: ['**/auth.setup.ts'],
       use: { ...devices['Desktop Chrome'] },
+    },
+    // Specs that must run logged out (login/signup pages, invite gate,
+    // unauthenticated redirects).
+    {
+      name: 'unauthenticated',
+      testMatch: ['**/auth.spec.ts', '**/signup.spec.ts'],
+      use: { ...devices['Desktop Chrome'] },
+    },
+    // Everything else runs with the captured authenticated session.
+    {
+      name: 'authenticated',
+      testIgnore: ['**/auth.setup.ts', '**/auth.spec.ts', '**/signup.spec.ts'],
+      use: { ...devices['Desktop Chrome'], storageState: STORAGE_STATE },
+      dependencies: ['setup'],
     },
   ],
   webServer: {
     command: process.env.CI ? 'npm run start' : 'npm run dev',
     url: 'http://localhost:3000',
     reuseExistingServer: !process.env.CI,
-    timeout: 30000,
+    timeout: 120000,
   },
 });
