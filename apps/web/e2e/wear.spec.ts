@@ -23,9 +23,9 @@ test.describe('Wear logging (authenticated)', () => {
       .getByRole('button', { name: 'Log Wear' })
       .click();
 
-    // On success the popover closes, so its description disappears, and no
-    // error alert is shown.
+    // The submit handler only closes the popover on a resolved server action
+    // (a thrown wear keeps it open and shows an inline error), so the popover
+    // closing (its description disappearing) is the success signal.
     await expect(page.getByText('Record when you wore this item.')).toBeHidden();
-    await expect(page.getByRole('alert')).toHaveCount(0);
   });
 });

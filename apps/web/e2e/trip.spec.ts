@@ -10,7 +10,9 @@ import { test, expect } from '@playwright/test';
 test.describe('Trips (authenticated)', () => {
   test('trips page loads with the plan-trip action and tabs', async ({ page }) => {
     await page.goto('/trips');
-    await expect(page.getByRole('heading', { name: 'Trips' })).toBeVisible();
+    // exact: true so the page title h1 isn't ambiguous with empty-state
+    // headings like "No upcoming trips" (accessible-name matching is substring).
+    await expect(page.getByRole('heading', { name: 'Trips', exact: true })).toBeVisible();
     await expect(page.getByRole('button', { name: 'Plan Trip' })).toBeVisible();
     await expect(page.getByRole('tab', { name: /Upcoming/ })).toBeVisible();
     await expect(page.getByRole('tab', { name: /Past/ })).toBeVisible();

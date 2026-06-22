@@ -5,7 +5,9 @@ import { readSeedContext } from './fixtures/seed';
 test.describe('Outfits (authenticated)', () => {
   test('outfits page loads', async ({ page }) => {
     await page.goto('/outfits');
-    await expect(page.getByRole('heading', { name: 'Outfits' })).toBeVisible();
+    // exact: true so the page title h1 isn't ambiguous with the empty-state
+    // "No outfits yet" heading (accessible-name matching is substring).
+    await expect(page.getByRole('heading', { name: 'Outfits', exact: true })).toBeVisible();
   });
 
   test('creates an outfit from seeded items', async ({ page }) => {
