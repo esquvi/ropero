@@ -44,6 +44,11 @@ let userBId: string;
 const seedCode = `TEST${Date.now().toString(36).toUpperCase()}`.slice(0, 12);
 let seedCodeId: string | undefined;
 
+// Additional seeded codes for the redemption-guard and concurrency tests. The
+// prefix keeps them distinct from seedCode even when Date.now() collides.
+const exhaustedCode = `EXHA${Date.now().toString(36).toUpperCase()}`.slice(0, 12);
+const raceCode = `RACE${Date.now().toString(36).toUpperCase()}`.slice(0, 12);
+
 async function isSupabaseRunning(): Promise<boolean> {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/`, {
@@ -117,17 +122,30 @@ describe('Invite System RLS and RPC', () => {
       .select('id')
       .single();
     seedCodeId = seeded?.id;
+
+    // Exhausted code (already at max_uses) for the "maximum uses" paths.
+    await (admin as any)
+      .from('invite_codes')
+      .insert({ code: exhaustedCode, max_uses: 1, times_used: 1, user_id: null });
+
+    // Single-use code for the concurrency race.
+    await (admin as any)
+      .from('invite_codes')
+      .insert({ code: raceCode, max_uses: 1, times_used: 0, user_id: null });
   });
 
   afterAll(async () => {
     if (!supabaseRunning) return;
 
     // Clean up seeded redemptions + code, then users (cascade covers
-    // trigger-created codes for A and B).
+    // trigger-created codes for A and B). Deleting a code cascades to its
+    // redemptions, so the guard/race codes need only a code delete.
     if (seedCodeId) {
       await (admin as any).from('invite_redemptions').delete().eq('invite_code_id', seedCodeId);
       await (admin as any).from('invite_codes').delete().eq('id', seedCodeId);
     }
+    await (admin as any).from('invite_codes').delete().eq('code', exhaustedCode);
+    await (admin as any).from('invite_codes').delete().eq('code', raceCode);
     await admin.auth.admin.deleteUser(userAId);
     await admin.auth.admin.deleteUser(userBId);
   });
@@ -265,6 +283,71 @@ describe('Invite System RLS and RPC', () => {
       expect(data).not.toHaveProperty('id');
       expect(data).not.toHaveProperty('user_id');
       expect(data).not.toHaveProperty('code');
+    });
+
+    it('anon gets valid=false with reason "exhausted" for a fully used code', async () => {
+      if (!supabaseRunning) return expect(true).toBe(true);
+
+      const { data, error } = await (anonClient.rpc as any)('validate_invite_code', {
+        p_code: exhaustedCode,
+      });
+
+      expect(error).toBeNull();
+      expect(data).toMatchObject({ valid: false, reason: 'exhausted' });
+    });
+  });
+
+  describe('redeem_invite_code guards', () => {
+    it('rejects an unauthenticated caller', async () => {
+      if (!supabaseRunning) return expect(true).toBe(true);
+
+      // The function reads auth.uid() and returns a structured failure rather
+      // than mutating, so an anonymous caller can never record a redemption.
+      const { data, error } = await (anonClient.rpc as any)('redeem_invite_code', {
+        invite_code: 'ROPERO01',
+      });
+
+      expect(error).toBeNull();
+      expect(data).toMatchObject({ success: false, error: 'Not authenticated' });
+    });
+
+    it('rejects a code that has reached its maximum uses', async () => {
+      if (!supabaseRunning) return expect(true).toBe(true);
+
+      const { data, error } = await (userBClient.rpc as any)('redeem_invite_code', {
+        invite_code: exhaustedCode,
+      });
+
+      expect(error).toBeNull();
+      expect(data).toMatchObject({
+        success: false,
+        error: 'Invite code has reached maximum uses',
+      });
+    });
+
+    it('is race-safe: concurrent redemptions of a single-use code yield exactly one success', async () => {
+      if (!supabaseRunning) return expect(true).toBe(true);
+
+      // The redeem function locks the row FOR UPDATE, so two simultaneous
+      // redemptions of a max_uses:1 code must serialize: one wins, one is told
+      // the code is exhausted. Without the lock, both could read times_used:0
+      // and both succeed.
+      const [r1, r2] = await Promise.all([
+        (userAClient.rpc as any)('redeem_invite_code', { invite_code: raceCode }),
+        (userBClient.rpc as any)('redeem_invite_code', { invite_code: raceCode }),
+      ]);
+
+      const successes = [r1.data, r2.data].filter(
+        (d: { success?: boolean } | null) => d?.success === true,
+      );
+      expect(successes).toHaveLength(1);
+
+      const { data: codeRow } = await (admin as any)
+        .from('invite_codes')
+        .select('times_used')
+        .eq('code', raceCode)
+        .single();
+      expect(codeRow?.times_used).toBe(1);
     });
   });
 
